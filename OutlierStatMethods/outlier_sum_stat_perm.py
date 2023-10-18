@@ -2,6 +2,8 @@ from OutlierStatMethods import base_class
 import pandas as pd 
 import numpy as np
 import scipy.stats as sp 
+import logging
+# logger = logging.getLogger(__name__)
 
 class OSPerm(base_class.OutlierStatMethod):
     def __init__(self, disease_data=None, control_data=None):
@@ -15,7 +17,8 @@ class OSPerm(base_class.OutlierStatMethod):
             raise ValueError("Input disease data is invalid")
         if self.control_data is None or self.control_data.shape[0] == 0 or self.control_data.shape[1] == 0:
             raise ValueError("Input disease data is invalid")
-
+        # self.logger = logger.getChild('OSPerm')
+        # self.logger.setLevel(logging.INFO)
         ## properties        
         self._no_of_feats = None
         self._mad_norm_disease_df = None 
@@ -96,15 +99,21 @@ class OSPerm(base_class.OutlierStatMethod):
         return zscore, pvalue, OS_disease 
     
     def get_stats(self):
+
         ## initial stats from controls 
+        print("Calculating median, mad and applying mad normalization")
         meds = self.get_all_meds(self.mad_norm_control_df)
         mads = self.get_all_mads(self.mad_norm_control_df)
         threshes = self.get_all_threshes(self.mad_norm_control_df)
 
+        print("Generating null distribution")
         ## OS_null distribution 
         OS_null_df = self.generate_null()
         zscores, pvalues, OS_disease = self.get_pvalue_for_feat(OS_null_df)
         
+        print("Consolidating stats into dictionary")
         ## final stats_dict 
         stat_dict = {'median': meds, 'mad': mads, 'iqr_threshold': threshes, 'zscores': zscores, 'pvalues': pvalues, 'OutlierSum': OS_disease}
+        
+        print("Finished applying outlier stat methods")
         return stat_dict 
