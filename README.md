@@ -36,12 +36,12 @@ OmicsProjects
    └── <jupyter_nb2.ipynb>
    ```
 #### Method utilities development
-- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/tree/main/OutlierStatMethods/README.md)
-- [Module for Omics data processing](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/README.md)  
+- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/blob/main/OmicsUtils/README.md)
+- [Module for Omics data processing](https://github.com/adhal007/OmicsProjects/blob/main/OmicsUtils/README.md)  
 
 
 #### Projects (Application of Methods)
-Project 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/tree/main/OutlierMethodsApplication/README.md) 
+Project 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/blob/main/OutlierMethodsApplication/README.md) 
 
 
 Project 2: [ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data](https://github.com/adhal007/OmicsProjects/blob/main/Transcriptomics/README.md)
