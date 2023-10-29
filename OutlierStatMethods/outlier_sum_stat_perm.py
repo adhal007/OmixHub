@@ -2,8 +2,10 @@ from OutlierStatMethods import base_class
 import pandas as pd 
 import numpy as np
 import scipy.stats as sp 
-import logging
-# logger = logging.getLogger(__name__)
+import CustomLogger.custom_logger
+import inspect 
+
+logger = CustomLogger.custom_logger.CustomLogger()
 
 class OSPerm(base_class.OutlierStatMethod):
     def __init__(self, disease_data=None, control_data=None):
@@ -16,15 +18,16 @@ class OSPerm(base_class.OutlierStatMethod):
         if self.disease_data is None or self.disease_data.shape[0] == 0 or self.disease_data.shape[1] == 0:
             raise ValueError("Input disease data is invalid")
         if self.control_data is None or self.control_data.shape[0] == 0 or self.control_data.shape[1] == 0:
-            raise ValueError("Input disease data is invalid")
-        # self.logger = logger.getChild('OSPerm')
-        # self.logger.setLevel(logging.INFO)
+            raise ValueError("Input disease data is invalid")      
         ## properties        
         self._no_of_feats = None
         self._mad_norm_disease_df = None 
         self._mad_norm_control_df = None
         self._n_cases = None
         self._n_controls = None 
+        ## Iniatilize logger for class 
+        self.logger = logger.custlogger(loglevel='DEBUG')
+        self.logger.debug("Initialized OS Perm class")
 
     @property
     def no_of_feats(self):
@@ -99,21 +102,21 @@ class OSPerm(base_class.OutlierStatMethod):
         return zscore, pvalue, OS_disease 
     
     def get_stats(self):
-
         ## initial stats from controls 
-        print("Calculating median, mad and applying mad normalization")
+        logger_child = self.logger.getChild("get_stats")
+        logger_child.info("Calculating median, mad and applying mad normalization")
         meds = self.get_all_meds(self.mad_norm_control_df)
         mads = self.get_all_mads(self.mad_norm_control_df)
         threshes = self.get_all_threshes(self.mad_norm_control_df)
 
-        print("Generating null distribution")
+        logger_child.info("Generating null distribution")
         ## OS_null distribution 
         OS_null_df = self.generate_null()
         zscores, pvalues, OS_disease = self.get_pvalue_for_feat(OS_null_df)
         
-        print("Consolidating stats into dictionary")
+        logger_child.info("Consolidating stats into dictionary")
         ## final stats_dict 
         stat_dict = {'median': meds, 'mad': mads, 'iqr_threshold': threshes, 'zscores': zscores, 'pvalues': pvalues, 'OutlierSum': OS_disease}
         
-        print("Finished applying outlier stat methods")
+        logger_child.info("Finished applying outlier stat methods")
         return stat_dict 
