@@ -14,17 +14,26 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 #### Codebase
 ```md
 OmicsProjects
-   ├── CustomLogger
-   │   ├── init.py
-   │   ├── custom_logger.py
-   ├── OutlierStatMethods
-   │   ├── init.py
-   │   ├── base_class.py
-   │   ├── <some_child_method>.py
-   │   └── README.md 
    ├── OmicsUtils
+   │   ├── OutlierStatMethods
+   │   │   ├── init.py
+   │   │   ├── base_class.py
+   │   │   ├── <some_child_method>.py
+   │   │   └── README.md
+   │   ├── DimRedMappers
+   │   │   ├── init.py
+   │   │   ├── <some_method_method>.py
+   │   │   └── README.md
+   │   ├── PlotUtils
+   │   │   ├── init.py
+   │   │   ├── <some_method_method>.py
+   │   │   └── README.md
+   │   ├── CustomLogger
+   │   │   ├── init.py
+   │   │   ├── custom_logger.py
+   │   │   └── README.md      
    │   ├── init.py
-   │   ├── preprocess_utils.py
+   │   ├── preprocess_utils.py        
    │   └── README.md
    ├── Transcriptomics
    │   ├── init.py
@@ -36,16 +45,16 @@ OmicsProjects
    └── <jupyter_nb2.ipynb>
    ```
 #### Method utilities development
-- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/blob/main/OutlierStatMethods/README.md)
+- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/blob/main/OmicsUtils/OutlierStatMethods/README.md)
 
 - [Module for Omics data processing](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/README.md)
 
-- [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmicsProjects/tree/main/DimRedMappers/README.md)  
+- [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmicsProjects/tree/main/OmicUtils/DimRedMappers/README.md)  
 
 
 #### Projects/Analysis (Application of Methods)
 
-Analysis 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/tree/main/OutlierMethodsApplication/README.md) 
+Analysis 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/OutlierMethodsApplication/README.md) 
 
 
 Analysis 2: [Application of Dimensionality reduction methods for stratification of Kidney-Cancer Subtypes](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/README.md)        

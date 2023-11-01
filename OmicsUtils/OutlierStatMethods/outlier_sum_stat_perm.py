@@ -1,11 +1,11 @@
-from OutlierStatMethods import base_class
+from OmicsUtils.OutlierStatMethods import base_class
 import pandas as pd 
 import numpy as np
 import scipy.stats as sp 
-import CustomLogger.custom_logger
+import OmicsUtils.CustomLogger.custom_logger
 import inspect 
 
-logger = CustomLogger.custom_logger.CustomLogger()
+logger = OmicsUtils.CustomLogger.custom_logger.CustomLogger()
 
 class OSPerm(base_class.OutlierStatMethod):
     def __init__(self, disease_data=None, control_data=None):

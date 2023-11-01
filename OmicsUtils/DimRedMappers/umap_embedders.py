@@ -43,6 +43,12 @@ class umap_embedder:
                                      )
         return embed_df 
     
+
+class DRClusterer:
+    def __init__(self, clust_method='knn'):
+        self.clust_method = clust_method
+
+    def perform_clustering(self):
     ## Next - Neural Network embeddings in parametric UMAP  
 
 
