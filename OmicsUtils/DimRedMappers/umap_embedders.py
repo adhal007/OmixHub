@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import FunctionTransformer
 import pandas as pd
 import umap
 
@@ -43,12 +44,18 @@ class umap_embedder:
                                      )
         return embed_df 
     
-
+    def log10_transformer(self, list_of_cols, df:pd.DataFrame):
+        df[gene_cols] = df[gene_cols] + 1
+        transformer = FunctionTransformer(np.log10)
+        df[list_of_cols] = transformer.fit_transform(df[list_of_cols])
+        return df 
+        
 class DRClusterer:
-    def __init__(self, clust_method='knn'):
-        self.clust_method = clust_method
-
-    def perform_clustering(self):
+    def __init__(self, clust_methods=['knn']):
+        self.clust_method = clust_methods
+    
+    def get_clustering_performances(self):
+        raise NotImplementedError()
     ## Next - Neural Network embeddings in parametric UMAP  
 
 

@@ -63,6 +63,20 @@ Given ~1500 samples total for 3 sub-types of Kidney cancer and 60660 gene expres
 - GMM
 - Possibly deep learning methods? [Review Paper link](https://academic.oup.com/bib/article/22/1/393/5721075) 
 
+
+A list of 10 of the more popular algorithms is as follows:
+([Examples of clustering methods applied](https://machinelearningmastery.com/clustering-algorithms-with-python/))
+- Affinity Propagation
+- Agglomerative Clustering
+- BIRCH
+- DBSCAN
+- K-Means
+- Mini-Batch K-Means
+- Mean Shift
+- OPTICS
+- Spectral Clustering
+- Mixture of Gaussians
+
 ## Visualizations/Results:
 
 This section has the visualization of sub-cohorts after DR, interpretation of results and visualization of quantifying metrics for measuring clustering accuracy, neighborhood preservation and classification accuracy. 
