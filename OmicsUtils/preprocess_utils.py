@@ -5,7 +5,7 @@ from shutil import move
 import CustomLogger.custom_logger
 logger = CustomLogger.custom_logger.CustomLogger()
 
-class PreProcessor:
+class RNASeqPreProcessor:
     def __init__(self):
         self.logger =  logger.custlogger(loglevel='DEBUG')
         self.logger.debug("Initialized PreProcessor Class for TCGA data")

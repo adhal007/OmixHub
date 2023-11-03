@@ -11,6 +11,16 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 - Strategize an Infrastructure that can be used for multi-omics analysis based on the Genomic Data Commons workflows to enable easy application to other disease datasets.
 - Functionality to explore multiple NGS assays: Identify data structures/data types commonly used in the 6 types of NGS assays
 
+
+#### Dataset download
+
+- [Genome Data Commons(GDC)](https://portal.gdc.cancer.gov/projects?filters=%7B%22op%22%3A%22and%22%2C%22content%22%3A%5B%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22projects.summary.experimental_strategies.experimental_strategy%22%2C%22value%22%3A%5B%22RNA-Seq%22%5D%7D%7D%5D%7D)
+- Add all chosen datasets to cart and then download it.
+- Since this module is currently developed for bulk transcriptomics RNA-Seq data, in the GDC portal, select the "RNA-Seq" experimental strategy
+- Here is an example of the same from a screen-shot 
+  - ![example](Transciptomics/../Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
+- The data for RNA-Seq data for kidney cancer is used as an example here as it was provided as one of the datasets on the UCI ML repository. 
+
 #### Codebase
 ```md
 OmicsProjects

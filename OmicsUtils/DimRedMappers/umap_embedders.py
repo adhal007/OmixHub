@@ -3,6 +3,9 @@ from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import FunctionTransformer
+
+
+
 import pandas as pd
 import umap
 
@@ -18,7 +21,7 @@ class umap_embedder:
         if mapper_type not in self.mapper_list:
             raise ValueError("Incorrect mapper used for Umap")
         elif mapper_type == 'plane':
-            mapper = umap.UMAP(random_state=42).fit(self.data)
+            mapper = umap.UMAP(n_components = 2, random_state=143, n_jobs=-1, negative_gradient_method='bh').fit(self.data)
         elif mapper_type == 'sphere':
             mapper = umap.UMAP(output_metric='haversine', random_state=42).fit(self.data)
         elif mapper_type == 'hyperbolic':
@@ -49,32 +52,6 @@ class umap_embedder:
         transformer = FunctionTransformer(np.log10)
         df[list_of_cols] = transformer.fit_transform(df[list_of_cols])
         return df 
-        
-class DRClusterer:
-    def __init__(self, clust_methods=['knn']):
-        self.clust_method = clust_methods
     
-    def get_clustering_performances(self):
-        raise NotImplementedError()
-    ## Next - Neural Network embeddings in parametric UMAP  
+    
 
-
-    # @numba.njit(fastmath=True)
-    # def torus_euclidean_grad(x, y, torus_dimensions=(2*np.pi,2*np.pi)):
-    #     """Standard euclidean distance.
-
-    #     ..math::
-    #         D(x, y) = \sqrt{\sum_i (x_i - y_i)^2}
-    #     """
-    #     distance_sqr = 0.0
-    #     g = np.zeros_like(x)
-    #     for i in range(x.shape[0]):
-    #         a = abs(x[i] - y[i])
-    #         if 2*a < torus_dimensions[i]:
-    #             distance_sqr += a ** 2
-    #             g[i] = (x[i] - y[i])
-    #         else:
-    #             distance_sqr += (torus_dimensions[i]-a) ** 2
-    #             g[i] = (x[i] - y[i]) * (a - torus_dimensions[i]) / a
-    #     distance = np.sqrt(distance_sqr)
-    #     return distance, g/(1e-6 + distance)

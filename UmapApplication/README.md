@@ -9,6 +9,17 @@ Paper: [Dimensionality reduction Application by UMAP in bulk transcriptomic data
 
 Given ~1500 samples total for 3 sub-types of Kidney cancer and 60660 gene expression features (Normalized fragments per kilo million[fpkm]), how well can we stratify the sub-types and quantify genes associated with each cohort? 
 
+## Recommended UMAP Pipeline
+![](images/PipelineForUmapBulkRNA.jpg)
+[Paper reference](https://www.sciencedirect.com/science/article/pii/S2211124721008597#sec4) Yang Yang, Hongjian Sun, Yu Zhang, Tiefu Zhang, Jialei Gong, Yunbo Wei, Yong-Gang Duan, Minglei Shu, Yuchen Yang, Di Wu, Di Yu,
+Dimensionality reduction by UMAP reinforces sample heterogeneity analysis in bulk transcriptomic data,
+Cell Reports,
+Volume 36, Issue 4,
+2021,
+109442,
+ISSN 2211-1247,
+https://doi.org/10.1016/j.celrep.2021.109442.
+
 ### Questions:
 
 ##### Sub-type stratification:
@@ -77,6 +88,7 @@ A list of 10 of the more popular algorithms is as follows:
 - Spectral Clustering
 - Mixture of Gaussians
 
+
 ## Visualizations/Results:
 
 This section has the visualization of sub-cohorts after DR, interpretation of results and visualization of quantifying metrics for measuring clustering accuracy, neighborhood preservation and classification accuracy. 
@@ -85,18 +97,18 @@ This section has the visualization of sub-cohorts after DR, interpretation of re
 
 Performance of UMAP as a function of different embedding spaces: 
 
-1. 2D plots for plane and hyperbeloid embedding mappers 
+###### Umap using default configurations:
+      
+Fig 1.A. Plane embedding shows separation of clustering structures by batch effects ![2D scatterplot using plane mapper](images/Plane_UMAP_embedment.png)
    
-![2D scatterplot using plane mapper](images/Plane_UMAP_embedment.png)
-   
-![2D scatterplot using hyperbeloid mapper](images/Hperbolic_UMAP_embedder.png) 
+Fig 1.B. Hyperbeloid embedding supports the hypothesis of clustering structures with batch effects ![2D scatterplot using hyperbeloid mapper](images/Hperbolic_UMAP_embedder.png) 
 
-2. 3D plot for sphere mapper 
-   
-   ![3D scatterplot using Sphere mapper](images/Sphere_UMAP_embedment.png)
+    
+Fig 2. Example of 3D visualization shows separate batches by clustering structures   ![3D scatterplot using Sphere mapper](images/Sphere_UMAP_embedment.png)
 
-3. Interpretation:
 
-In the 2-D plots, there are 4 distinct clusters that are observed. 3 of the 4 clusters have majority of the class labels being well separated. However, there is one cluster that seems mixed with all three sub-types of kidney cancer. This might be due to 
-   - Batch effects in the samples due to confounding factors (collection date, etc)
-   - Even after normalization with sklearn's standard scaler,  log transformation might be needed. 
+###### Interpretation:
+
+In the 2-D plots, there are 4 distinct clusters that are observed. 3 of the 4 clusters have majority of the class labels being well separated. However, there is one cluster that seems mixed with all three sub-types of kidney cancer. 
+- The well separater Orange, Green and Blue clusters of TCGA-KIRP, TCGA-KICH and TCGA-KIRC cohorts seem to be from 3 different batches.  
+- The mixed group might correspond to a different biological group. 
