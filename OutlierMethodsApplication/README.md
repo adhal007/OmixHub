@@ -4,7 +4,7 @@ The outlier sum statistic is a statistical method to identify differential featu
 
 ## Visualization of significant differential features between 2 cohorts:
 
-![](images/VolcanoPlot.png)
+![](/OutlierMethodsApplication/images/VolcanoPlot.png)
 
-![](images/ManhattanPlot.png)
+![](/OutlierMethodsApplication/images/ManhattanPlot.png)
 *X-axis: Could be ordered set of genes on a chromosome*
