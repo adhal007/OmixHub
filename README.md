@@ -18,7 +18,7 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 - Add all chosen datasets to cart and then download it.
 - Since this module is currently developed for bulk transcriptomics RNA-Seq data, in the GDC portal, select the "RNA-Seq" experimental strategy
 - Here is an example of the same from a screen-shot 
-  - ![example](Transciptomics/../Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
+  - ![example](./Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
 - The data for RNA-Seq data for kidney cancer is used as an example here as it was provided as one of the datasets on the UCI ML repository. 
 
 #### Codebase
