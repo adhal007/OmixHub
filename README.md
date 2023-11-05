@@ -64,7 +64,7 @@ OmicsProjects
 
 #### Projects/Analysis (Application of Methods)
 
-Analysis 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/OutlierMethodsApplication/README.md) 
+Analysis 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/blob/main/OmicsUtils/OutlierMethodsApplication/README.md) 
 
 
 Analysis 2: [Application of Dimensionality reduction methods for stratification of Kidney-Cancer Subtypes](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/README.md)        
