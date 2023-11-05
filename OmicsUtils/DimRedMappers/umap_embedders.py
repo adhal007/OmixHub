@@ -11,13 +11,30 @@ import umap
 
 
 class umap_embedder:
-    def __init__(self, data):
+    def __init__(self, 
+                 data, 
+                 embedding_type = None):
         self.data = data
         self.mapper = 'plane'
         self.mapper_list = ['plane', 'sphere', 'custom', 'hyperbolic']
         self.dims = ['2D', '3D']
+        self.allowed_embedding_types = ['optimized']
+        self.embedding_type = embedding_type
+        self.n_neighbors = None 
+        self.n_components = None 
+        self.random_state = None 
+        self._embedding = None 
 
-    def mappers(self, mapper_type='plane'):
+    @property
+    def embedding(self):
+        if self._embedding is None:
+            if self.embedding_type is None:
+                embedding = self.default_embedding()
+            elif self.embedding_type == 'optimized':
+                embedding = self.optimized_embedding()
+        return embedding
+    
+    def default_embedding(self, mapper_type='plane'):
         if mapper_type not in self.mapper_list:
             raise ValueError("Incorrect mapper used for Umap")
         elif mapper_type == 'plane':
@@ -28,7 +45,15 @@ class umap_embedder:
             mapper = umap.UMAP(output_metric='hyperboloid',random_state=42).fit(self.data)
         return mapper
 
-    def create_embedded_df(self,  mapper:umap.UMAP, dim='2D'):
+    def optimized_embedding(self):
+
+        umap_embeddings = umap.UMAP(negative_gradient_method='bh', 
+                                    n_neighbors=n_neighbors, 
+                                    n_components=n_components, 
+                                    random_state=random_state).fit_transform(self.data)
+        return umap_embeddings
+
+    def create_embedded_df(self,  mapper:umap.UMAP, dim='2D', embedding=None):
         if dim not in self.dims:
             raise ValueError("Incorrect number of dimensions provided for creating a dataframe")
         if dim == '2D':
