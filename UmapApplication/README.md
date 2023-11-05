@@ -99,7 +99,7 @@ Performance of UMAP as a function of different embedding spaces:
 
 ###### Umap using default configurations:
       
-Fig 1.A. Plane embedding shows separation of clustering structures by batch effects ![2D scatterplot using plane mapper](images/Plane_UMAP_embedment.png)
+Fig 1.A. Plane embedding shows separation of clustering structures by batch effects ![2D scatterplot using plane mapper](/UmapApplication/images/Plane_UMAP_embedment.png)
    
 Fig 1.B. Hyperbeloid embedding supports the hypothesis of clustering structures with batch effects ![2D scatterplot using hyperbeloid mapper](images/Hperbolic_UMAP_embedder.png) 
 
