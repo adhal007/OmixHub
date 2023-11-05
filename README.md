@@ -55,7 +55,7 @@ OmicsProjects
    └── <jupyter_nb2.ipynb>
    ```
 #### Method utilities development
-- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/blob/main/OmicsUtils/OutlierStatMethods/README.md)
+- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/OutlierStatMethods/README.md)
 
 - [Module for Omics data processing](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/README.md)
 
