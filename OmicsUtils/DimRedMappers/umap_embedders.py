@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import FunctionTransformer
 
 
-
+import OmicsUtils.DimRedMappers.clusterer
 import pandas as pd
 import umap
 
@@ -13,41 +13,64 @@ import umap
 class umap_embedder:
     def __init__(self, 
                  data, 
-                 embedding_type = None):
+                 embedding_type = None,
+                 optimizer_search_space = None):
         self.data = data
         self.mapper = 'plane'
         self.mapper_list = ['plane', 'sphere', 'custom', 'hyperbolic']
         self.dims = ['2D', '3D']
-        self.allowed_embedding_types = ['optimized']
+        self.allowed_embedding_types = ['default', 'optimized']
         self.embedding_type = embedding_type
-        self.n_neighbors = None 
-        self.n_components = None 
-        self.random_state = None 
+        self.optimizer = OmicsUtils.DimRedMappers.clusterer.ClusteringOptimizer() 
+        
+        self._opt_search_space = optimizer_search_space
         self._embedding = None 
 
+        
     @property
     def embedding(self):
+        """Embeddings of a umap object 
+
+        Returns:
+            umap.UMAP().fit() object: embedding using a umap object
+        """
         if self._embedding is None:
-            if self.embedding_type is None:
-                embedding = self.default_embedding()
-            elif self.embedding_type == 'optimized':
-                embedding = self.optimized_embedding()
-        return embedding
+        
+            if self.embedding_type == 'optimized':
+                self._embedding = self.optimized_embedding(self.opt_search_space["n_neighbors"],
+                                                        self.opt_search_space["n_components"], 
+                                                        self.opt_search_space["random_state"])
+            else:
+                self._embedding = self.default_embedding           
+        
+        return self._embedding 
     
+
+
     def default_embedding(self, mapper_type='plane'):
+        """Default umap embedding if User doesnt provide any specifications
+
+        Args:
+            mapper_type (str, optional): _description_. Defaults to 'plane'.
+
+        Raises:
+            ValueError: if out of scope mapper type provided
+
+        Returns:
+           umap.UMAP().fit() object: embedding using a umap object
+        """
         if mapper_type not in self.mapper_list:
             raise ValueError("Incorrect mapper used for Umap")
         elif mapper_type == 'plane':
-            mapper = umap.UMAP(n_components = 2, random_state=143, n_jobs=-1, negative_gradient_method='bh').fit(self.data)
+            mapper = umap.UMAP(n_components = 2, random_state=143, n_jobs=-1).fit(self.data)
         elif mapper_type == 'sphere':
             mapper = umap.UMAP(output_metric='haversine', random_state=42).fit(self.data)
         elif mapper_type == 'hyperbolic':
             mapper = umap.UMAP(output_metric='hyperboloid',random_state=42).fit(self.data)
         return mapper
 
-    def optimized_embedding(self):
-
-        umap_embeddings = umap.UMAP(negative_gradient_method='bh', 
+    def optimized_embedding(self, n_neighbors, n_components, random_state):
+        umap_embeddings = umap.UMAP( 
                                     n_neighbors=n_neighbors, 
                                     n_components=n_components, 
                                     random_state=random_state).fit_transform(self.data)
@@ -77,6 +100,13 @@ class umap_embedder:
         transformer = FunctionTransformer(np.log10)
         df[list_of_cols] = transformer.fit_transform(df[list_of_cols])
         return df 
-    
-    
+
+## getter and setter example usage of property 
+# @property
+# def name(self):
+#     return self._name
+
+# @name.setter
+# def name(self, value):
+#     self._name = value.upper() 
 
