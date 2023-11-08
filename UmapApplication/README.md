@@ -161,7 +161,7 @@ In the 2-D plots, there are 4 distinct clusters that are observed. 3 of the 4 cl
 
 ##### II. Investigation of more optimized and well separated clustering structures in kidney cancer
 
-Fig 2.A. Separation of clustering structures with bayesian optimized HDbScan![Separation of clustering structures with bayesian optimized HDbScan](/UmapApplication/images/OptimizedClusteringGEDatapng.png)
+Fig 2.A. Separation of clustering structures with bayesian optimized HDbScan![Separation of clustering structures with bayesian optimized HDbScan](/UmapApplication/images/OptimizedClusteringGE.png)
 
 
 ###### Interpretation:
