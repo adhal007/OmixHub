@@ -21,31 +21,6 @@ import pandas as pd
 import OmicsUtils.DimRedMappers.clusterer
 import OmicsUtils.DimRedMappers.umap_embedders
 
-## example usage of getter and setter class 
-# class Geeks: 
-#      def __init__(self): 
-#           self._age = 0
-    
-#      # using property decorator 
-#      # a getter function 
-#      @property
-#      def age(self): 
-#          print("getter method called") 
-#          return self._age 
-    
-#      # a setter function 
-#      @age.setter 
-#      def age(self, a): 
-#          if(a < 18): 
-#             raise ValueError("Sorry you age is below eligibility criteria") 
-#          print("setter method called") 
-#          self._age = a 
-
-# mark = Geeks() 
-
-# mark.age = 19
-
-# print(mark.age)
 
 class DRClusterer:
     """Base/Parent class for clustering models : Contains all the functions/methods generalizable across clustering models
@@ -284,6 +259,7 @@ class ClusteringOptimizer(DRClusterer):
 
     def optimized_results(self):
         raise NotImplementedError()
+    
 # class Hierarchical(DRClustererBase):
 #     def __init__(self):
 #         super().__init__()
