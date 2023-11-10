@@ -50,6 +50,21 @@ OmicsProjects
    │   ├── analysis
    │   ├── images
    │   └── README.md
+   │   ├── OutlierStatMethodsApplication
+   │   │   ├── analysis
+   │   │   ├── images
+   │   │   └── Summary.md
+   │   │   └── Workflow.md
+   │   ├── SupervisedLearningApplication
+   │   │   ├── analysis
+   │   │   ├── images
+   │   │   └── Summary.md
+   │   │   └── Workflow.md
+   │   ├── UmapApplication
+   │   │   ├── analysis
+   │   │   ├── images
+   │   │   └── Summary.md
+   │   │   └── Workflow.md   
    └── README.md
    └── <jupyter_nb1.ipynb> 
    └── <jupyter_nb2.ipynb>
@@ -64,9 +79,16 @@ OmicsProjects
 
 #### Projects/Analysis (Application of Methods)
 
-Analysis 1: [Application of Outlier Statistic Methods for differential gene expression](https://github.com/adhal007/OmicsProjects/blob/main/OutlierMethodsApplication/README.md) 
+Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
+- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/SupervisedLearning/Summary.md)
+- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/SupervisedLearning/Workflow.md)
 
+Analysis 2: Application of Outlier Statistic Methods for differential gene expression
+- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/OutlierMethodsApplication/Summary.md) 
+- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/OutlierMethodsApplication/Workflow.md)
 
-Analysis 2: [Application of Dimensionality reduction methods for stratification of Kidney-Cancer Subtypes](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/README.md)        
+Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
+- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/Summary.md) 
+- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/Workflow.md)
+     
 
-Analysis 3: [Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data](https://github.com/adhal007/OmicsProjects/blob/main/Transcriptomics/README.md)

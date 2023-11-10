@@ -4,3 +4,4 @@
 *.log*
 *settings.json*
 *scratch*
+*ProjectScope*
