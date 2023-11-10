@@ -80,15 +80,15 @@ OmicsProjects
 #### Projects/Analysis (Application of Methods)
 
 Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
-- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/SupervisedLearning/Summary.md)
-- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/SupervisedLearning/Workflow.md)
+- [Summary](https://github.com/adhal007/OmicsProjects/tree/main/SupervisedLearning/Summary.md)
+- [Notebook workflow](https://github.com/adhal007/OmicsProjects/tree/main/SupervisedLearning/Workflow.md)
 
 Analysis 2: Application of Outlier Statistic Methods for differential gene expression
-- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/OutlierMethodsApplication/Summary.md) 
-- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/OutlierMethodsApplication/Workflow.md)
+- [Summary](https://github.com/adhal007/OmicsProjects/tree/main/OutlierMethodsApplication/Summary.md) 
+- [Notebook workflow](https://github.com/adhal007/OmicsProjects/tree/main/OutlierMethodsApplication/Workflow.md)
 
 Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
-- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/Summary.md) 
-- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/Workflow.md)
+- [Summary](https://github.com/adhal007/OmicsProjects/tree/main/UmapApplication/Summary.md) 
+- [Notebook workflow](https://github.com/adhal007/OmicsProjects/tree/main/UmapApplication/Workflow.md)
      
 
