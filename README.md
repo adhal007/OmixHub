@@ -82,7 +82,7 @@ OmicsProjects
 #### Projects/Analysis (Application of Methods)
 
 Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
-- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/Summary.md)
+- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/summary.md)
 - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/Workflow.md)
 
 Analysis 2: Application of Outlier Statistic Methods for differential gene expression
@@ -90,7 +90,7 @@ Analysis 2: Application of Outlier Statistic Methods for differential gene expre
 - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/workflow.md)
 
 Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
-- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/Summary.md) 
+- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/summary.md) 
 - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/workflow.md)
      
 
