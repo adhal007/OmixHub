@@ -85,7 +85,7 @@ ax.set_title("Distribution of min, mean, max of all gene expression values" )
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_6_2.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_6_2.png)
     
 
 
@@ -209,7 +209,7 @@ ax.bar_label(ax.containers[0])
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_16_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_16_1.png)
     
 
 
@@ -245,7 +245,7 @@ ax.bar_label(ax.containers[0])
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_18_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_18_1.png)
     
 
 
@@ -314,7 +314,7 @@ ax.bar_label(ax.containers[0])
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_23_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_23_1.png)
     
 
 
@@ -394,7 +394,7 @@ ax1.set_title("Count of samples originally across tumors")
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_32_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_32_1.png)
     
 
 
@@ -415,7 +415,7 @@ ax.set_title("Count of samples after separating patient overlap samples")
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_33_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_33_1.png)
     
 
 
@@ -435,7 +435,7 @@ ax.set_title("Samples Count in Kidney cancer(KC) subtypes Originally")
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_34_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_34_1.png)
     
 
 
@@ -455,7 +455,7 @@ ax.set_title("Samples count in KC subtypes after separating patient overlap")
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_35_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_35_1.png)
     
 
 
@@ -863,7 +863,7 @@ plt.show()
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_56_0.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_56_0.png)
     
 
 
@@ -898,7 +898,7 @@ plt.show()
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_57_0.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_57_0.png)
     
 
 
@@ -1063,7 +1063,7 @@ for model, clf_i in best_model_classes:
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_62_1.png)
+![png](/ProjectDocs/SupervisedLearningApplication/TCGA_Supervised_Multilabel_Classification_files/TCGA_Supervised_Multilabel_Classification_62_1.png)
     
 
 
