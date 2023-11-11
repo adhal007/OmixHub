@@ -50,6 +50,7 @@ OmicsProjects
    │   ├── analysis
    │   ├── images
    │   └── README.md
+   ├── Applications  
    │   ├── OutlierStatMethodsApplication
    │   │   ├── analysis
    │   │   ├── images
@@ -69,26 +70,44 @@ OmicsProjects
    └── <jupyter_nb1.ipynb> 
    └── <jupyter_nb2.ipynb>
    ```
-#### Method utilities development
-- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/OutlierStatMethods/README.md)
+#### Modules developed:
 
-- [Module for Omics data processing](https://github.com/adhal007/OmicsProjects/tree/main/OmicsUtils/README.md)
+- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/OutlierStatMethods/README.md)
 
-- [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmicsProjects/tree/main/OmicUtils/DimRedMappers/README.md)  
+- [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/README.md)
+
+- [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/DimRedMappers/README.md)  
 
 
 #### Projects/Analysis (Application of Methods)
 
 Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
-- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/SupervisedLearningApplication/Summary.md)
-- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/SupervisedLearningApplication/Workflow.md)
+- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/Summary.md)
+- [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/Workflow.md)
 
 Analysis 2: Application of Outlier Statistic Methods for differential gene expression
-- [Summary](https://github.com/adhal007/OmicsProjects/tree/blob/OutlierMethodsApplication/Summary.md) 
-- [Notebook workflow](https://github.com/adhal007/OmicsProjects/tree/blob/OutlierMethodsApplication/Workflow.md)
+- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/summary.md) 
+- [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/workflow.md)
 
 Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
-- [Summary](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/Summary.md) 
-- [Notebook workflow](https://github.com/adhal007/OmicsProjects/blob/main/UmapApplication/Workflow.md)
+- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/Summary.md) 
+- [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/workflow.md)
      
 
+## Future work
+
+- Develop a module for multi-omics data analysis
+- Develop a module for single-cell RNA-Seq data analysis
+- Develop a module for proteomics data analysis
+- Develop a module for metabolomics data analysis
+- Develop a module for epigenomics data analysis
+- Develop a module for microbiomics data analysis
+- Develop a module for clinical data analysis
+- Develop a module for single-cell RNA-Seq data analysis
+- Develop a module for WGAS data analysis
+- Develop a module for WES data analysis
+- Develop a module for WGS data analysis
+- Develop a module for CHIP-Seq data analysis
+- Develop a module for ATAC-Seq data analysis
+- Develop a module for Hi-C data analysis
+- Develop a module for Hi-Seq data analysis
