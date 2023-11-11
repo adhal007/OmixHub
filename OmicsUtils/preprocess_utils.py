@@ -47,26 +47,26 @@ class RNASeqPreProcessor:
 
     ## Should give an option to change excessive logging of starting and finishing each file
     def make_data_matrix(self, file_path_ls, metric_type='fpkm_unstranded'):
-        logger_child = self.logger.getChild('make_data_matrix')
+        logger_child = self.logger.getChild(suffix='make_data_matrix')
         
         data_matrix_ls = []
         if metric_type not in self.metric_types_rna_seq:
             raise ValueError("Specify correct metric for data matrix generation")
-        logger_child.info(f"Preparing data matrix for {metric_type} values")
+        logger_child.info(msg=f"Preparing data matrix for {metric_type} values")
 
         for file_path in file_path_ls:
-            if os.path.exists(file_path):
+            if os.path.exists(path=file_path):
                 file_name = file_path.split('/')[-1]
-                logger_child.info(f"Starting file {file_name} processing")
+                logger_child.info(msg=f"Starting file {file_name} processing")
                 file_idx = file_path.split('/')[-1].split('.')[0]
-                df = pd.read_csv(file_path, skiprows=[0], sep='\t')
+                df = pd.read_csv(filepath_or_buffer=file_path, skiprows=[0], sep='\t')
                 df_t = df.T.reset_index()
 
                 df_col_names = df_t[df_t['index'] == 'gene_id'].iloc[:, 5:]
                 df_col_names_ls = list(np.concatenate(df_col_names.to_numpy(), axis=0)) 
                 df_col_names_ls.append('file_identifier')
                 df_t['file_identifier'] = file_idx
-                df_row = df_t[df_t['index'] == 'fpkm_unstranded'].iloc[:, 5:]
+                df_row = df_t[df_t['index'] == metric_type].iloc[:, 5:]
                 df_row.columns = df_col_names_ls
             
             data_matrix_ls.append(df_row)
