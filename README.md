@@ -78,24 +78,34 @@ OmicsProjects
 
 - [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/DimRedMappers/README.md)  
 
-
+- [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/pydeseq_utils.py)
+  
 #### Projects/Analysis (Application of Methods)
 
-Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
-- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/summary.md)
-- [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/Workflow.md)
+###### A. Characterization of kidney cancer using RNA-Seq transcriptome profiline
+- Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
+  <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/summary.md) -->
+  - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/workflow.md)
 
-Analysis 2: Application of Outlier Statistic Methods for differential gene expression
-- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/summary.md) 
-- [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/workflow.md)
+- Analysis 2: Differential expression of kidney cancer subtypes by single factor and multi-factor methods
+  <!-- - [Summary]() -->
+  - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/DeSeqApplication/docs/workflow.md)
 
-Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
-- [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/summary.md) 
-- [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/workflow.md)
-     
+- Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
+  (To be updated with workflow notebooks)
+  <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/summary.md) 
+  - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/workflow.md) -->
+
+- Analysis 4: Application of Outlier Statistic Methods for differential gene expression
+  (To be updated with workflow notebooks)
+  <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/summary.md) 
+  - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/workflow.md) -->
+
+ 
 
 ## Future work
 
+**Development**:
 - Develop a module for multi-omics data analysis
 - Develop a module for single-cell RNA-Seq data analysis
 - Develop a module for proteomics data analysis
@@ -111,3 +121,7 @@ Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimen
 - Develop a module for ATAC-Seq data analysis
 - Develop a module for Hi-C data analysis
 - Develop a module for Hi-Seq data analysis
+
+**Application work**:
+- Autoimmune disease characterization by omics methods 
+- Other cancers 
