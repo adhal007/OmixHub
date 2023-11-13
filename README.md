@@ -92,9 +92,10 @@ OmicsProjects
   - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/DeSeqApplication/docs/workflow.md)
 
 - Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
-  (To be updated with workflow notebooks)
+  <!-- (To be updated with workflow notebooks) -->
   <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/summary.md) 
-  - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/workflow.md) -->
+   -->
+    - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/workflow.md)
 
 - Analysis 4: Application of Outlier Statistic Methods for differential gene expression
   (To be updated with workflow notebooks)
