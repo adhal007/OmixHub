@@ -770,7 +770,7 @@ sc.pl.pca(pydeseq_obj.dds, color = 'Condition', size = 200)
 
 
     
-![png](/ProjectDocs/DeSeqApplication/images/TCGA_Deseq2_analysis_files/TCGA_Deseq2_analysis_19_1.png)
+![png](/docs/DeSeqApplication/images/TCGA_Deseq2_analysis_files/TCGA_Deseq2_analysis_19_1.png)
     
 
 
@@ -1344,7 +1344,8 @@ ax1 = sns.scatterplot(data = df, x = 'log2FoldChange', y = 'nlog10',
 
 
     
-![png](/ProjectDocs/DeSeqApplication/images/TCGA_Deseq2_analysis_files/TCGA_Deseq2_analysis_33_0.png)
+![png](/docs/DeSeqApplication/images/TCGA_Deseq2_analysis_files/TCGA_Deseq2_analysis_33_0.png)
+
     
 
 
@@ -1400,7 +1401,7 @@ plt.show()
 
 
     
-![png](/ProjectDocs/DeSeqApplication/images/TCGA_Deseq2_analysis_files/TCGA_Deseq2_analysis_35_0.png)
+![png](/docs/DeSeqApplication/images/TCGA_Deseq2_analysis_files/TCGA_Deseq2_analysis_35_0.png)
     
 
 

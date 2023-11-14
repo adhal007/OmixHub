@@ -24,7 +24,7 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 #### Codebase
 ```md
 OmicsProjects
-   ├── OmicsUtils
+   ├── src
    │   ├── OutlierStatMethods
    │   │   ├── init.py
    │   │   ├── base_class.py
@@ -50,19 +50,19 @@ OmicsProjects
    │   ├── analysis
    │   ├── images
    │   └── README.md
-   ├── Applications  
+   ├── docs 
    │   ├── OutlierStatMethodsApplication
-   │   │   ├── analysis
+   │   │   ├── docs
    │   │   ├── images
    │   │   └── Summary.md
    │   │   └── Workflow.md
    │   ├── SupervisedLearningApplication
-   │   │   ├── analysis
+   │   │   ├── docs
    │   │   ├── images
    │   │   └── Summary.md
    │   │   └── Workflow.md
    │   ├── UmapApplication
-   │   │   ├── analysis
+   │   │   ├── docs
    │   │   ├── images
    │   │   └── Summary.md
    │   │   └── Workflow.md   

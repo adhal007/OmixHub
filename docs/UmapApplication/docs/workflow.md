@@ -83,7 +83,7 @@ ax.set_title("Distribution of min, mean, max of all gene expression values" )
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_6_2.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_6_2.png)
     
 
 
@@ -207,7 +207,7 @@ ax.bar_label(ax.containers[0])
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_16_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_16_1.png)
     
 
 
@@ -243,7 +243,7 @@ ax.bar_label(ax.containers[0])
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_18_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_18_1.png)
     
 
 
@@ -312,7 +312,7 @@ ax.bar_label(ax.containers[0])
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_23_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_23_1.png)
     
 
 
@@ -392,7 +392,7 @@ ax1.set_title("Count of samples originally across tumors")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_32_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_32_1.png)
     
 
 
@@ -413,7 +413,7 @@ ax.set_title("Count of samples after separating patient overlap samples")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_33_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_33_1.png)
     
 
 
@@ -433,7 +433,7 @@ ax.set_title("Samples Count in Kidney cancer(KC) subtypes Originally")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_34_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_34_1.png)
     
 
 
@@ -453,7 +453,7 @@ ax.set_title("Samples count in KC subtypes after separating patient overlap")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_35_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_35_1.png)
     
 
 
@@ -1942,7 +1942,7 @@ ax3.set_title("HDBSCAN Clustering with bayesian optimized clusters")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_56_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_56_1.png)
     
 
 
@@ -1962,7 +1962,7 @@ ax2.set_title("HDBSCAN Clustering with ground truth labels")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_57_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_57_1.png)
     
 
 
@@ -1983,7 +1983,7 @@ ax1.set_title("HDBSCAN Clustering with ground truth labels")
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_58_1.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_58_1.png)
     
 
 
@@ -2008,7 +2008,7 @@ fig.subplots_adjust(top=0.95)
 
 
     
-![png](/ProjectDocs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_59_0.png)
+![png](/docs/UmapApplication/images/TCGA_Semisupervised_clustering_files/TCGA_Semisupervised_clustering_59_0.png)
     
 
 
