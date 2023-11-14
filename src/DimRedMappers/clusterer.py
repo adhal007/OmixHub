@@ -18,8 +18,8 @@ import random
 import umap
 import pandas as pd 
 ## omics utils imports 
-import OmicsUtils.DimRedMappers.clusterer
-import OmicsUtils.DimRedMappers.umap_embedders
+import src.DimRedMappers.clusterer
+import src.DimRedMappers.umap_embedders
 
 
 class DRClusterer:

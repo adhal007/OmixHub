@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import os 
 from shutil import move
-import OmicsUtils.CustomLogger.custom_logger
-logger = OmicsUtils.CustomLogger.custom_logger.CustomLogger()
+import src.CustomLogger.custom_logger
+logger = src.CustomLogger.custom_logger.CustomLogger()
 
 class RNASeqPreProcessor:
     def __init__(self):

@@ -1,7 +1,7 @@
 import pandas as pd
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
-import OmicsUtils.CustomLogger.custom_logger as clog 
+import src.CustomLogger.custom_logger as clog 
 import os 
 
 
@@ -77,6 +77,10 @@ class PyDeSeqWrapper:
         # stat_res = stat_res_group1_vs_group2.summary()
         # stat_res.results_df.to_csv(os.path.join(self.output_path, "results.csv"))
         return stat_res_group1_vs_group2 
-
     
-    
+    def run_deseq_all(self): 
+        if len(self.groups) == 2:
+            stat_res_group1_vs_group2 = self.run_deseq(design_factor=self.design_factors[0], group1=self.groups[0], group2=self.groups[1])
+            return stat_res_group1_vs_group2    
+        elif len(self.groups) > 2:
+            raise ValueError('More than 2 groups provided') 
