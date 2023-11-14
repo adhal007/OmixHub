@@ -46,8 +46,6 @@ OmicsProjects
    │   ├── preprocess_utils.py        
    │   └── README.md
    ├── Transcriptomics
-   │   ├── init.py
-   │   ├── analysis
    │   ├── images
    │   └── README.md
    ├── docs 
