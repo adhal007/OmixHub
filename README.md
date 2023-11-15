@@ -18,7 +18,7 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 - Add all chosen datasets to cart and then download it.
 - Since this module is currently developed for bulk transcriptomics RNA-Seq data, in the GDC portal, select the "RNA-Seq" experimental strategy
 - Here is an example of the same from a screen-shot 
-  - ![example](./Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
+  - ![example](/Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
 - The data for RNA-Seq data for kidney cancer is used as an example here as it was provided as one of the datasets on the UCI ML repository. 
 
 #### Codebase
@@ -83,17 +83,17 @@ OmicsProjects
 ###### A. Characterization of kidney cancer using RNA-Seq transcriptome profiline
 - Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
   <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/summary.md) -->
-  - [Notebook workflow](/ProjectDocs/SupervisedLearningApplication/docs/workflow.md)
+  - [Notebook workflow](/docs/SupervisedLearningApplication/docs/workflow.md)
 
 - Analysis 2: Differential expression of kidney cancer subtypes by single factor and multi-factor methods
   <!-- - [Summary]() -->
-  - [Notebook workflow](/ProjectDocs/DeSeqApplication/docs/workflow.md)
+  - [Notebook workflow](/docs/DeSeqApplication/docs/workflow.md)
 
 - Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
   <!-- (To be updated with workflow notebooks) -->
   <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/summary.md) 
    -->
-    - [Notebook workflow](/ProjectDocs/UmapApplication/docs/workflow.md)
+    - [Notebook workflow](/docsUmapApplication/docs/workflow.md)
 
 - Analysis 4: Application of Outlier Statistic Methods for differential gene expression
   (To be updated with workflow notebooks)
