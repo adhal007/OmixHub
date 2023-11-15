@@ -21,6 +21,7 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
   - ![example](/Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
 - The data for RNA-Seq data for kidney cancer is used as an example here as it was provided as one of the datasets on the UCI ML repository. 
 
+
 #### Codebase
 ```md
 OmicsProjects
@@ -43,7 +44,9 @@ OmicsProjects
    │   │   ├── custom_logger.py
    │   │   └── README.md      
    │   ├── init.py
-   │   ├── preprocess_utils.py        
+   │   ├── preprocess_utils.py
+   │   ├── quality_checker.py
+   │   ├── pydeseq_utils.py
    │   └── README.md
    ├── Transcriptomics
    │   ├── images
@@ -73,10 +76,12 @@ OmicsProjects
 - [Module for Outlier Statistic Methods](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/OutlierStatMethods/README.md)
 
 - [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/README.md)
-
+  - [Module for RNA-seq preprocessing](https://github.com/adhal007/OmixHub/blob/main/src/preprocess_utils.py)
+  - [Module for data quality check](https://github.com/adhal007/OmixHub/blob/main/src/quality_checker.py)
 - [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/DimRedMappers/README.md)  
 
 - [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/pydeseq_utils.py)
+  
   
 #### Projects/Analysis (Application of Methods)
 
