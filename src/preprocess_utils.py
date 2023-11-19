@@ -2,15 +2,28 @@ import pandas as pd
 import numpy as np
 import os 
 from shutil import move
+
+from imblearn.over_sampling import SMOTE
+from collections import Counter
+from sklearn.model_selection import train_test_split
+from src import base_preprocessor as bp
 import src.CustomLogger.custom_logger
+
 logger = src.CustomLogger.custom_logger.CustomLogger()
 
-class RNASeqPreProcessor:
-    def __init__(self):
+
+class RNASeqPreProcessor(bp.BaseProcessor):
+    def __init__(self, data: pd.DataFrame, x_cols: list[str], y_cols: list[str], unique_id_col: str) -> None:
+        super().__init__(data=data, x_cols=x_cols, y_cols=y_cols, unique_id_col=unique_id_col)
+
         self.logger =  logger.custlogger(loglevel='DEBUG')
         self.logger.debug("Initialized PreProcessor Class for TCGA data")
         self.metric_types_rna_seq = ['fpkm_unstranded', 'fpkm_uq_unstranded', 'tpm_unstranded', 'stranded_second', 'stranded_first', 'unstranded']
         self.logger.debug("Initialized Omics PreProcessor class")
+
+        ## property variables 
+        self._duplicate_samples = None 
+        self._non_overlap_samples = None         
 
     def remove_empty_folders(self, directory_path):
         for root, dirs, files in os.walk(directory_path, topdown=False):
@@ -71,12 +84,72 @@ class RNASeqPreProcessor:
             
             data_matrix_ls.append(df_row)
             logger_child.info(f"Finished file {file_name} processing")
-        logger_child.info("Finished making data matrix")
-
+        logger_child.info("Finished making data matrix"
         return data_matrix_ls     
 
 
 
-# How to read Gene Expression Files
-# pd.read_csv(os.path.join(folder_paths[0], os.listdir(folder_paths[0])[0]), skiprows=[0], sep='\t')
-        
+    @property
+    def duplicate_samples(self):
+        if self._duplicate_samples is None:
+            if self.check_duplicate_data():
+                self._duplicate_samples = self.data[self.unique_id_col].value_counts()[self.data[self.unique_id_col].value_counts() > 1].index.tolist()
+            return self._duplicate_samples
+        else:
+            return self._duplicate_samples
+
+    @property
+    def non_overlap_samples(self):
+        if self._non_overlap_samples is None:
+            non_overlap_samples = self.data[~self.data[self.unique_id_col].isin(self.duplicate_samples)][self.unique_id_col].unique().tolist()    
+            self._non_overlap_samples = non_overlap_samples
+            return self._non_overlap_samples
+        else:
+            return self._non_overlap_samples
+    
+    def get_patient_overlap_train_test_split(self)
+        patient_overlap_splits = self.split_data(self.duplicate_samples, self.unique_id_col)
+        return patient_overlap_splits
+
+    def get_non_overlap_count(self, target_columns:list[str]):
+        df = self.data[~self.data[self.unique_id_col].isin(self.non_overlap_samples)]
+        counts = df[target_columns].value_counts().reset_index
+        counts.columns = ['unique_id', 'count']
+    
+
+## Add more functions for the following:
+## 1. Checking if there is class imbalance in the data
+## 2. Checking if there is any missing data
+## 3. Checking if there is any duplicate data (for set sampling)
+## 4. Checking if there is any outlier data 
+## 5. Checking if there is any data leakage (between training, test and validation cohorts)
+## 6. Checking if there is any data drift (between training, test and validation cohorts)
+## 7. Checking if there is any data skew (between training, test and validation cohorts)
+## 8. Checking if there is any data bias (between training, test and validation cohorts)
+## 9. Checking if there is any data noise (between training, test and validation cohorts)
+## 10. Splitter for generating training, test and validation cohorts (seeded or random)
+## 11. Splitter for generating training, test and validation cohorts (patient overlap)
+## 12. Splitter for generating training, test and validation cohorts (set sampling)
+## 13. Oversampling for minority samples (SMOTE)
+    
+## now get minority samples across each class a
+## For example if there are 3 classes, then there will be 2 minority classes 
+## and 1 majority class.
+## This function will return a dataframe with the minority samples
+
+## Challenges
+## 1. How do we handle if there are 2 types of target labels and we want to combine them for a multiclass problem
+## Example: 
+## 3 kidney cancer types, 2 of them are minority and 1 is majority
+## 2 tumor types, 1 majority and 1 minority 
+
+## Solution
+## We find the union of all the minority samples across all the type of target labels
+## then we perform sampling to raise the minority samples to the level of majority samples 
+## Use this new dataset to define training, testing and validation splits 
+
+    
+## Steps for data splitting
+## 1. Process duplicate samples uniquely into training, test and validation splits 
+## 2. Oversample the remaining minority classes to the level of majority class
+## 3. Split the balanced dataset into training, testing and validation splits 

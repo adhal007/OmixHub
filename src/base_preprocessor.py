@@ -5,8 +5,8 @@ from sklearn.model_selection import train_test_split
 import src.CustomLogger.custom_logger
 logger = src.CustomLogger.custom_logger.CustomLogger()
 
-class DataQualityChecker:
-    def __init__(self, data:pd.DataFrame) -> None:
+class BaseProcessor:
+    def __init__(self, data:pd.DataFrame, x_cols: list[str], y_cols: list[str], unique_id_col: str) -> None:
         """
         Initialize the DataQualityChecker with a DataFrame.
 
@@ -14,6 +14,10 @@ class DataQualityChecker:
             data (pd.DataFrame): The input DataFrame.
         """
         self.data = data
+        self.x_cols = x_cols
+        self.y_cols = y_cols 
+        self.unique_id_col = unique_id_col  
+        
         self.logger = logger.custlogger(loglevel='DEBUG')
         self.logger.debug("Initialized Quality Checker class")
         if self.data is None:
@@ -213,7 +217,13 @@ class DataQualityChecker:
             noise |= ((np.abs(train_std - test_std) > 0.5 * train_std) or
                       (np.abs(train_std - validation_std) > 0.5 * train_std))
         return noise
-    
+
+    def get_patient_overlap_train_test_split(self):
+        raise NotImplementedError("Subclasses must implement the 'get_patient_overlap_train_test_split' method.")
+
+    def get_set_sampling_train_test_split(self):
+        raise NotImplementedError("Subclasses must implement the 'get_set_sampling_train_test_split' method.")
+
 
 # Example usage:
 # df = pd.read_csv('your_data.csv')
