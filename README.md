@@ -45,8 +45,9 @@ OmicsProjects
    │   │   └── README.md      
    │   ├── init.py
    │   ├── preprocess_utils.py
-   │   ├── quality_checker.py
+   │   ├── base_preprocessor.py
    │   ├── pydeseq_utils.py
+   │   ├── base_ml_models.py 
    │   └── README.md
    ├── Transcriptomics
    │   ├── images
@@ -77,14 +78,13 @@ OmicsProjects
 
 - [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/README.md)
   - [Module for RNA-seq preprocessing](https://github.com/adhal007/OmixHub/blob/main/src/preprocess_utils.py)
-  - [Module for data quality check](https://github.com/adhal007/OmixHub/blob/main/src/quality_checker.py)
+  - [Module for base preprocessor class](https://github.com/adhal007/OmixHub/blob/main/src/quality_checker.py)
 - [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/DimRedMappers/README.md)  
-
+- [Module for ML classifier models (ensemble, multi_output)](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/base_ml_models.py)
 - [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/pydeseq_utils.py)
-  
+
   
 #### Projects/Analysis (Application of Methods)
-
 ###### A. Characterization of kidney cancer using RNA-Seq transcriptome profiline
 - Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
   <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/summary.md) -->
@@ -108,7 +108,6 @@ OmicsProjects
  
 
 ## Future work
-
 **Development**:
 - Develop a module for multi-omics data analysis
 - Develop a module for single-cell RNA-Seq data analysis
