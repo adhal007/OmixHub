@@ -109,6 +109,8 @@ OmicsProjects
 
 ## Future work
 **Development**:
+- Develop a module for machine learning models 
+- Develop a module for deep learning models 
 - Develop a module for multi-omics data analysis
 - Develop a module for single-cell RNA-Seq data analysis
 - Develop a module for proteomics data analysis
@@ -128,3 +130,4 @@ OmicsProjects
 **Application work**:
 - Autoimmune disease characterization by omics methods 
 - Other cancers 
+- Deep learning
