@@ -78,7 +78,7 @@ OmicsProjects
 
 - [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/src/README.md)
   - [Module for RNA-seq preprocessing](https://github.com/adhal007/OmixHub/blob/main/src/preprocess_utils.py)
-  - [Module for base preprocessor class](https://github.com/adhal007/OmixHub/blob/main/src/quality_checker.py)
+  - [Module for base preprocessor class](https://github.com/adhal007/OmixHub/blob/main/src/base_preprocessor.py)
 - [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/src/DimRedMappers/README.md)  
 - [Module for ML classifier models (ensemble, multi_output)](https://github.com/adhal007/OmixHub/blob/main/src/base_ml_models.py)
 - [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/src/pydeseq_utils.py)
