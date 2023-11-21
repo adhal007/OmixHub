@@ -74,42 +74,37 @@ OmicsProjects
    ```
 #### Modules developed:
 
-- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/OutlierStatMethods/README.md)
+- [Module for Outlier Statistic Methods](https://github.com/adhal007/OmixHub/blob/main/src/OutlierStatMethods/README.md)
 
-- [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/README.md)
+- [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/src/README.md)
   - [Module for RNA-seq preprocessing](https://github.com/adhal007/OmixHub/blob/main/src/preprocess_utils.py)
   - [Module for base preprocessor class](https://github.com/adhal007/OmixHub/blob/main/src/quality_checker.py)
-- [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/DimRedMappers/README.md)  
-- [Module for ML classifier models (ensemble, multi_output)](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/base_ml_models.py)
-- [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/OmicsUtils/pydeseq_utils.py)
+- [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/src/DimRedMappers/README.md)  
+- [Module for ML classifier models (ensemble, multi_output)](https://github.com/adhal007/OmixHub/blob/main/src/base_ml_models.py)
+- [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/src/pydeseq_utils.py)
 
   
 #### Projects/Analysis (Application of Methods)
 ###### A. Characterization of kidney cancer using RNA-Seq transcriptome profiline
 - Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
-  <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/SupervisedLearningApplication/docs/summary.md) -->
-  - [Notebook workflow](/docs/SupervisedLearningApplication/docs/workflow.md)
+  - [Evaluation of multi-output classifier models(Jupyter NB)](/docs/SupervisedLearningApplication/docs/workflow.md)
+  
+  - [Evaluation of ensemble models for multi-label classification(Jupyter NB)](/docs/SupervisedLearningEnsembleApplication/docs/workflow.md)
 
 - Analysis 2: Differential expression of kidney cancer subtypes by single factor and multi-factor methods
   <!-- - [Summary]() -->
   - [Notebook workflow](/docs/DeSeqApplication/docs/workflow.md)
 
 - Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
-  <!-- (To be updated with workflow notebooks) -->
-  <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/UmapApplication/docs/summary.md) 
-   -->
     - [Notebook workflow](/docsUmapApplication/docs/workflow.md)
 
 - Analysis 4: Application of Outlier Statistic Methods for differential gene expression
   (To be updated with workflow notebooks)
-  <!-- - [Summary](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/summary.md) 
-  - [Notebook workflow](https://github.com/adhal007/OmixHub/blob/main/ProjectDocs/OutlierMethodsApplication/docs/workflow.md) -->
-
  
 
 ## Future work
 **Development**:
-- Develop a module for machine learning models 
+- Develop a module for graph based machine learning models 
 - Develop a module for deep learning models 
 - Develop a module for multi-omics data analysis
 - Develop a module for single-cell RNA-Seq data analysis

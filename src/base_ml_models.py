@@ -49,120 +49,59 @@ class BaseEnsembleClf:
             if not isinstance(clf, ClassifierMixin):
                 raise ValueError(f"{clf_name} is not a valid scikit-learn classifier.")
 
-    # def train_clf(self, X_train, y_train, X_val, y_val):
-    #     """
-    #     Train a multi-label classifier using given sklearn model.
+    def train_clf(self, X_train, y_train, X_val, y_val):
+        """
+        Train a multi-label classifier using given sklearn model.
         
-    #     This code is adapted from the scikit-learn documentation:
-    #     https://scikit-learn.org/stable/auto_examples/linear_model/plot_sparse_logistic_regression_mnist.html#sphx-glr-auto-examples-linear-model-plot-sparse-logistic-regression-mnist-py
+        This code is adapted from the scikit-learn documentation:
+        https://scikit-learn.org/stable/auto_examples/linear_model/plot_sparse_logistic_regression_mnist.html#sphx-glr-auto-examples-linear-model-plot-sparse-logistic-regression-mnist-py
 
-    #     The code has been expanded to be more generalizable to other sklearn models with any number of features.
-
-    #     :param X_train: training data
-    #     :param y_train: training labels
-    #     :param X_val: validation data
-    #     :param y_val: validation labels
-    #     :return: dictionary of model scores, model names, chain jaccard scores, and chains
-    #     """
-    #     ## can probabaly use multiprocessing.Pool here to parallelize the training of each model
-    #     ovr_jaccard_scores = {}
-    #     model_outs = {}
-    #     for clf_name, clf in self.model_clf.items():
-    #         ovr = OneVsRestClassifier(estimator=clf)
-    #         ovr.fit(X_train, y=y_train)
-    #         Y_val_ovr = ovr.predict(X=X_val)
-    #         ovr_jaccard_score = jaccard_score(y_true=y_val, y_pred=Y_val_ovr, average="samples")
-    #         ovr_jaccard_scores[clf_name] = ovr_jaccard_score
-
-    #         # Fit an ensemble of model classifier chains and take the
-    #         # take the average prediction of all the chains.
-    #         chains = [ClassifierChain(base_estimator=clf, order="random", random_state=i) for i in range(self.num_labels)]
-    #         for chain in chains:
-    #             chain.fit(X=X_train, Y=y_train)
-
-    #         Y_val_chains = np.array(object=[chain.predict(X=X_val) for chain in chains])
-    #         chain_jaccard_scores = [
-    #             jaccard_score(y_true=y_val, y_pred=Y_val_chain >= self.prob_thresh, average="samples")
-    #             for Y_val_chain in Y_val_chains
-    #         ]
-
-    #         Y_val_ensemble = Y_val_chains.mean(axis=0)
-    #         ensemble_jaccard_score = jaccard_score(
-    #             y_true=y_val, y_pred=Y_val_ensemble >= self.prob_thresh, average="samples"
-    #         )
-
-    #         model_scores = [ovr_jaccard_score] + chain_jaccard_scores
-    #         model_scores.append(ensemble_jaccard_score)
-
-
-    #         model_names = tuple( ["Independent"] + [f"Chain {i}" for i in range(1, self.num_labels+1)] + ["Ensemble"])
-    #         out_dict = {'model_scores': model_scores,
-    #                     'model_names': model_names,
-    #                     'chain_jaccard_scores': chain_jaccard_scores,
-    #                     'chains': chains}
-    #         model_outs[clf_name] = out_dict
-    #     return model_outs
-
-
-
-
-
-    def _train_single_clf(self, clf_name, clf, X_train, y_train, X_val, y_val):
-        """
-        Train a single classifier and return its outputs.
-        """
-        ovr = OneVsRestClassifier(estimator=clf)
-        ovr.fit(X_train, y=y_train)
-        Y_val_ovr = ovr.predict(X_val)
-        ovr_jaccard_score = jaccard_score(y_true=y_val, y_pred=Y_val_ovr, average="samples")
-
-        # Fit an ensemble of model classifier chains and take the average prediction
-        chains = [ClassifierChain(base_estimator=clf, order="random", random_state=i) for i in range(self.num_labels)]
-        for chain in chains:
-            chain.fit(X=X_train, Y=y_train)
-
-        Y_val_chains = np.array([chain.predict(X_val) for chain in chains])
-        chain_jaccard_scores = [
-            jaccard_score(y_true=y_val, y_pred=Y_val_chain >= self.prob_thresh, average="samples")
-            for Y_val_chain in Y_val_chains
-        ]
-
-        Y_val_ensemble = Y_val_chains.mean(axis=0)
-        ensemble_jaccard_score = jaccard_score(
-            y_true=y_val, y_pred=Y_val_ensemble >= self.prob_thresh, average="samples"
-        )
-
-        model_scores = [ovr_jaccard_score] + chain_jaccard_scores + [ensemble_jaccard_score]
-        model_names = ["Independent"] + [f"Chain {i}" for i in range(1, self.num_labels+1)] + ["Ensemble"]
-
-        return {
-            clf_name: {
-                'model_scores': model_scores,
-                'model_names': model_names,
-                'chain_jaccard_scores': chain_jaccard_scores,
-                'chains': chains
-            }
-        }
-
-    def train_clf(self, X_train, y_train, X_val, y_val, num_processes=None):
-        """
-        Train multiple classifiers in parallel using multiprocessing.
+        The code has been expanded to be more generalizable to other sklearn models with any number of features.
 
         :param X_train: training data
         :param y_train: training labels
         :param X_val: validation data
         :param y_val: validation labels
-        :param num_processes: number of processes to use in parallel, defaults to None (all available cores)
         :return: dictionary of model scores, model names, chain jaccard scores, and chains
         """
-        train_func = partial(self._train_single_clf, X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val)
-        
-        with Pool(processes=num_processes) as pool:
-            results = pool.starmap(train_func, self.model_clf.items())
+        ## can probabaly use multiprocessing.Pool here to parallelize the training of each model
+        ovr_jaccard_scores = {}
+        model_outs = {}
+        for clf_name, clf in self.model_clf.items():
+            ovr = OneVsRestClassifier(estimator=clf)
+            ovr.fit(X_train, y=y_train)
+            Y_val_ovr = ovr.predict(X=X_val)
+            ovr_jaccard_score = jaccard_score(y_true=y_val, y_pred=Y_val_ovr, average="samples")
+            ovr_jaccard_scores[clf_name] = ovr_jaccard_score
 
-        # Combine results from all classifiers
-        model_outs = {key: value for result in results for key, value in result.items()}
-        return model_outs 
+            # Fit an ensemble of model classifier chains and take the
+            # take the average prediction of all the chains.
+            chains = [ClassifierChain(base_estimator=clf, order="random", random_state=i) for i in range(self.num_labels)]
+            for chain in chains:
+                chain.fit(X=X_train, Y=y_train)
+
+            Y_val_chains = np.array(object=[chain.predict(X=X_val) for chain in chains])
+            chain_jaccard_scores = [
+                jaccard_score(y_true=y_val, y_pred=Y_val_chain >= self.prob_thresh, average="samples")
+                for Y_val_chain in Y_val_chains
+            ]
+
+            Y_val_ensemble = Y_val_chains.mean(axis=0)
+            ensemble_jaccard_score = jaccard_score(
+                y_true=y_val, y_pred=Y_val_ensemble >= self.prob_thresh, average="samples"
+            )
+
+            model_scores = [ovr_jaccard_score] + chain_jaccard_scores
+            model_scores.append(ensemble_jaccard_score)
+
+
+            model_names = tuple( ["Independent"] + [f"Chain {i}" for i in range(1, self.num_labels+1)] + ["Ensemble"])
+            out_dict = {'model_scores': model_scores,
+                        'model_names': model_names,
+                        'chain_jaccard_scores': chain_jaccard_scores,
+                        'chains': chains}
+            model_outs[clf_name] = out_dict
+        return model_outs
     
     def train_multiple_cls(self):
         raise NotImplementedError("Evaluation of multiple models not implemented yet")
@@ -302,3 +241,62 @@ class BaseEnsembleClf:
         # Optionally, you can visualize the Shapley values for a specific sample
         shap.summary_plot(shap_values, X_val[:num_samples_to_explain], feature_names=X_train.columns)
         return shap, shap_values
+    
+
+## very slow implementation with multiprocessing
+# def _train_single_clf(self, clf_name, clf, X_train, y_train, X_val, y_val):
+#     """
+#     Train a single classifier and return its outputs.
+#     """
+#     ovr = OneVsRestClassifier(estimator=clf)
+#     ovr.fit(X_train, y=y_train)
+#     Y_val_ovr = ovr.predict(X_val)
+#     ovr_jaccard_score = jaccard_score(y_true=y_val, y_pred=Y_val_ovr, average="samples")
+
+#     # Fit an ensemble of model classifier chains and take the average prediction
+#     chains = [ClassifierChain(base_estimator=clf, order="random", random_state=i) for i in range(self.num_labels)]
+#     for chain in chains:
+#         chain.fit(X=X_train, Y=y_train)
+
+#     Y_val_chains = np.array([chain.predict(X_val) for chain in chains])
+#     chain_jaccard_scores = [
+#         jaccard_score(y_true=y_val, y_pred=Y_val_chain >= self.prob_thresh, average="samples")
+#         for Y_val_chain in Y_val_chains
+#     ]
+
+#     Y_val_ensemble = Y_val_chains.mean(axis=0)
+#     ensemble_jaccard_score = jaccard_score(
+#         y_true=y_val, y_pred=Y_val_ensemble >= self.prob_thresh, average="samples"
+#     )
+
+#     model_scores = [ovr_jaccard_score] + chain_jaccard_scores + [ensemble_jaccard_score]
+#     model_names = ["Independent"] + [f"Chain {i}" for i in range(1, self.num_labels+1)] + ["Ensemble"]
+
+#     return {
+#         clf_name: {
+#             'model_scores': model_scores,
+#             'model_names': model_names,
+#             'chain_jaccard_scores': chain_jaccard_scores,
+#             'chains': chains
+#         }
+#     }
+
+# def train_clf(self, X_train, y_train, X_val, y_val, num_processes=None):
+#     """
+#     Train multiple classifiers in parallel using multiprocessing.
+
+#     :param X_train: training data
+#     :param y_train: training labels
+#     :param X_val: validation data
+#     :param y_val: validation labels
+#     :param num_processes: number of processes to use in parallel, defaults to None (all available cores)
+#     :return: dictionary of model scores, model names, chain jaccard scores, and chains
+#     """
+#     train_func = partial(self._train_single_clf, X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val)
+    
+#     with Pool(processes=num_processes) as pool:
+#         results = pool.starmap(train_func, self.model_clf.items())
+
+#     # Combine results from all classifiers
+#     model_outs = {key: value for result in results for key, value in result.items()}
+#     return model_outs 
