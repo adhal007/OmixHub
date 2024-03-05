@@ -105,6 +105,7 @@ OmicsProjects
 ## Future work
 **Development**:
 - Develop a module for graph based machine learning models 
+- Develop a module for shotgun sequencing dataset
 - Develop a module for deep learning models 
 - Develop a module for multi-omics data analysis
 - Develop a module for single-cell RNA-Seq data analysis

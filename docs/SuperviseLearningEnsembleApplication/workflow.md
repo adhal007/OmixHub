@@ -540,99 +540,6 @@ train_val_test_ids_df = pd.concat([train_ids_df, val_ids_df, test_ids_df], axis=
 
 
 ```python
-train_val_test_ids_df 
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Case_ID</th>
-      <th>label</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>TCGA-CW-5585</td>
-      <td>training</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>TCGA-B0-5706</td>
-      <td>training</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>TCGA-DZ-6132</td>
-      <td>training</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>TCGA-CW-6090</td>
-      <td>training</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>TCGA-BQ-7055</td>
-      <td>training</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>93</th>
-      <td>TCGA-KN-8418</td>
-      <td>testing</td>
-    </tr>
-    <tr>
-      <th>94</th>
-      <td>TCGA-KO-8406</td>
-      <td>testing</td>
-    </tr>
-    <tr>
-      <th>95</th>
-      <td>TCGA-KO-8414</td>
-      <td>testing</td>
-    </tr>
-    <tr>
-      <th>96</th>
-      <td>TCGA-KL-8325</td>
-      <td>testing</td>
-    </tr>
-    <tr>
-      <th>97</th>
-      <td>TCGA-KM-8438</td>
-      <td>testing</td>
-    </tr>
-  </tbody>
-</table>
-<p>799 rows × 2 columns</p>
-</div>
-
-
-
-
-```python
 train_val_test_ids_df = pd.merge(train_val_test_ids_df, ml_df[['Case_ID', 'project_id_orig', 'Sample_Type_orig']],
 left_on='Case_ID',
 right_on='Case_ID')
@@ -682,7 +589,7 @@ ax.set_title("Samples count in KC subtypes after separating patient overlap")
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_43_2.png)
+![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_42_2.png)
     
 
 
@@ -708,7 +615,7 @@ ax.set_title("Samples count in KC tumor types training/testing/validation")
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_44_2.png)
+![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_43_2.png)
     
 
 
@@ -1065,14 +972,14 @@ import src.base_ml_models as ens_models
 reload(ens_models)
 dict_of_base_models = {
 
-# "clf_rfc": RandomForestClassifier(
-#         max_depth=5, n_estimators=10, max_features=1, random_state=42
-#     ),
+"clf_rfc": RandomForestClassifier(
+        max_depth=5, n_estimators=10, max_features=1, random_state=42
+    ),
 # "clf_dtc": DecisionTreeClassifier(random_state=42),
 "clf_lr": LogisticRegression(solver='liblinear', penalty='l1', random_state=42),
 # "clf_svc": SVC(kernel="rbf", C=0.025, random_state=42),
-# "clf_gnb": GaussianNB(),
-# "clf_knn": KNeighborsClassifier(),
+"clf_gnb": GaussianNB(),
+"clf_knn": KNeighborsClassifier(),
 "clf_ada": AdaBoostClassifier()
 }
 clf_obj = ens_models.BaseEnsembleClf(dict_of_base_models, num_labels=5, random_state=42, prob_thresh=0.5)
@@ -1087,80 +994,7 @@ model_train_val_outs
 
 
 
-    {'clf_rfc': {'model_scores': [0.7107843137254901,
-       0.7299019607843138,
-       0.7313725490196078,
-       0.7333333333333334,
-       0.7269607843137254,
-       0.7210784313725489,
-       0.7284313725490197],
-      'model_names': ('Independent',
-       'Chain 1',
-       'Chain 2',
-       'Chain 3',
-       'Chain 4',
-       'Chain 5',
-       'Ensemble'),
-      'chain_jaccard_scores': [0.7299019607843138,
-       0.7313725490196078,
-       0.7333333333333334,
-       0.7269607843137254,
-       0.7210784313725489],
-      'chains': [ClassifierChain(base_estimator=RandomForestClassifier(max_depth=5,
-                                                             max_features=1,
-                                                             n_estimators=10,
-                                                             random_state=42),
-                       order='random', random_state=0),
-       ClassifierChain(base_estimator=RandomForestClassifier(max_depth=5,
-                                                             max_features=1,
-                                                             n_estimators=10,
-                                                             random_state=42),
-                       order='random', random_state=1),
-       ClassifierChain(base_estimator=RandomForestClassifier(max_depth=5,
-                                                             max_features=1,
-                                                             n_estimators=10,
-                                                             random_state=42),
-                       order='random', random_state=2),
-       ClassifierChain(base_estimator=RandomForestClassifier(max_depth=5,
-                                                             max_features=1,
-                                                             n_estimators=10,
-                                                             random_state=42),
-                       order='random', random_state=3),
-       ClassifierChain(base_estimator=RandomForestClassifier(max_depth=5,
-                                                             max_features=1,
-                                                             n_estimators=10,
-                                                             random_state=42),
-                       order='random', random_state=4)]},
-     'clf_dtc': {'model_scores': [0.8656862745098038,
-       0.8725490196078431,
-       0.8794117647058823,
-       0.8828431372549018,
-       0.8637254901960784,
-       0.8745098039215685,
-       0.8892156862745098],
-      'model_names': ('Independent',
-       'Chain 1',
-       'Chain 2',
-       'Chain 3',
-       'Chain 4',
-       'Chain 5',
-       'Ensemble'),
-      'chain_jaccard_scores': [0.8725490196078431,
-       0.8794117647058823,
-       0.8828431372549018,
-       0.8637254901960784,
-       0.8745098039215685],
-      'chains': [ClassifierChain(base_estimator=DecisionTreeClassifier(random_state=42),
-                       order='random', random_state=0),
-       ClassifierChain(base_estimator=DecisionTreeClassifier(random_state=42),
-                       order='random', random_state=1),
-       ClassifierChain(base_estimator=DecisionTreeClassifier(random_state=42),
-                       order='random', random_state=2),
-       ClassifierChain(base_estimator=DecisionTreeClassifier(random_state=42),
-                       order='random', random_state=3),
-       ClassifierChain(base_estimator=DecisionTreeClassifier(random_state=42),
-                       order='random', random_state=4)]},
-     'clf_lr': {'model_scores': [0.9568627450980391,
+    {'clf_lr': {'model_scores': [0.9568627450980391,
        0.9509803921568627,
        0.9588235294117647,
        0.9627450980392158,
@@ -1194,88 +1028,6 @@ model_train_val_outs
        ClassifierChain(base_estimator=LogisticRegression(penalty='l1', random_state=42,
                                                          solver='liblinear'),
                        order='random', random_state=4)]},
-     'clf_svc': {'model_scores': [0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744],
-      'model_names': ('Independent',
-       'Chain 1',
-       'Chain 2',
-       'Chain 3',
-       'Chain 4',
-       'Chain 5',
-       'Ensemble'),
-      'chain_jaccard_scores': [0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744,
-       0.6480392156862744],
-      'chains': [ClassifierChain(base_estimator=SVC(C=0.025, random_state=42), order='random',
-                       random_state=0),
-       ClassifierChain(base_estimator=SVC(C=0.025, random_state=42), order='random',
-                       random_state=1),
-       ClassifierChain(base_estimator=SVC(C=0.025, random_state=42), order='random',
-                       random_state=2),
-       ClassifierChain(base_estimator=SVC(C=0.025, random_state=42), order='random',
-                       random_state=3),
-       ClassifierChain(base_estimator=SVC(C=0.025, random_state=42), order='random',
-                       random_state=4)]},
-     'clf_gnb': {'model_scores': [0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803],
-      'model_names': ('Independent',
-       'Chain 1',
-       'Chain 2',
-       'Chain 3',
-       'Chain 4',
-       'Chain 5',
-       'Ensemble'),
-      'chain_jaccard_scores': [0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803,
-       0.6715686274509803],
-      'chains': [ClassifierChain(base_estimator=GaussianNB(), order='random', random_state=0),
-       ClassifierChain(base_estimator=GaussianNB(), order='random', random_state=1),
-       ClassifierChain(base_estimator=GaussianNB(), order='random', random_state=2),
-       ClassifierChain(base_estimator=GaussianNB(), order='random', random_state=3),
-       ClassifierChain(base_estimator=GaussianNB(), order='random', random_state=4)]},
-     'clf_knn': {'model_scores': [0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665],
-      'model_names': ('Independent',
-       'Chain 1',
-       'Chain 2',
-       'Chain 3',
-       'Chain 4',
-       'Chain 5',
-       'Ensemble'),
-      'chain_jaccard_scores': [0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665,
-       0.9166666666666665],
-      'chains': [ClassifierChain(base_estimator=KNeighborsClassifier(), order='random',
-                       random_state=0),
-       ClassifierChain(base_estimator=KNeighborsClassifier(), order='random',
-                       random_state=1),
-       ClassifierChain(base_estimator=KNeighborsClassifier(), order='random',
-                       random_state=2),
-       ClassifierChain(base_estimator=KNeighborsClassifier(), order='random',
-                       random_state=3),
-       ClassifierChain(base_estimator=KNeighborsClassifier(), order='random',
-                       random_state=4)]},
      'clf_ada': {'model_scores': [0.9509803921568627,
        0.9460784313725489,
        0.95,
@@ -1336,7 +1088,7 @@ clf_names = list(dict_of_base_models.keys())
 
 # Create a grid of subplots
 num_plots = len(clf_names)
-num_cols = 3  # Number of columns in the grid
+num_cols = 2  # Number of columns in the grid
 num_rows = (num_plots - 1) // num_cols + 1
 
 fig, axs = plt.subplots(num_rows, num_cols, figsize=(15, 4 * num_rows))
@@ -1347,7 +1099,7 @@ for i, clf_name in enumerate(clf_names):
     row = i // num_cols
     col = i % num_cols
     model_scores, model_names, chain_jaccard_scores = model_train_val_outs[clf_name]['model_scores'], model_train_val_outs[clf_name]['model_names'], model_train_val_outs[clf_name]['chain_jaccard_scores']
-    plot_performance(model_scores, model_names, chain_jaccard_scores, text=clf_name, ax=axs[row, col])
+    plot_performance(model_scores, model_names, chain_jaccard_scores, text=clf_name, ax=axs[col])
 
 # Hide any empty subplots
 for i in range(num_plots, num_rows * num_cols):
@@ -1360,7 +1112,7 @@ plt.show()
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_58_0.png)
+![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_57_0.png)
     
 
 
@@ -1440,49 +1192,111 @@ for clf_name, roc_auc in roc_auc_dict.items():
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_0.png)
+![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_60_0.png)
     
 
 
 
     
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_1.png)
+![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_60_1.png)
     
 
 
-
-    
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_2.png)
-    
+## 4.4. Sensitivity evaluation of testing data with swarmplots 
 
 
-
-    
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_3.png)
-    
-
-
-
-    
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_4.png)
-    
+- create a long dataframe from which a single swarm plot can be created
+- We want to calculate the sensitivity for a given specificity of say 95% 
+- Using test dataset we can evaluate the sensitivity of both models
+- Since this is a multi label problem, we want to calculate the sensitivity across each label
 
 
+```python
+from sklearn.metrics import accuracy_score
+```
 
-    
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_5.png)
-    
-
-
-
-    
-![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_61_6.png)
-    
+## 4.4.1. Create unique case ids since there maybe duplicate samples across different multi-label outputs
 
 
-## 4.4. Generate swarmplots for different label categories
+```python
+# testing_ids_df = train_val_test_ids_df[train_val_test_ids_df ['label'] == 'testing'].reset_index(drop=True) 
+# testing_ids_df.head()
+# unique_testing_id = testing_ids_df['Case_ID'] + '_' + [testing_ids_df['Sample_Type_orig'][i].replace(' ', '_') for i in range(testing_ids_df.shape[0])]
+# unique_testing_id.head() 
+```
+
+
+
+
+    0          TCGA-KN-8434_Primary_Tumor
+    1    TCGA-KN-8434_Solid_Tissue_Normal
+    2    TCGA-CJ-5677_Solid_Tissue_Normal
+    3          TCGA-CJ-5677_Primary_Tumor
+    4    TCGA-KN-8427_Solid_Tissue_Normal
+    Name: Case_ID, dtype: object
+
+
+
+
+```python
+sids_testing = ml_df[ml_df['Case_ID'].isin(testing_ids_df['Case_ID'].to_numpy())]['Sample_ID'].to_numpy()
+X_test = ml_df[ml_df['Sample_ID'].isin(sids_testing)][gene_cols].to_numpy()
+y_test = ml_df[ml_df['Sample_ID'].isin(sids_testing)][y_label_cols].astype(int).to_numpy()
+```
+
+## 4.4.2. Apply multi-label classification model to test samples 
 
 
 ```python
 
+y_pred_test = clf_obj.test_clf(X_test=X_test, y_test=y_test, model_outs=model_train_val_outs)
 ```
+
+
+```python
+y_pred_test_df = pd.DataFrame(y_pred_test['clf_lr']['y_pred_ensemble'])
+y_pred_test_df.columns = y_test_ch.columns
+y_pred_test_df['Sample_ID'] = sids_testing
+```
+
+## 4.4.3 Melt and merge true and predicted values into a single dataframe in long format
+
+
+```python
+y_test_df = pd.DataFrame(y_test)
+y_test_df.columns = y_test_ch.columns
+y_test_df['Sample_ID'] = sids_testing
+y_pred_test_df_mt = y_pred_test_df.melt(id_vars='Sample_ID')
+y_test_df_mt = y_test_df.melt(id_vars='Sample_ID')
+```
+
+
+```python
+true_pred_values = pd.merge(y_test_df_mt, 
+         y_pred_test_df_mt, 
+         left_on=['Sample_ID','variable'], 
+         right_on=['Sample_ID','variable'],
+         suffixes=('_true', '_pred'))
+```
+
+
+```python
+
+sns.set(rc={'figure.figsize':(20.7,6.27)})
+sns.set(style="white")
+ax = sns.violinplot(data=true_pred_values, x='variable', y='value_pred', hue='value_true', inner="point", density_norm="count",
+                    inner_kws=dict(box_width=15, whis_width=2, color=".8"))
+# sns.stripplot(data=true_pred_values, x='variable', y='value_pred', hue='value_true')
+```
+
+    is_categorical_dtype is deprecated and will be removed in a future version. Use isinstance(dtype, CategoricalDtype) instead
+    is_categorical_dtype is deprecated and will be removed in a future version. Use isinstance(dtype, CategoricalDtype) instead
+    is_categorical_dtype is deprecated and will be removed in a future version. Use isinstance(dtype, CategoricalDtype) instead
+    is_categorical_dtype is deprecated and will be removed in a future version. Use isinstance(dtype, CategoricalDtype) instead
+
+
+
+    
+![png](TCGA_Supervised_Multilabel_Classification_with_ensemble_models_files/TCGA_Supervised_Multilabel_Classification_with_ensemble_models_72_1.png)
+    
+

@@ -21,11 +21,20 @@ class umap_embedder:
         self.dims = ['2D', '3D']
         self.allowed_embedding_types = ['default', 'optimized']
         self.embedding_type = embedding_type
-        self.optimizer = src.DimRedMappers.clusterer.ClusteringOptimizer() 
-        
+        self.optimizer = src.DimRedMappers.clusterer.ClusteringOptimizer(data=self.data) 
         self._opt_search_space = optimizer_search_space
         self._embedding = None 
 
+    @property
+    def opt_search_space(self):
+        """Search space for the optimizer
+
+        Returns:
+            dict: search space for the optimizer
+        """
+        if self._opt_search_space is None:
+            self._opt_search_space = self.optimizer.search_space
+        return self._opt_search_space
         
     @property
     def embedding(self):
