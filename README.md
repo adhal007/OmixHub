@@ -74,6 +74,7 @@ OmicsProjects
    ```
 #### Modules developed:
 
+- [Module for Genomic Data Commons API accession, querying, search and retrieval](https://github.com/adhal007/OmixHub/tree/main/src/Connectors)
 - [Module for Outlier Statistic Methods](https://github.com/adhal007/OmixHub/blob/main/src/OutlierStatMethods/README.md)
 
 - [Module for Omics data processing](https://github.com/adhal007/OmixHub/blob/main/src/README.md)
