@@ -1,0 +1,3 @@
+id	filename	md5	size	state
+9c97e3fe-1610-4a92-9a24-ab3b9e4000e2	genome.wustl.edu_clinical.TCGA-AB-2903.xml	0c4dd773394545412844c1859f11b057	46301	validated
+a751cc7e-d2ff-4e9a-8645-09bf12612f1a	TCGA-LAML.80fd1413-7e22-44e2-b3c3-f03c08a2fefd.ascat2.allelic_specific.seg.txt	b31dc0407f413d9e79cd9faf06818dad	5062	validated

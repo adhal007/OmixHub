@@ -220,27 +220,26 @@ class BaseEnsembleClf:
         plt.legend(loc="lower right")
         plt.show()
 
-    def shap_value_calculation(self, X_train, Y_train, X_val):
-        # raise NotImplementedError("SHAP value calculation not implemented yet"
-        import numpy as np
+    # def shap_value_calculation(self, X_train, Y_train, X_val):
+    #     # raise NotImplementedError("SHAP value calculation not implemented yet"
 
-        # Create an ensemble of logistic regression classifier chains
-        chains = [ClassifierChain(LogisticRegression(), order="random", random_state=i) for i in range(10)]
-        for chain in chains:
-            chain.fit(X_train, Y_train)
+    #     # Create an ensemble of logistic regression classifier chains
+    #     chains = [ClassifierChain(LogisticRegression(), order="random", random_state=i) for i in range(10)]
+    #     for chain in chains:
+    #         chain.fit(X_train, Y_train)
 
-        # Create a Shap explainer for the ensemble
-        explainer = shap.Explainer(chains, X_train)
+    #     # Create a Shap explainer for the ensemble
+    #     explainer = shap.Explainer(chains, X_train)
 
-        # Calculate Shapley values for a specific sample or multiple samples (e.g., X_test)
-        num_samples_to_explain = 10
-        shap_values = explainer.shap_values(X_val[:num_samples_to_explain])
+    #     # Calculate Shapley values for a specific sample or multiple samples (e.g., X_test)
+    #     num_samples_to_explain = 10
+    #     shap_values = explainer.shap_values(X_val[:num_samples_to_explain])
 
-        # shap_values now contains the Shapley values for the ensemble model
+    #     # shap_values now contains the Shapley values for the ensemble model
 
-        # Optionally, you can visualize the Shapley values for a specific sample
-        shap.summary_plot(shap_values, X_val[:num_samples_to_explain], feature_names=X_train.columns)
-        return shap, shap_values
+    #     # Optionally, you can visualize the Shapley values for a specific sample
+    #     shap.summary_plot(shap_values, X_val[:num_samples_to_explain], feature_names=X_train.columns)
+    #     return shap, shap_values
     
 
 ## very slow implementation with multiprocessing
