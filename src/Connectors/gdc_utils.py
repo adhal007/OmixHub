@@ -7,15 +7,31 @@ import re
 import pandas as pd 
 
 # Example of usage
+"""
+Copyright (c) 2024 OmixHub.  All rights are reserved.
+GDC Base Utils class and high-level API functions
 
-class GDCUtils(gdc_sar.GDCClient):
-    def __init__(self, homepage='https://api.gdc.cancer.gov'):
-        super().__init__(homepage)
-        self.gdc_flt = gdc_flt.GDCFilters()
-        self.gdc_fld = gdc_fld.GDCQueryFields()
+@author: Abhilash Dhal
+@date:  2024_22_27
+"""
+class GDCUtilsBase:
+    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
+        self.endpt = endpt
+        self.homepage = homepage
+        self._files_endpt = None
+        self.headers = {
+            'Content-Type': 'application/json'
+        }
 
+    @property
+    def files_endpt(self):
+        if self._files_endpt is None:
+            if self.endpt is not None:
+                return f"{self.homepage}/{self.endpt}"
+            else:
+                return None
+            
 ####### COMMON API calls for GDC ####################################################
-    ## This is the same as search method in gdc_sar.py 
     def get_json_data(self, files_endpt, params):
         response = requests.get(files_endpt, params = params)
         json_data = json.loads(response.text)
@@ -48,97 +64,41 @@ class GDCUtils(gdc_sar.GDCClient):
         # The file name can be found in the header within the Content-Disposition key.
         response_head_cd = response.headers["Content-Disposition"]
         file_name = re.findall("filename=(.+)", response_head_cd)[0]
+        print(file_name)
         with open(file_name, "wb") as output_file:
             output_file.write(response.content)
-    
-######### APPLICATION ORIENTED python functions ################################################
-################################################################################################
-    def list_all_projects_by_exp(self, experimental_strategy=None, new_fields=None, size=100, format='json'):
-        files_endpt = "https://api.gdc.cancer.gov/projects"
-        pbe_filter = self.gdc_flt.all_projects_by_exp_filter(experimental_strategy=experimental_strategy)
-        if new_fields is None:
-            fields = self.gdc_fld.dft_list_all_project_fields
-        else:
-            self.gdc_fld.update_fields('dft_list_all_project_fields', new_fields)
-            fields = self.gdc_fld.dft_list_all_project_fields            
-        fields = ",".join(fields)
 
-        params = self.make_params_dict(filters=pbe_filter, fields=fields, size=size, format=format)
-        json_data = self.get_json_data(files_endpt, params)
-        # return self.search('/projects', filters=pbd_filter, fields=fields)
-        return json_data
-    
-    def list_projects_by_disease(self, disease_type, new_fields=None, size=100, format='json'):
+    def query(self, endpoint, params=None, method='GET', data=None):
         """
-        List projects filtered by disease type with specified fields.
+        General purpose method to query GDC API.
         """
-        files_endpt = "https://api.gdc.cancer.gov/projects" 
-        pbd_filter = self.gdc_flt.projects_by_disease_filter(disease_type)
-
-        if new_fields is None:
-            fields = self.gdc_fld.dft_project_by_disease_fields
+        url = f"{self.homepage}{endpoint}"
+        response = requests.request(method, url, headers=self.headers, params=params, data=json.dumps(data) if data else data)
+        if response.status_code == 200:
+            try:
+                print("Valid Connection")
+                return response.json()
+            except json.JSONDecodeError as e:
+                print(f"Failed to decode JSON. Status code: {response.status_code}, Response text: {response.text}")
+                raise
         else:
-            self.gdc_fld.update_fields('dft_project_by_disease_fields', new_fields)
-            fields = self.gdc_fld.dft_primary_site_race_gender_exp_fields            
-        fields = ",".join(fields)
-        params = self.make_params_dict(filters=pbd_filter, fields=fields, size=size, format=format)
-        json_data = self.get_json_data(files_endpt, params)
-        # return self.search('/projects', filters=pbd_filter, fields=fields)
-        return json_data
+            print(f"Error: {response.status_code}, Response: {response.text}")
+            response.raise_for_status()
 
-    def list_projects_by_ps_race_gender_exp(self, 
-                                            new_fields=None,
-                                            ps_list=None, 
-                                            race_list=None, 
-                                            exp_list=None, 
-                                            size=100, 
-                                            format='json'):
-        files_endpt = "https://api.gdc.cancer.gov/files"
-        if new_fields is None:
-            fields = self.gdc_fld.dft_primary_site_race_gender_exp_fields
-        else:
-            self.gdc_fld.update_fields('dft_primary_site_race_gender_exp_fields', new_fields)
-            fields = self.gdc_fld.dft_primary_site_race_gender_exp_fields
-        print(fields)
-        fields = ",".join(fields)
-
-        filters = self.gdc_flt.ps_race_gender_exp_filter(ps_list=ps_list, race_list=race_list, exp_list=exp_list)
-        params = self.make_params_dict(filters, fields, size=size, format=format)
-        json_data = self.get_json_data(files_endpt, params)
-        df = self.create_projects_by_ps_gender_race_exp_df(json_data)
-        return json_data, df 
-    
-    def create_projects_by_ps_gender_race_exp_df(self, json_data):
-        df = pd.DataFrame(json_data['data']['hits'])
-        new_dict = {'file_id': [], 'file_name':[], 'disease_type':[], 'project_id':[], 'sample_type':[], 'submitter_id':[]}
-        for row in df.iterrows():
-            new_dict['file_id'].append(row[1]['file_id'])
-            new_dict['file_name'].append(row[1]['file_name'])
-            cases_row = row[1]['cases'][0]
-            new_dict['disease_type'].append(cases_row['disease_type'])
-            new_dict['project_id'].append(cases_row['project']['project_id'])
-            new_dict['sample_type'].append(cases_row['samples'][0]['sample_type'])
-            new_dict['submitter_id'].append(cases_row['submitter_id'])
-        return df 
-
-    def search_files_by_criteria(self, new_fields=None, primary_sites=None, experimental_strategies=None, data_formats='json', size=100):
+    def search(self, endpoint, filters, fields, size=100, format='json'):
         """
-        Search files based on primary site, experimental strategy, and data format.
+        Search data in the GDC using filters and expansion, now including format handling.
         """
-        files_endpt = "https://api.gdc.cancer.gov/files"
-        filters = self.gdc_flt.primary_site_exp_filter(primary_sites, experimental_strategies, data_formats='tsv')
-        if new_fields is None:
-            fields = self.gdc_fld.dft_primary_site_exp_fields
-        else:
-            self.gdc_fld.update_fields('dft_primary_site_exp_fields', new_fields)
-            fields = self.gdc_fld.dft_primary_site_exp_fields       
+        data = {
+            'filters': json.dumps(filters),
+            'fields': ','.join(fields),
+            'format': format,
+            'size': size
+        }
+        return self.query(endpoint, method='POST', data=data)
 
-        fields = ",".join(fields)
-        params = self.make_params_dict(filters, fields, size=size, format=data_formats)
-        json_data = self.get_json_data(files_endpt, params)
-        # return self.search('/files', filters=filters, fields=fields, format=data_formats, size=100)
-        return json_data
-
+    def check_valid_endpt(self):
+        self.query(self.endpt)
 
 ### Methods to be added based on application by user/bioinformatician/ 
 ### 1. Get list of all disease_types available on gdc platform 

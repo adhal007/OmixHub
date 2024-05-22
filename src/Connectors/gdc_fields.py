@@ -1,13 +1,27 @@
 
 import json
 import requests
+import src.Connectors.gdc_field_validator as gdc_vld
+"""
+Copyright (c) 2024 OmixHub.  All rights are reserved.
+GDC fields class and high-level API functions
 
-class GDCQueryFields:
-    def __init__(self) -> None:
-        
+@author: Abhilash Dhal
+@date:  2024_22_27
+"""
+
+class GDCQueryFields():
+    def __init__(self, endpt) -> None:
+
+        self.endpts = ['cases', 'annotation', 'projects', 'files']
+        if endpt not in self.endpts:
+            raise ValueError(f"Endpoint has be either of {','.join(self.endpts)}")
+        self.endpt = endpt
+
         self.dft_list_all_project_fields = [
             "project_id", "project_name", "program.name", "summary.experimental_strategies.experimental_strategy"
         ]
+
         self.dft_primary_site_fields = [
         "file_id", "file_name", "cases.submitter_id", "cases.case_id",
         "data_category", "data_type", "cases.samples.tumor_descriptor",
