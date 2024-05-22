@@ -1,6 +1,5 @@
 
 import json
-import requests
 import src.Connectors.gdc_field_validator as gdc_vld
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
@@ -54,6 +53,10 @@ class GDCQueryFields():
             "cases.samples.portions.analytes.aliquots.submitter_id"
         ]
 
+        self.dft_rna_seq_star_count_data_fields = ['file_id', 'file_name', 
+                                                   'experimental_strategy', 'data_type', 
+                                                   'cases.case_id', 'analysis.workflow_type']
+        
     def update_fields(self, field_name, new_fields):
         """
         General method to update field lists based on the field name and new fields.

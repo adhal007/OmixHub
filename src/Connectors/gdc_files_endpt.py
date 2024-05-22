@@ -2,9 +2,9 @@
 import json
 import requests
 import src.Connectors.gdc_utils as gdc_utils
-import src.Connectors.gdc_sar as gdc_sar
 import src.Connectors.gdc_filters as gdc_flt
 import src.Connectors.gdc_fields as gdc_fld
+import src.Connectors.gdc_field_validator as gdc_vld
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
 GDC Files Endpt Class and high-level API functions
@@ -13,11 +13,13 @@ GDC Files Endpt Class and high-level API functions
 @date:  2024_22_27
 """
 class GDCFilesEndpt(gdc_utils.GDCUtilsBase):
-    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='Projects'):
-        super().__init__(homepage, endpt)
-        if self.check_valid_endpt():
-            self.gdc_flt = gdc_flt.GDCFilters(self.endpt)
-            self.gdc_fld = gdc_fld.GDCQueryFields(self.endpt)
+    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='files'):
+        super().__init__(homepage, endpt='files')
+        # if self.check_valid_endpt():
+        self.gdc_flt = gdc_flt.GDCFilters(self.endpt)
+        self.gdc_fld = gdc_fld.GDCQueryFields(self.endpt)
+        self.gdc_vld = gdc_vld.GDCValidator()
+
 ######### APPLICATION ORIENTED python functions ################################################
 ################################################################################################
     def list_projects_by_ps_race_gender_exp(self, 
@@ -70,4 +72,34 @@ class GDCFilesEndpt(gdc_utils.GDCUtilsBase):
         params = self.make_params_dict(filters, fields, size=size, format=data_formats)
         json_data = self.get_json_data(files_endpt, params)
         # return self.search('/files', filters=filters, fields=fields, format=data_formats, size=100)
+        return json_data
+    
+    def fetch_rna_seq_star_counts_data(self, new_fields=None, ps_list=None, race_list=None, gender_list=None):
+        if ps_list is None:
+            raise ValueError("List of primary sites must be provided")
+        
+        for x in ps_list:
+            if x not in self.gdc_vld.list_of_primary_sites:
+                raise ValueError(f"Incorrect primary site queried by user: Please check the list of allowed primary sites from {','.join(self.gdc_vld.list_of_primary_sites)}")
+            
+        if new_fields is None:
+            fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
+        else:
+            self.gdc_fld.update_fields('dft_rna_seq_star_count_data_fields', new_fields)
+            fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
+        print(fields)        
+        fields = ",".join(fields)
+
+        filters = self.gdc_flt.rna_seq_star_count_filter(ps_list=ps_list, race_list=race_list, gender_list=gender_list)
+        # Here a GET is used, so the filter parameters should be passed as a JSON string.
+        print(filters)
+        params = {
+            "filters": json.dumps(filters),
+            "fields": fields,
+            "format": "json",
+            "size": "1000"
+            }
+        print(params)
+        response = requests.get(self.files_endpt, params = params)
+        json_data = json.loads(response.text)
         return json_data

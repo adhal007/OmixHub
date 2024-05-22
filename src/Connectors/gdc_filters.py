@@ -1,5 +1,4 @@
 import json
-import requests
 import re
 import src.Connectors.gdc_fields as gdc_fld
 import src.Connectors.gdc_field_validator as gdc_vld
@@ -35,6 +34,27 @@ class GDCFilters(gdc_fld.GDCQueryFields):
             filters["content"].append(filter_op)
         return filters
     
+    def create_filters(self, filter_specs):
+        """
+        Creates a list of filters based on given specifications.
+        
+        Args:
+        filter_specs (list of tuples): Each tuple contains the field name and the corresponding values list.
+        
+        Returns:
+        list of dicts: List containing filter dictionaries.
+        """
+        filters = []
+        for field, values in filter_specs:
+            filter_op = {
+                "op": "in",
+                "content": {
+                    "field": field,
+                    "value": values
+                }
+            }
+            filters.append(filter_op)
+        return filters 
         
     def all_projects_by_exp_filter(self, experimental_strategy):
         filters = {
@@ -47,7 +67,6 @@ class GDCFilters(gdc_fld.GDCQueryFields):
         }
         return filters 
     
-    def 
     def primary_site_filter(self, ps_value:list)->None:
         # cases_endpt = "https://api.gdc.cancer.gov/cases"
         if ps_value is None:
@@ -139,3 +158,30 @@ class GDCFilters(gdc_fld.GDCQueryFields):
             ]
         }
         return filters
+    
+    def rna_seq_star_count_filter(self, ps_list=None, race_list=None, gender_list=None):
+        default_filter_specs = [
+            ("files.experimental_strategy", ["RNA-Seq"]),
+            ("data_type", ["Gene Expression Quantification"]),
+            ("analysis.workflow_type", ["STAR - Counts"])
+        ]
+        # Start with default filters
+        combined_filter_specs = default_filter_specs.copy()
+
+        # Append conditionally based on the content of user inputs
+        if ps_list:
+            combined_filter_specs.append(("cases.project.primary_site", ps_list))
+
+        if race_list:
+            combined_filter_specs.append(("cases.demographic.race", race_list))
+
+        if gender_list:
+            combined_filter_specs.append(("cases.demographic.gender", gender_list))
+
+        # Output the filter list to verify its contents
+        final_filters = self.create_filters(combined_filter_specs)
+        filters_for_query = filters = {
+            "op": "and",
+            "content": final_filters
+        } 
+        return filters_for_query

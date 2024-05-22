@@ -1,6 +1,6 @@
 import json
 import requests
-import src.Connectors.gdc_sar as gdc_sar
+
 import src.Connectors.gdc_filters as gdc_flt
 import src.Connectors.gdc_fields as gdc_fld
 import re
@@ -97,8 +97,9 @@ class GDCUtilsBase:
         }
         return self.query(endpoint, method='POST', data=data)
 
-    def check_valid_endpt(self):
-        self.query(self.endpt)
+##### Need to update this check tomorrow ###############################
+    # def check_valid_endpt(self):
+    #     return self.query(self.endpt)
 
 ### Methods to be added based on application by user/bioinformatician/ 
 ### 1. Get list of all disease_types available on gdc platform 
