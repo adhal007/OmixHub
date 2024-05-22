@@ -13,13 +13,13 @@ GDC Projects Endpoint Class and high-level API functions
 """
 
 class GDCProjectsEndpt(gdc_utils.GDCUtilsBase):
-    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='Projects'):
-        super().__init__(homepage, endpt)
+    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='projects'):
+        super().__init__(homepage, endpt='projects')
         if self.check_valid_endpt():
             self.gdc_flt = gdc_flt.GDCFilters(self.endpt)
             self.gdc_fld = gdc_fld.GDCQueryFields(self.endpt)
 
-######### APPLICATION ORIENTED python functions ################################################
+######### APPLICATION ORIENTED python functions for projects endpoint ################################################
 ################################################################################################
     def list_all_projects_by_exp(self, experimental_strategy=None, new_fields=None, size=100, format='json'):
         
