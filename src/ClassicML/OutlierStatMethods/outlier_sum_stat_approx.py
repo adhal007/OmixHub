@@ -1,4 +1,4 @@
-from OutlierStatMethods import base_class
+from src.ClassicML.OutlierStatMethods import base_class
 import pandas as pd 
 import numpy as np
 import scipy.stats as sp 

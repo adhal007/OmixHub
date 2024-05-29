@@ -17,9 +17,10 @@ import numpy as np
 import random 
 import umap
 import pandas as pd 
+
 ## omics utils imports 
-import src.DimRedMappers.clusterer
-import src.DimRedMappers.umap_embedders
+# import src.ClassicML.DimRedMappers.clusterer
+import src.ClassicML.DimRedMappers.umap_embedders
 
 
 class DRClusterer:

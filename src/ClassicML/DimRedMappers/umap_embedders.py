@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import FunctionTransformer
 
 
-import src.DimRedMappers.clusterer
+import src.ClassicMl.DimRedMappers.clusterer
 import pandas as pd
 import umap
 
@@ -21,7 +21,7 @@ class umap_embedder:
         self.dims = ['2D', '3D']
         self.allowed_embedding_types = ['default', 'optimized']
         self.embedding_type = embedding_type
-        self.optimizer = src.DimRedMappers.clusterer.ClusteringOptimizer(data=self.data) 
+        self.optimizer = src.ClassicMl.DimRedMappers.clusterer.ClusteringOptimizer(data=self.data) 
         self._opt_search_space = optimizer_search_space
         self._embedding = None 
 

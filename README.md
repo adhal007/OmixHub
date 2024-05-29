@@ -1,78 +1,70 @@
 ## Main 
 
-#### Overview
-Here is a list of existing and upcoming projects for different omics datasets and application of different ML/AI methods and models for biomarker discovery and disease classification.  
+### Overview
+We want to build an integrated platform for well known ML and DL based classification, feature selection and other bioinformatics for high dimensional NGS data. Here is a list of existing and upcoming projects for different omics datasets and modules of different ML/AI methods and models for biomarker discovery and disease classification.
 
-#### High Level Objective: 
+#### High Level Objective:
 In NGS datasets for kidney cancer or other complex diseases, apply known or new ML models to identify patterns of gene expression to serve as a template for bio-informatics learning for aspiring scientists/researchers/students in the field.
 
-#### Immediate/Short term focus:
-- Focus on kidney cancer dataset (RNA-Seq) analysis and release a beta version of notebook and modules for conducting RNA-Seq data analysis and ML models 
-- Strategize an Infrastructure that can be used for multi-omics analysis based on the Genomic Data Commons workflows to enable easy application to other disease datasets.
-- Functionality to explore multiple NGS assays: Identify data structures/data types commonly used in the 6 types of NGS assays
+### Immediate/Short term focus for prototype:
+**Dataset:**
 
+Focus on kidney cancer dataset (RNA-Seq) analysis  as our input data (tabular form) 
 
-#### Dataset download
+N x P matrix where N - number of unique patients, P - number of features (genes from RNA-Seq expression)
 
-- [Genome Data Commons(GDC)](https://portal.gdc.cancer.gov/projects?filters=%7B%22op%22%3A%22and%22%2C%22content%22%3A%5B%7B%22op%22%3A%22in%22%2C%22content%22%3A%7B%22field%22%3A%22projects.summary.experimental_strategies.experimental_strategy%22%2C%22value%22%3A%5B%22RNA-Seq%22%5D%7D%7D%5D%7D)
-- Add all chosen datasets to cart and then download it.
-- Since this module is currently developed for bulk transcriptomics RNA-Seq data, in the GDC portal, select the "RNA-Seq" experimental strategy
-- Here is an example of the same from a screen-shot 
-  - ![example](/Transcriptomics/images/GDC_portal_data_set_selection_RNA_SEQ.png)
-- The data for RNA-Seq data for kidney cancer is used as an example here as it was provided as one of the datasets on the UCI ML repository. 
+This contain gene expression quantification data (definition for the gene expression, RNA-Seq data, etc) can be found here RNA-Seq - GDC Docs 
 
+**Methods/Applications for UI:** Here is a list of what applications we expect to have for our initial release:
+
+- **Cohort Selector:** Click button availability to select a cohort from GDC using queries for the following parameters:
+  - primary_site: 60+ available sites eg: Lung, Kidney, Throat, etc
+  - gender: Male, Female or Both
+  - experimental_strategy: Only RNA-Seq for now. In the future we would add in the order of prioritization  
+    - SNP (Genotyping data)
+    - miRNA-seq 
+    - WGS data
+  - demography: White, latino, etc 
+
+- **Modules for analysis:**
+  - Classical ML: 
+    - Supervised ML for disease vs control classification 
+      - Multi-label multi-output classification 
+      - Single-Label classification 
+    - Biomarker identification using feature selection
+      - Outlier Sum Statistics 
+      - Differential Gene Expression using pydeseq wrapper 
+      - Feature importances from different classifiers 
+    - Unsupervised ML:
+      - Bayesian optimized (Hyper-Opt) clustering (KNN) using UMap embeddings
+    - Semi-supervised ML:
+      - Iterative GMM + PCA for cohort stratification for niche disease-control applications 
+  - Deep-learning:
+    - Auto-encoders 
+    - CNN’s
+    - RNN’s for multi-timepoint data 
+  - Bayesian ML
+  - Knowledge Graphs and NLP 
 
 #### Codebase
 ```md
 OmicsProjects
    ├── src
-   │   ├── OutlierStatMethods
+   │   ├── ClassicML
    │   │   ├── init.py
-   │   │   ├── base_class.py
-   │   │   ├── <some_child_method>.py
-   │   │   └── README.md
-   │   ├── DimRedMappers
-   │   │   ├── init.py
-   │   │   ├── <some_method_method>.py
-   │   │   └── README.md
+   │   │   ├── DimRedMappers
+   │   │   ├── DGE
+   │   │   └── OutlierStatMethods
+   │   │   ├── Supervised
+   │   ├── CustomLogger   
+   │   ├── Connectors
    │   ├── PlotUtils
-   │   │   ├── init.py
-   │   │   ├── <some_method_method>.py
-   │   │   └── README.md
-   │   ├── CustomLogger
-   │   │   ├── init.py
-   │   │   ├── custom_logger.py
-   │   │   └── README.md      
-   │   ├── init.py
-   │   ├── preprocess_utils.py
-   │   ├── base_preprocessor.py
-   │   ├── pydeseq_utils.py
-   │   ├── base_ml_models.py 
-   │   └── README.md
-   ├── Transcriptomics
-   │   ├── images
-   │   └── README.md
-   ├── docs 
-   │   ├── OutlierStatMethodsApplication
-   │   │   ├── docs
-   │   │   ├── images
-   │   │   └── Summary.md
-   │   │   └── Workflow.md
-   │   ├── SupervisedLearningApplication
-   │   │   ├── docs
-   │   │   ├── images
-   │   │   └── Summary.md
-   │   │   └── Workflow.md
-   │   ├── UmapApplication
-   │   │   ├── docs
-   │   │   ├── images
-   │   │   └── Summary.md
-   │   │   └── Workflow.md   
+   │   ├── PreProcess 
    └── README.md
    └── <jupyter_nb1.ipynb> 
    └── <jupyter_nb2.ipynb>
    ```
-#### Modules developed:
+<!-- #### Modules developed:
 
 - [Module for Genomic Data Commons API accession, querying, search and retrieval](https://github.com/adhal007/OmixHub/tree/main/src/Connectors)
 - [Module for Outlier Statistic Methods](https://github.com/adhal007/OmixHub/blob/main/src/OutlierStatMethods/README.md)
@@ -82,7 +74,7 @@ OmicsProjects
   - [Module for base preprocessor class](https://github.com/adhal007/OmixHub/blob/main/src/base_preprocessor.py)
 - [Module for Dimensionality Reduction Models](https://github.com/adhal007/OmixHub/blob/main/src/DimRedMappers/README.md)  
 - [Module for ML classifier models (ensemble, multi_output)](https://github.com/adhal007/OmixHub/blob/main/src/base_ml_models.py)
-- [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/src/pydeseq_utils.py)
+- [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/src/pydeseq_utils.py) -->
 
   
 #### Projects/Analysis (Application of Methods)
@@ -105,7 +97,15 @@ OmicsProjects
 
 ## Future work
 **Development**:
-- Develop a module for graph based machine learning models 
+
+- UI Prototype Release
+- Semi-supervised ML:
+    - Iterative GMM + PCA for cohort stratification for niche disease-control applications 
+- Deep-learning:
+  - Auto-encoders 
+  - CNN’s
+  - RNN’s for multi-timepoint data 
+<!-- - Develop a module for graph based machine learning models 
 - Develop a module for shotgun sequencing dataset
 - Develop a module for deep learning models 
 - Develop a module for multi-omics data analysis
@@ -122,7 +122,7 @@ OmicsProjects
 - Develop a module for CHIP-Seq data analysis
 - Develop a module for ATAC-Seq data analysis
 - Develop a module for Hi-C data analysis
-- Develop a module for Hi-Seq data analysis
+- Develop a module for Hi-Seq data analysis -->
 
 **Application work**:
 - Autoimmune disease characterization by omics methods 
