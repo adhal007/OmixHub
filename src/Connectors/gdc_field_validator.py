@@ -132,7 +132,6 @@ class GDCValidator:
         
 
 
-
     def load_fields_from_file(self, filename):
         """
         Load field names from a text file, where each line is a field name.
@@ -141,24 +140,20 @@ class GDCValidator:
             with open(filename, 'r') as file:
                 return [line.strip() for line in file if line.strip()]
         except FileNotFoundError:
-            raise Exception(f"The file {filename} was not found. Please check the file path.")
-        
-
+            raise Exception(f"The file {filename} was not found. Please check the file path.")        
     def validate_project_fields(self, input_fields):
         invalid_fields = [field for field in input_fields if field not in self.project_endpt_fields]
         if invalid_fields:
             raise ValueError(f"Invalid project fields: {', '.join(invalid_fields)}")
-        
+
     def validate_case_fields(self, input_fields):
         invalid_fields = [field for field in input_fields if field not in self.case_endpt_fields]
         if invalid_fields:
             raise ValueError(f"Invalid case fields: {', '.join(invalid_fields)}")
-
     def validate_file_fields(self, input_fields):
         invalid_fields = [field for field in input_fields if field not in self.file_endpt_fields]
         if invalid_fields:
             raise ValueError(f"Invalid file fields: {', '.join(invalid_fields)}")
-    
     def validate_annotation_fields(self, input_fields):
         invalid_fields = [field for field in input_fields if field not in self.annotation_endpt_fields]
         if invalid_fields:

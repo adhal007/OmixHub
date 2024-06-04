@@ -11,8 +11,7 @@ import src.CustomLogger.custom_logger
 
 logger = src.CustomLogger.custom_logger.CustomLogger()
 
-
-class RNASeqPreProcessor(bp.BaseProcessor):
+class RNASeqPreProcessor(bp.BaseDataProcessor):
     def __init__(self, data: pd.DataFrame, x_cols: list[str], y_cols: list[str], unique_id_col: str) -> None:
         super().__init__(data=data, x_cols=x_cols, y_cols=y_cols, unique_id_col=unique_id_col)
 
@@ -84,7 +83,7 @@ class RNASeqPreProcessor(bp.BaseProcessor):
             
             data_matrix_ls.append(df_row)
             logger_child.info(f"Finished file {file_name} processing")
-        logger_child.info("Finished making data matrix"
+        logger_child.info("Finished making data matrix")
         return data_matrix_ls     
 
 
@@ -115,7 +114,6 @@ class RNASeqPreProcessor(bp.BaseProcessor):
         df = self.data[~self.data[self.unique_id_col].isin(self.non_overlap_samples)]
         counts = df[target_columns].value_counts().reset_index
         counts.columns = ['unique_id', 'count']
-    
 
 ## Add more functions for the following:
 ## 1. Checking if there is class imbalance in the data

@@ -41,7 +41,12 @@ class GDCQueryFields():
             "cases.samples.sample_type",
             "cases.disease_type",
             "cases.project.project_id",
-            "cases.summary.experimental_strategies.experimental_strategy"
+            "cases.summary.experimental_strategies.experimental_strategy",
+            "cases.diagnoses.last_known_disease_status",
+            "cases.diagnoses.primary_diagnosis",
+            "cases.diagnoses.tumor_stage",
+            "cases.diagnoses.tumor_grade",
+            "cases.diagnoses.treatments.treatment_or_therapy"
             ]
         
         self.dft_primary_site_exp_fields = [
@@ -55,7 +60,12 @@ class GDCQueryFields():
 
         self.dft_rna_seq_star_count_data_fields = ['file_id', 'file_name', 
                                                    'experimental_strategy', 'data_type', 
-                                                   'cases.case_id', 'analysis.workflow_type']
+                                                   'cases.case_id', 'analysis.workflow_type',
+                                                               "cases.diagnoses.last_known_disease_status",
+            "cases.diagnoses.primary_diagnosis",
+            "cases.diagnoses.tumor_stage",
+            "cases.diagnoses.tumor_grade",
+            "cases.diagnoses.treatments.treatment_or_therapy"]
         
     def update_fields(self, field_name, new_fields):
         """

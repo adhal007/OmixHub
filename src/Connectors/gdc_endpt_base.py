@@ -5,7 +5,7 @@ import src.Connectors.gdc_filters as gdc_flt
 import src.Connectors.gdc_fields as gdc_fld
 import re
 import pandas as pd 
-
+from abc import abstractmethod
 # Example of usage
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
@@ -14,7 +14,7 @@ GDC Base Utils class and high-level API functions
 @author: Abhilash Dhal
 @date:  2024_22_27
 """
-class GDCUtilsBase:
+class GDCEndptBase:
     def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
         self.endpt = endpt
         self.homepage = homepage
@@ -32,11 +32,13 @@ class GDCUtilsBase:
                 return None
             
 ####### COMMON API calls for GDC ####################################################
+    @abstractmethod
     def get_json_data(self, files_endpt, params):
         response = requests.get(files_endpt, params = params)
         json_data = json.loads(response.text)
         return json_data
 
+    @abstractmethod
     def make_params_dict(self, filters, fields, size=100, format='tsv'):
         params = {
             "filters": json.dumps(filters),
@@ -46,10 +48,12 @@ class GDCUtilsBase:
             }
         return params
     
+    @abstractmethod
     def get_response(self, endpt, params):
         response = requests.get(endpt, params = params)
         return response
 
+    @abstractmethod
     def fetch_case_details(self, case_id):
         """
         Fetch detailed information for a specific case.
@@ -57,7 +61,7 @@ class GDCUtilsBase:
         return self.query(f"/cases/{case_id}", method='GET')
     
     def download_by_file_id(self, file_id):
-        data_endpt = "https://api.gdc.cancer.gov/data/{}".format(file_id)
+        data_endpt = "{}/data/{}".format(self.homepage, file_id)
 
         response = requests.get(data_endpt, headers = {"Content-Type": "application/json"})
 
@@ -68,6 +72,7 @@ class GDCUtilsBase:
         with open(file_name, "wb") as output_file:
             output_file.write(response.content)
 
+    @abstractmethod
     def query(self, endpoint, params=None, method='GET', data=None):
         """
         General purpose method to query GDC API.
@@ -84,7 +89,8 @@ class GDCUtilsBase:
         else:
             print(f"Error: {response.status_code}, Response: {response.text}")
             response.raise_for_status()
-
+            
+    @abstractmethod
     def search(self, endpoint, filters, fields, size=100, format='json'):
         """
         Search data in the GDC using filters and expansion, now including format handling.

@@ -5,13 +5,15 @@ from sklearn.model_selection import train_test_split
 import src.CustomLogger.custom_logger
 logger = src.CustomLogger.custom_logger.CustomLogger()
 
-class BaseProcessor:
+class BaseDataProcessor:
     def __init__(self, data:pd.DataFrame, x_cols: list[str], y_cols: list[str], unique_id_col: str) -> None:
         """
         Initialize the DataQualityChecker with a DataFrame.
 
         Args:
             data (pd.DataFrame): The input DataFrame.
+            x_cols: patients
+            y_cols: gene ids 
         """
         self.data = data
         self.x_cols = x_cols
