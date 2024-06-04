@@ -1,7 +1,22 @@
-#### Overview
+## Source code documentation:
+This contains all the source code for different modules that contribute to 
 
-This module will contain all the utilities for data extraction, wrangling and pre-processing of different Omics data types (DNA-Seq WXS Somatic Variant Analysis, DNA-Seq WGS Somatic Variant Analysis, RNA-Seq Gene Expression Analysis, scRNA-Seq Gene Expression Analysis, miRNA-Seq Analysis, Methylation Array Analysis) 
+1. Backend data search, query and retrieval for Genomic data commons platform. (Connectors)
+2. Preprocessing for query data as well as before applying machine learning algorithms(PreProcess) 
+3. Logging(CustomLogger)
+4. Plotting(PlotUtils)
+5. Applications of custom bioinformatics and machine learning methods for disease classification or biomarker discovery. 
 
-TO BE UPDATED SOON
+#### Code structure:
 
-##### RNA-Seq Analysis 
+   ├── ClassicML
+   ├── CustomLogger   
+   ├── Connectors
+   ├── PlotUtils
+   ├── PreProcess
+
+#### More Modules that will be coming
+
+1. Deep learning 
+2. Bayesian Methods 
+3. NLP 
