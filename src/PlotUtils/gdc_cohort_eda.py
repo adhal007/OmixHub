@@ -27,6 +27,9 @@ class CohortEDA(gdc_prs.GDCParser):
         plt.show()
 
     def therapy_hist(self, rna_star_count_data, title):
+        """
+        Function to show distribution of treatment or therapy received
+        """
         df =  pd.DataFrame(rna_star_count_data['treatment_or_therapy'].value_counts()).reset_index() 
             # Plotting using seaborn
         plt.figure(figsize=(10, 6))
@@ -36,5 +39,12 @@ class CohortEDA(gdc_prs.GDCParser):
         plt.ylabel('Diagnosis')
         plt.show()
    
-
-
+    def days_to_last_follow_up(self, rna_star_count_data, title):
+        df =  pd.DataFrame(rna_star_count_data['cases.diagnoses.days_to_last_follow_up'].value_counts()).reset_index() 
+            # Plotting using seaborn
+        plt.figure(figsize=(10, 6))
+        sns.barplot(y='count', x='cases.diagnoses.days_to_last_follow_up', data=df, palette='viridis')
+        plt.title(f'Frequency of followed up clients in {title} Cancer Cases')
+        plt.xlabel('Number of patients')
+        plt.ylabel('Days to last follow up')
+        plt.show() 

@@ -29,7 +29,6 @@ class GDCParser:
         self._cases_sub = gdc_cases_sub or gdc_cases.GDCCasesEndpt()
         self._projs_sub = gdc_projs_sub or gdc_projects.GDCProjectsEndpt() 
 
-
 ### First building parsers for files endpoint 
     def create_df_from_rna_star_count_q_op(self, data):
         """
@@ -38,12 +37,29 @@ class GDCParser:
 
         """
         data = data['data']['hits']
+
+        # Preprocessing to ensure 'treatments' key exists in all 'diagnoses'
+        for item in data:
+                for case in item.get('cases', []):
+                    if 'diagnoses' not in case:
+                            case['diagnoses'] = [
+                                {"days_to_last_follow_up": None,
+                                "primary_diagnosis": "Not Available",
+                                "tumor_grade": "Not Available",
+                                "treatments": [{"treatment_or_therapy": "Not Available"},
+                                                {"treatment_or_therapy": "Not Available"}],
+                                "last_known_disease_status": "Not Available"}]
+                    else:
+                        for diagnosis in case.get('diagnoses', []):
+                                if 'treatments' not in diagnosis:
+                                    # Provide a default empty list or other default structure for 'treatments'
+                                    diagnosis['treatments'] = [{'treatment_or_therapy': 'Not Available'}]  # default
         # Assuming 'data' is already defined
         # Define the correct paths and structure for json_normalize
         df = json_normalize(
-            data,
-            record_path=['cases', 'diagnoses', 'treatments'],
-            meta=[
+        data,
+        record_path=['cases', 'diagnoses', 'treatments'],
+        meta=[
                 'file_id',
                 'file_name',
                 'experimental_strategy',
@@ -52,19 +68,23 @@ class GDCParser:
                 ['cases', 'diagnoses', 'last_known_disease_status'],
                 ['cases', 'diagnoses', 'primary_diagnosis'],
                 ['cases', 'diagnoses', 'tumor_grade'],
+                ['cases', 'diagnoses', 'days_to_last_follow_up'],
                 ['analysis', 'workflow_type']
-            ],
-            errors='ignore'  # This will fill missing keys with NaN, useful if not all records are uniform
+        ],
+        errors='ignore'  # This will fill missing keys with NaN, useful if not all records are uniform
         )
 
         # Flatten treatments if needed and manage multiple entries correctly
         df['treatment_or_therapy'] = df[[col for col in df.columns if col.startswith('treatment_or_therapy')]].apply(
-            lambda x: ', '.join(x.dropna().unique()), axis=1
+        lambda x: ', '.join(x.dropna().unique()), axis=1
         )
 
         # Drop original treatments columns if they are no longer needed
         df.drop(columns=[col for col in df.columns if 'treatment_or_therapy' in col and col != 'treatment_or_therapy'], inplace=True)
         return df
+
+    def get_longitudinal_data_q_op(self, data):
+        raise NotImplementedError()
 
 # def create_projects_by_ps_gender_race_exp_df(self, json_data):
 #     df = pd.DataFrame(json_data['data']['hits'])

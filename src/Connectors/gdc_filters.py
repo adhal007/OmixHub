@@ -34,7 +34,7 @@ class GDCFilters(gdc_fld.GDCQueryFields):
             filters["content"].append(filter_op)
         return filters
     
-    def create_filters(self, filter_specs):
+    def create_and_filters(self, filter_specs):
         """
         Creates a list of filters based on given specifications.
         
@@ -54,8 +54,17 @@ class GDCFilters(gdc_fld.GDCQueryFields):
                 }
             }
             filters.append(filter_op)
-        return filters 
         
+        filters_for_query = {
+            "op": "and",
+            "content": filters
+        } 
+        return filters_for_query 
+    
+    def create_age_filter(self, other_filter_specs):
+        raise NotImplementedError()
+    
+    
     def all_projects_by_exp_filter(self, experimental_strategy):
         filters = {
             "op": "in",
@@ -67,99 +76,21 @@ class GDCFilters(gdc_fld.GDCQueryFields):
         }
         return filters 
     
-    def primary_site_filter(self, ps_value:list)->None:
-        # cases_endpt = "https://api.gdc.cancer.gov/cases"
-        if ps_value is None:
-            raise ValueError('Please provide a valid list of primary sites')
-        
-
-        filters = {
-            "op": "in",
-            "content":{
-                "field": "cases.primary_site",
-                "value": ps_value
-                }
-            }
-
-        return filters
-
-    def projects_by_disease_filter(self,  disease_type:list):
-        filters = {
-            "op": "in",
-            "content": {
-                "field": "projects.disease_type",
-                "value": disease_type
-            }
-        }
-        return filters
-    
-    def ps_race_gender_exp_filter(self, ps_list:list=None, race_list:list=None, exp_list:list=None, gender_list:list=['male', 'female']):
-        
-        filters = {
-            "op": "and",
-            "content":[
-                {
-                "op": "in",
-                "content":{
-                    "field": "cases.project.primary_site",
-                    "value": ps_list
-                    }
-                },
-                {
-                "op": "in",
-                "content":{
-                    "field": "cases.demographic.race",
-                    "value": race_list
-                    }
-                },
-                {
-                "op": "in",
-                "content":{
-                    "field": "cases.demographic.gender",
-                    "value": gender_list
-                    }
-                },
-                {
-                "op": "in",
-                "content":{
-                    "field": "files.experimental_strategy",
-                    "value": exp_list
-                    }
-                }
-            ]
-        }
-        return filters
-
-    def primary_site_exp_filter(self, primary_sites:list, experimental_strategies:list, data_formats:list):
-        filters = {
-            "op": "and",
-            "content": [
-                {
-                    "op": "in",
-                    "content": {
-                        "field": "cases.project.primary_site",
-                        "value": primary_sites
-                    }
-                },
-                {
-                    "op": "in",
-                    "content": {
-                        "field": "files.experimental_strategy",
-                        "value": experimental_strategies
-                    }
-                },
-                {
-                    "op": "in",
-                    "content": {
-                        "field": "files.data_format",
-                        "value": data_formats
-                    }
-                }
-            ]
-        }
-        return filters
+    def all_diseases(self):
+        raise NotImplementedError()
     
     def rna_seq_star_count_filter(self, ps_list=None, race_list=None, gender_list=None):
+        """
+        Function to filer for 1) Primary Site 2) Race 3) Demography
+
+        Args:
+        ps_list (list of string items): Each string item contains the primary site available.
+        race_list (list of string items): Each string item contains race info from GDC
+        gender_list (list of string items): Each string item contains gender info
+        
+        Returns:
+        json_query: nested json object to be fed into query for GDC.
+        """
         default_filter_specs = [
             ("files.experimental_strategy", ["RNA-Seq"]),
             ("data_type", ["Gene Expression Quantification"]),
@@ -178,10 +109,125 @@ class GDCFilters(gdc_fld.GDCQueryFields):
         if gender_list:
             combined_filter_specs.append(("cases.demographic.gender", gender_list))
 
-        # Output the filter list to verify its contents
-        final_filters = self.create_filters(combined_filter_specs)
-        filters_for_query = filters = {
-            "op": "and",
-            "content": final_filters
-        } 
-        return filters_for_query
+        filter_for_query = self.create_and_filters(combined_filter_specs)
+        return filter_for_query
+    
+    def rna_seq_disease_filter(self, disease_list=None):
+        default_filter_specs = [
+            ("files.experimental_strategy", ["RNA-Seq"]),
+            ("data_type", ["Gene Expression Quantification"]),
+            ("analysis.workflow_type", ["STAR - Counts"])
+        ]
+        
+        combined_filter_specs = default_filter_specs.copy()
+        if disease_list:
+            combined_filter_specs.append(("cases.diagnoses.primary_diagnosis", disease_list))
+        
+        filter_for_query = self.create_and_filters(combined_filter_specs)
+        return filter_for_query
+    
+    
+
+
+
+##### Need to be re-tested
+
+    # # Output the filter list to verify its contents
+    # final_filters = self.create_filters(combined_filter_specs)
+    # filters_for_query = filters = {
+    #     "op": "and",
+    #     "content": final_filters
+    # } 
+
+
+    # def primary_site_filter(self, ps_value:list)->None:
+    #     # cases_endpt = "https://api.gdc.cancer.gov/cases"
+    #     if ps_value is None:
+    #         raise ValueError('Please provide a valid list of primary sites')
+        
+
+    #     filters = {
+    #         "op": "in",
+    #         "content":{
+    #             "field": "cases.primary_site",
+    #             "value": ps_value
+    #             }
+    #         }
+
+    #     return filters
+
+    # def projects_by_disease_filter(self,  disease_type:list):
+    #     filters = {
+    #         "op": "in",
+    #         "content": {
+    #             "field": "projects.disease_type",
+    #             "value": disease_type
+    #         }
+    #     }
+    #     return filters
+    
+    # def ps_race_gender_exp_filter(self, ps_list:list=None, race_list:list=None, exp_list:list=None, gender_list:list=['male', 'female']):
+        
+    #     filters = {
+    #         "op": "and",
+    #         "content":[
+    #             {
+    #             "op": "in",
+    #             "content":{
+    #                 "field": "cases.project.primary_site",
+    #                 "value": ps_list
+    #                 }
+    #             },
+    #             {
+    #             "op": "in",
+    #             "content":{
+    #                 "field": "cases.demographic.race",
+    #                 "value": race_list
+    #                 }
+    #             },
+    #             {
+    #             "op": "in",
+    #             "content":{
+    #                 "field": "cases.demographic.gender",
+    #                 "value": gender_list
+    #                 }
+    #             },
+    #             {
+    #             "op": "in",
+    #             "content":{
+    #                 "field": "files.experimental_strategy",
+    #                 "value": exp_list
+    #                 }
+    #             }
+    #         ]
+    #     }
+    #     return filters
+
+    # def primary_site_exp_filter(self, primary_sites:list, experimental_strategies:list, data_formats:list):
+    #     filters = {
+    #         "op": "and",
+    #         "content": [
+    #             {
+    #                 "op": "in",
+    #                 "content": {
+    #                     "field": "cases.project.primary_site",
+    #                     "value": primary_sites
+    #                 }
+    #             },
+    #             {
+    #                 "op": "in",
+    #                 "content": {
+    #                     "field": "files.experimental_strategy",
+    #                     "value": experimental_strategies
+    #                 }
+    #             },
+    #             {
+    #                 "op": "in",
+    #                 "content": {
+    #                     "field": "files.data_format",
+    #                     "value": data_formats
+    #                 }
+    #             }
+    #         ]
+    #     }
+    #     return filters

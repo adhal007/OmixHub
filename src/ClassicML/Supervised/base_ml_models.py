@@ -24,8 +24,7 @@ class BaseEnsembleClf:
 
         if self.prob_thresh is None:
             raise ValueError("prob_thresh must be specified for jacard score")
-        
-
+    
         self.num_labels = num_labels
         self.random_state = random_state
         self.check_models()

@@ -27,16 +27,19 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
         if ps_list is None:
             raise ValueError("List of primary sites must be provided")
         
-        for x in ps_list:
-            if x not in self.gdc_vld.list_of_primary_sites:
-                raise ValueError(f"Incorrect primary site queried by user: Please check the list of allowed primary sites from {','.join(self.gdc_vld.list_of_primary_sites)}")
+        # for x in ps_list:
+        #     if x not in self.gdc_vld.list_of_primary_sites:
+        #         raise ValueError(f"Incorrect primary site queried by user: Please check the list of allowed primary sites from {','.join(self.gdc_vld.list_of_primary_sites)}")
             
         if new_fields is None:
             fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
         else:
+            ## Adding logic for checking fields
+            for x in new_fields:
+                if x not in self.gdc_vld.file_endpt_fields:
+                    raise ValueError("Field provided is not in the list of fields by GDC")
             self.gdc_fld.update_fields('dft_rna_seq_star_count_data_fields', new_fields)
-            fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
-        print(fields)        
+            fields = self.gdc_fld.dft_rna_seq_star_count_data_fields        
         fields = ",".join(fields)
 
         filters = self.gdc_flt.rna_seq_star_count_filter(ps_list=ps_list, race_list=race_list, gender_list=gender_list)
@@ -46,13 +49,12 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
             "filters": json.dumps(filters),
             "fields": fields,
             "format": "json",
-            "size": "1000"
+            "size": "50000"
             }
         print(params)
         response = requests.get(self.files_endpt, params = params)
         json_data = json.loads(response.text)
         return json_data, filters
-   
     # def list_projects_by_ps_race_gender_exp(self, 
     #                                         new_fields=None,
     #                                         ps_list=None, 
