@@ -19,5 +19,10 @@ class GDCCasesEndpt(gdc_endpt_base.GDCEndptBase):
         self.gdc_flt = gdc_flt.GDCFilters(self.endpt)
         self.gdc_fld = gdc_fld.GDCQueryFields(self.endpt)
 
+    def fetch_case_details(self, case_id):
+        """
+        Fetch detailed information for a specific case.
+        """
+        return self.query(f"{self.homepage}/cases/{case_id}", method='GET')
 ######### APPLICATION ORIENTED python functions for cases endpoint ################################################
 ################################################################################################

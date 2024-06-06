@@ -14,3 +14,5 @@
 *output*
 *gz*
 *.DS_Store*
+*__pycache__*
+*personal_docs*
