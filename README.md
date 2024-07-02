@@ -39,12 +39,12 @@ This contain gene expression quantification data (definition for the gene expres
       - Bayesian optimized (Hyper-Opt) clustering (KNN) using UMap embeddings
     - Semi-supervised ML:
       - Iterative GMM + PCA for cohort stratification for niche disease-control applications 
-  - Deep-learning:
+  <!-- - Deep-learning:
     - Auto-encoders 
     - CNN’s
     - RNN’s for multi-timepoint data 
   - Bayesian ML
-  - Knowledge Graphs and NLP 
+  - Knowledge Graphs and NLP  -->
 
 #### Codebase
 ```md
@@ -128,3 +128,6 @@ OmicsProjects
 - Autoimmune disease characterization by omics methods 
 - Other cancers 
 - Deep learning
+
+### ADDITIONAL CODE DOCS:
+- [Methods in src.Connectors for GDC API search and retrieval using custom queries](./src/README.md)

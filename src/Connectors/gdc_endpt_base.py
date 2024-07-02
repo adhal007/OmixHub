@@ -43,6 +43,19 @@ class GDCEndptBase:
     # def list_of_exp_strategies(self):
     #     return self.get_files_facet_data(url=self.files_endpt_url, facet_key='list_of_exp_flt', method_name='list_of_exp_flt')
     
+    ### These properties should be in the base class
+    @property
+    def files_endpt_url(self):
+        return self._get_endpt_url('files')
+    
+    @property 
+    def projects_endpt_url(self):
+        return self._get_endpt_url('projects')
+    
+    @property
+    def cases_endpt_url(self):
+        return self._get_endpt_url('cases')
+    
     @property
     def endpt_fields(self):
         if self._endpt_fields is None:
@@ -67,28 +80,13 @@ class GDCEndptBase:
             setattr(self, f'_{endpt}_endpt_url', self.make_endpt_url(self._endpts[endpt]))
         return getattr(self, f'_{endpt}_endpt_url')
     
-    ### These properties should be in the base class
-    @property
-    def files_endpt_url(self):
-        return self._get_endpt_url('files')
-    
-    @property 
-    def projects_endpt_url(self):
-        return self._get_endpt_url('projects')
-    
-    @property
-    def cases_endpt_url(self):
-        return self._get_endpt_url('cases')
-    
     
 ####### COMMON API calls for GDC ####################################################
-    @abstractmethod
     def get_json_data(self, url:str, params: dict):
         response = requests.get(url, params = params)
         json_data = json.loads(response.text)
         return json_data
 
-    @abstractmethod
     def make_params_dict(self, filters:dict, fields: list[str], size:int=100, format:str='tsv'):
         params = {
             "filters": json.dumps(filters),
@@ -133,22 +131,11 @@ class GDCEndptBase:
             
     def download_by_file_id(self, file_id:str):
         data_endpt = "{}/data/{}".format(self.homepage, file_id)
-
         response = requests.get(data_endpt, headers = {"Content-Type": "application/json"})
-
         # The file name can be found in the header within the Content-Disposition key.
         response_head_cd = response.headers["Content-Disposition"]
         file_name = re.findall("filename=(.+)", response_head_cd)[0]
         print(file_name)
         with open(file_name, "wb") as output_file:
             output_file.write(response.content)
-            
-
-
-### Methods to be added based on application by user/bioinformatician/ 
-### 1. Get list of all disease_types available on gdc platform 
-### 2. Fetch Gene expression files by tcga barcodes 
-### 3. Fetch Metadata for files based on a list of UUIDS 
-### 4. Fetch Metadata by primate site query 
-### 5. Get Gene expression data by primary site query 
-### 6. Get Gene expression data by project query
+    
