@@ -19,7 +19,7 @@ to perform queries
 @author: Abhilash Dhal
 @date:  2024_06_04
 """
-class GDCParser:
+class GDCJson2DfParser:
     def __init__(self, 
                  gdc_files_sub:gdc_files.GDCFilesEndpt, 
                  gdc_cases_sub:gdc_cases.GDCCasesEndpt,
@@ -82,18 +82,4 @@ class GDCParser:
         # Drop original treatments columns if they are no longer needed
         df.drop(columns=[col for col in df.columns if 'treatment_or_therapy' in col and col != 'treatment_or_therapy'], inplace=True)
         return df
-
-
-
-# def create_projects_by_ps_gender_race_exp_df(self, json_data):
-#     df = pd.DataFrame(json_data['data']['hits'])
-#     new_dict = {'file_id': [], 'file_name':[], 'disease_type':[], 'project_id':[], 'sample_type':[], 'submitter_id':[]}
-#     for row in df.iterrows():
-#         new_dict['file_id'].append(row[1]['file_id'])
-#         new_dict['file_name'].append(row[1]['file_name'])
-#         cases_row = row[1]['cases'][0]
-#         new_dict['disease_type'].append(cases_row['disease_type'])
-#         new_dict['project_id'].append(cases_row['project']['project_id'])
-#         new_dict['sample_type'].append(cases_row['samples'][0]['sample_type'])
-#         new_dict['submitter_id'].append(cases_row['submitter_id'])
-#     return df 
+ 

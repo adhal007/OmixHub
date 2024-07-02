@@ -17,11 +17,10 @@ class GDCProjectsEndpt(gdc_endpt_base.GDCEndptBase):
     def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='projects'):
         super().__init__(homepage, endpt='projects')
 
-        self.gdc_flt = gdc_flt.GDCQueryFilters(self.endpt)
-        self.gdc_fld = gdc_fld.GDCQueryFields(self.endpt)
+        self.gdc_flt = gdc_flt.GDCQueryFilters()
+        self.gdc_fld = gdc_fld.GDCQueryDefaultFields(self.endpt)
         self.gdc_vld = gdc_vld.GDCValidator()
-        self._proj_endpt_url = self.gdc_vld.projects_endpt_url
-
+        self._proj_endpt_url = self.projects_endpt_url
 ######### APPLICATION ORIENTED python functions for projects endpoint ################################################
 ################################################################################################
     def list_all_projects_by_exp(self, experimental_strategy=None, new_fields=None, size=100, format='json'):

@@ -1,7 +1,7 @@
 
 import json
-import src.Connectors.gdc_field_validator as gdc_vld
-import src.Connectors.gdc_filters as gdc_flt 
+import src.Connectors.gdc_endpt_base as gdc_endpt_base
+
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
 GDC fields class and high-level API functions
@@ -10,13 +10,12 @@ GDC fields class and high-level API functions
 @date:  2024_06_07
 """
 
-class GDCQueryFields(gdc_flt.GDCFacetFilters):
+class GDCQueryDefaultFields:
     def __init__(self, endpt) -> None:
-        super().__init__()
 
-        self.endpts = ['cases', 'annotation', 'projects', 'files']
-        if endpt not in self.endpts:
-            raise ValueError(f"Endpoint has be either of {','.join(self.endpts)}")
+        self._endpts = gdc_endpt_base.GDCEndptBase()._endpts
+        if endpt not in self._endpts.keys():
+            raise ValueError(f"Endpoint has be either of {','.join(list(self._endpts.keys()))}")
         self.endpt = endpt
 
         self.dft_list_all_project_fields = [

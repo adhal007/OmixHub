@@ -11,7 +11,7 @@ import pandas as pd
 import seaborn as sns 
 import matplotlib.pyplot as plt 
 
-class CohortEDA(gdc_prs.GDCParser):
+class CohortEDA(gdc_prs.GDCJson2DfParser):
     def __init__(self, gdc_files_sub: gdc_files.GDCFilesEndpt, gdc_cases_sub: GDCCasesEndpt, gdc_projs_sub: gdc_proj.GDCProjectsEndpt) -> None:
         super().__init__(gdc_files_sub, gdc_cases_sub, gdc_projs_sub)
 

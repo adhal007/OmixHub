@@ -1,6 +1,6 @@
 import json
 import requests
-import re 
+import pandas as pd
 import src.Connectors.gdc_endpt_base as gdc_endpt_base
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
@@ -9,11 +9,10 @@ GDC filter class and high-level API functions
 @author: Abhilash Dhal
 @date:  2024_06_07
 """
-class GDCQueryFilters(gdc_endpt_base.GDCEndptBase):
-    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
-        super().__init__(homepage, endpt)
-        self.endpt = endpt
-
+class GDCQueryFilters:
+    def __init__(self):
+        pass 
+    
     def generate_filters(self, filter_list, operation='and'):
         """
         Generic function to generate filters based on given specifications.
@@ -109,9 +108,7 @@ class GDCQueryFilters(gdc_endpt_base.GDCEndptBase):
             }
         }
         return filters
-    
-    def all_diseases(self):
-        raise NotImplementedError()
+
     
     def rna_seq_star_count_filter(self, ps_list=None, race_list=None, gender_list=None):
         """
@@ -174,15 +171,15 @@ class GDCQueryFilters(gdc_endpt_base.GDCEndptBase):
         filter_for_query = self.create_and_filters(combined_filter_specs)
         return filter_for_query
     
-
-class GDCFacetFilters(gdc_endpt_base.GDCEndptBase):
-    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
-        super().__init__(homepage, endpt)
-
+    def all_diseases(self):
+        raise NotImplementedError()
+    
+    
+class GDCFacetFilters:
+    def __init__(self):
         # Mapping of method names to facet keys for different endpoints 
-
         # This contains facets from file endpt that are used in the API
-        self.imp_facet_keys = {
+        self._imp_facet_keys = {
             'list_of_primary_sites_flt': 'project.primary_site',
             'list_of_exp_flt': 'experimental_strategy',
             'list_of_projects_flt': 'project.program.name'
@@ -216,10 +213,28 @@ class GDCFacetFilters(gdc_endpt_base.GDCEndptBase):
         Returns:
         dict: The facet filter for the given method name.
         """
-        facet_key_value = self.imp_facet_keys.get(method_name)
+        facet_key_value = self._imp_facet_keys.get(method_name)
         if facet_key_value is not None:
             return self.create_single_facet_filter(facet_key_value)
         else:
             raise ValueError(f"No facet key found for facet_key '{method_name}'")
 
+    def create_single_facet_df(self, url:str, facet_key_value:str, params:dict):
+        response = gdc_endpt_base.GDCEndptBase.get_response(url, params=params)
+        data = response.json()
+        facet_df = pd.DataFrame(data['data']['aggregations'][facet_key_value]['buckets'])
+        return facet_df 
+
+    def get_files_facet_data(self, url, facet_key, method_name):
+        facet_key_value = self._imp_facet_keys.get(facet_key, None)
+        print(facet_key_value)
+        if facet_key_value is None:
+            raise ValueError(f"Invalid facet_key: {facet_key}")
+        
+        if getattr(self, facet_key, None) is None:
+            params = self.get_files_endpt_facet_filter(method_name=method_name)
+            print(params)
+            data = self.create_single_facet_df(url=url, facet_key_value=facet_key_value, params=params)
+            data.columns = ['count', f"{facet_key_value}"]
+        return data
 

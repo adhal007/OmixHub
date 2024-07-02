@@ -6,25 +6,81 @@ from abc import abstractmethod
 # Example of usage
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
-GDC Base Utils class and high-level API functions
-
+GDC Base Utils class and high-level API functions Only Returns JSON like Objects for different Queries
 @author: Abhilash Dhal
 @date:  2024_22_27
 """
 class GDCEndptBase:
     def __init__(self, homepage:str='https://api.gdc.cancer.gov', endpt:str=None):
         self.endpt = endpt
+        self._endpts = {'files': 'files', 'projects': 'projects', 'cases': 'cases'}
         self.homepage = homepage
         self.headers = {
             'Content-Type': 'application/json'
         }
 
+        self._mapping = '_mapping'
+        self._files_endpt_url = None
+        self._projects_endpt_url = None
+        self._cases_endpt_url = None
+        self._endpt_fields = None   
+        # self._list_of_projects = None 
+        # self._list_of_primary_sites = None
+        # self._list_of_exp_strategies = None
+        # self._list_of_tumor_types = None
+        # self._list_of_primary_diagnoses = None
+
+
+    # @property
+    # def list_of_programs(self):
+    #     return self.get_files_facet_data(url=self.projects_endpt_url, facet_key='list_of_projects_flt', method_name='list_of_projects_flt')
+
+    # @property
+    # def list_of_primary_sites(self):
+    #     return self.get_files_facet_data(url=self.cases_endpt_url, facet_key='list_of_primary_sites_flt', method_name='list_of_primary_sites_flt')
+
+    # @property
+    # def list_of_exp_strategies(self):
+    #     return self.get_files_facet_data(url=self.files_endpt_url, facet_key='list_of_exp_flt', method_name='list_of_exp_flt')
+    
+    @property
+    def endpt_fields(self):
+        if self._endpt_fields is None:
+            self._endpt_fields = {endpt: self.get_endpt_fields(endpt) for endpt in self._endpts.keys()}
+        return self._endpt_fields
+    
     def make_endpt_url(self, endpt:str):
         if self.endpt is None:
             return f"{self.homepage}/{endpt}"
         else:
             return f"{self.homepage}/{self.endpt}"
-
+        
+    def get_endpt_fields(self, endpt:str):
+        url = f'{self.homepage}/{endpt}/{self._mapping}'
+        # Send a GET request
+        response = requests.get(url)
+        mappings = response.json()
+        return mappings['fields']
+    
+    def _get_endpt_url(self, endpt):
+        if getattr(self, f'_{endpt}_endpt_url') is None:
+            setattr(self, f'_{endpt}_endpt_url', self.make_endpt_url(self._endpts[endpt]))
+        return getattr(self, f'_{endpt}_endpt_url')
+    
+    ### These properties should be in the base class
+    @property
+    def files_endpt_url(self):
+        return self._get_endpt_url('files')
+    
+    @property 
+    def projects_endpt_url(self):
+        return self._get_endpt_url('projects')
+    
+    @property
+    def cases_endpt_url(self):
+        return self._get_endpt_url('cases')
+    
+    
 ####### COMMON API calls for GDC ####################################################
     @abstractmethod
     def get_json_data(self, url:str, params: dict):
@@ -42,8 +98,8 @@ class GDCEndptBase:
             }
         return params
     
-
-    def get_response(self, url:str, params:str):
+    @staticmethod
+    def get_response(url:str, params:str):
         """
         Function to get response from GDC API 
 
@@ -86,15 +142,7 @@ class GDCEndptBase:
         print(file_name)
         with open(file_name, "wb") as output_file:
             output_file.write(response.content)
-
-    def create_single_facet_df(self, url:str, facet_key_value:str, params:dict):
-        response = self.get_response(url, params=params)
-        data = response.json()
-        facet_df = pd.DataFrame(data['data']['aggregations'][facet_key_value]['buckets'])
-        return facet_df
-    
-    def get_files_facet_data(self, facet_key, method_name):
-        raise NotImplementedError("Method will be implemented in child class")
+            
 
 
 ### Methods to be added based on application by user/bioinformatician/ 
