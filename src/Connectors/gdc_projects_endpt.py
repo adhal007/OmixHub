@@ -2,6 +2,7 @@
 import src.Connectors.gdc_endpt_base as gdc_endpt_base
 import src.Connectors.gdc_filters as gdc_flt
 import src.Connectors.gdc_fields as gdc_fld
+import src.Connectors.gdc_field_validator as gdc_vld
 import json
 
 """
@@ -16,8 +17,10 @@ class GDCProjectsEndpt(gdc_endpt_base.GDCEndptBase):
     def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='projects'):
         super().__init__(homepage, endpt='projects')
 
-        self.gdc_flt = gdc_flt.GDCFilters(self.endpt)
+        self.gdc_flt = gdc_flt.GDCQueryFilters(self.endpt)
         self.gdc_fld = gdc_fld.GDCQueryFields(self.endpt)
+        self.gdc_vld = gdc_vld.GDCValidator()
+        self._proj_endpt_url = self.gdc_vld.projects_endpt_url
 
 ######### APPLICATION ORIENTED python functions for projects endpoint ################################################
 ################################################################################################
@@ -31,8 +34,10 @@ class GDCProjectsEndpt(gdc_endpt_base.GDCEndptBase):
             fields = self.gdc_fld.dft_list_all_project_fields            
         fields = ",".join(fields)
 
+        
+        
         params = self.make_params_dict(filters=pbe_filter, fields=fields, size=size, format=format)
-        json_data = self.get_json_data(self.files_endpt, params)
+        json_data = self.get_json_data(url=self._proj_endpt_url,params=params)
         # return self.search('/projects', filters=pbd_filter, fields=fields)
         return json_data
     
@@ -50,6 +55,6 @@ class GDCProjectsEndpt(gdc_endpt_base.GDCEndptBase):
             fields = self.gdc_fld.dft_primary_site_race_gender_exp_fields            
         fields = ",".join(fields)
         params = self.make_params_dict(filters=pbd_filter, fields=fields, size=size, format=format)
-        json_data = self.get_json_data(self.files_endpt, params)
+        json_data = self.get_json_data(url=self._proj_endpt_url,params=params)
         # return self.search('/projects', filters=pbd_filter, fields=fields)
         return json_data

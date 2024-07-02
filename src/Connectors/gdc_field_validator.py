@@ -1,160 +1,146 @@
 import json
 import requests
-
+import src.Connectors.gdc_filters as gdc_flt
+import src.Connectors.gdc_endpt_base as gdc_endpt_base
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
 GDC Endpoint Fields Validator Class and high-level API functions
 
 @author: Abhilash Dhal
-@date:  2024_22_27
+@date:  2024_06_05
 """
-
-
 ### Next steps: Would be Nice to Have a Base Validator Class and then subsequent child validators for each endpoint 
 ### gdc_field_validtor, gdc_file_validator, gdc_annotation_validator, gdc_project_validator 
-class GDCValidator:
-    def __init__(self, 
-                 homepage='https://api.gdc.cancer.gov', 
-                 case_fields_filename='/Users/abhilashdhal/Projects/src_files/gdc_case_fields.txt',
-                 file_fields_filename='/Users/abhilashdhal/Projects/src_files/gdc_file_fields.txt'):
-        
-        self.project_endpt_fields = [
-            "dbgap_accession_number",
-            "disease_type",
-            "name",
-            "primary_site",
-            "project_id",
-            "released",
-            "state",
-            "program.dbgap_accession_number",
-            "program.name",
-            "program.program_id",
-            "summary.case_count",
-            "summary.file_count",
-            "summary.file_size",
-            "summary.data_categories.case_count",
-            "summary.data_categories.data_category",
-            "summary.data_categories.file_count",
-            "summary.experimental_strategies.case_count",
-            "summary.experimental_strategies.experimental_strategy",
-            "summary.experimental_strategies.file_count"
-        ]
-        self.case_endpt_fields = self.load_fields_from_file(case_fields_filename)
-        self.file_endpt_fields = self.load_fields_from_file(file_fields_filename)
-        self.annotation_endpt_fields = [
-            "annotation_id", "case_id", "case_submitter_id", "category",
-            "classification", "created_datetime", "entity_id", "entity_submitter_id",
-            "entity_type", "legacy_created_datetime", "legacy_updated_datetime",
-            "notes", "state", "status", "submitter_id", "updated_datetime",
-            "project.code", "project.dbgap_accession_number", "project.disease_type",
-            "project.name", "project.primary_site", "project.program.dbgap_accession_number",
-            "project.program.name", "project.program.program_id", "project.project_id",
-            "project.released", "project.state"
-        ]
-        self.endpoint_fields = {
-            "project": self.project_endpt_fields,
-            "cases": self.case_endpt_fields,
-            "files": self.file_endpt_fields,
-            "annotation": self.annotation_endpt_fields
-        }
+class GDCValidator(gdc_flt.GDCFacetFilters):
+    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
+        super().__init__(homepage, endpt)
+        self.mapping = '_mapping'
+        self.endpts = {'projects': 'projects', 'cases':'cases', 'files':'files'}
+        self.imp_facet_keys = self.imp_facet_keys
+        self._endpt_fields = None
 
-        self.list_of_primary_sites = [
-                                    "accessory sinuses",
-                                    "adrenal gland",
-                                    "anus and anal canal",
-                                    "base of tongue",
-                                    "bladder",
-                                    "bones, joints and articular cartilage of limbs",
-                                    "bones, joints and articular cartilage of other and unspecified sites",
-                                    "brain",
-                                    "breast",
-                                    "bronchus and lung",
-                                    "cervix uteri",
-                                    "colon",
-                                    "connective, subcutaneous and other soft tissues",
-                                    "corpus uteri",
-                                    "esophagus",
-                                    "eye and adnexa",
-                                    "floor of mouth",
-                                    "gallbladder",
-                                    "gum",
-                                    "heart, mediastinum, and pleura",
-                                    "hematopoietic and reticuloendothelial systems",
-                                    "hypopharynx",
-                                    "kidney",
-                                    "larynx",
-                                    "lip",
-                                    "liver and intrahepatic bile ducts",
-                                    "lymph nodes",
-                                    "meninges",
-                                    "nasal cavity and middle ear",
-                                    "nasopharynx",
-                                    "not reported",
-                                    "oropharynx",
-                                    "other and ill-defined digestive organs",
-                                    "other and ill-defined sites",
-                                    "other and ill-defined sites in lip, oral cavity and pharynx",
-                                    "other and ill-defined sites within respiratory system and intrathoracic organs",
-                                    "other and unspecified female genital organs",
-                                    "other and unspecified major salivary glands",
-                                    "other and unspecified male genital organs",
-                                    "other and unspecified parts of biliary tract",
-                                    "other and unspecified parts of mouth",
-                                    "other and unspecified parts of tongue",
-                                    "other and unspecified urinary organs",
-                                    "other endocrine glands and related structures",
-                                    "ovary",
-                                    "palate",
-                                    "pancreas",
-                                    "parotid gland",
-                                    "penis",
-                                    "peripheral nerves and autonomic nervous system",
-                                    "prostate gland",
-                                    "rectosigmoid junction",
-                                    "rectum",
-                                    "renal pelvis",
-                                    "retroperitoneum and peritoneum",
-                                    "skin",
-                                    "small intestine",
-                                    "spinal cord, cranial nerves, and other parts of central nervous system",
-                                    "stomach",
-                                    "testis",
-                                    "thymus",
-                                    "thyroid gland",
-                                    "tonsil",
-                                    "trachea",
-                                    "unknown",
-                                    "ureter",
-                                    "uterus, nos",
-                                    "vagina",
-                                    "vulva"
-                                    ]
-        
+        self._files_endpt_url = None
+        self._projects_endpt_url = None
+        self._cases_endpt_url = None        
+        self._list_of_projects = None 
+        self._list_of_primary_sites = None
+        self._list_of_exp_strategies = None
+        self._list_of_tumor_types = None
+        self._list_of_primary_diagnoses = None
 
 
-    def load_fields_from_file(self, filename):
-        """
-        Load field names from a text file, where each line is a field name.
-        """
-        try:
-            with open(filename, 'r') as file:
-                return [line.strip() for line in file if line.strip()]
-        except FileNotFoundError:
-            raise Exception(f"The file {filename} was not found. Please check the file path.")        
+    def _get_endpt_url(self, endpt):
+        if getattr(self, f'_{endpt}_endpt_url') is None:
+            setattr(self, f'_{endpt}_endpt_url', self.make_endpt_url(self.endpts[endpt]))
+        return getattr(self, f'_{endpt}_endpt_url')
+    
+    @property
+    def files_endpt_url(self):
+        return self._get_endpt_url('files')
+    
+    @property 
+    def projects_endpt_url(self):
+        return self._get_endpt_url('projects')
+    
+    @property
+    def cases_endpt_url(self):
+        return self._get_endpt_url('cases')
+    
+    @property
+    def list_of_programs(self):
+        return self.get_files_facet_data(url=self.projects_endpt_url, facet_key='list_of_projects_flt', method_name='list_of_projects_flt')
+
+    @property
+    def list_of_primary_sites(self):
+        return self.get_files_facet_data(url=self.cases_endpt_url, facet_key='list_of_primary_sites_flt', method_name='list_of_primary_sites_flt')
+
+    @property
+    def list_of_exp_strategies(self):
+        return self.get_files_facet_data(url=self.files_endpt_url, facet_key='list_of_exp_flt', method_name='list_of_exp_flt')
+    
+    @property
+    def endpt_fields(self):
+        if self._endpt_fields is None:
+            self._endpt_fields = {endpt: self.get_endpt_fields(endpt) for endpt in self.endpts.keys()}
+        return self._endpt_fields
+     
+    def get_endpt_fields(self, endpt:str):
+        url = f'{self.homepage}/{endpt}/{self.mapping}'
+        # Send a GET request
+        response = requests.get(url)
+        mappings = response.json()
+        return mappings['fields']
+
     def validate_project_fields(self, input_fields):
-        invalid_fields = [field for field in input_fields if field not in self.project_endpt_fields]
+        """
+        Function to validate project fields specified by the user against the fields available in the GDC API's projects endpoint
+
+        Args:
+        input_fields (list): A list of fields to validate
+
+        Returns:
+        bool: True if all fields are valid, False otherwise
+        """
+        invalid_fields = [field for field in input_fields if field not in self.endpt_fields['projects']]
         if invalid_fields:
             raise ValueError(f"Invalid project fields: {', '.join(invalid_fields)}")
-
+        return True
+    
     def validate_case_fields(self, input_fields):
-        invalid_fields = [field for field in input_fields if field not in self.case_endpt_fields]
+        """
+        Function to validate case fields specified by the user against the fields available in the GDC API's cases endpoint
+
+        Args:
+        input_fields (list): A list of fields to validate
+
+        Returns:
+        bool: True if all fields are valid, False otherwise
+        """
+        invalid_fields = [field for field in input_fields if field not in self.endpt_fields['cases']]
         if invalid_fields:
             raise ValueError(f"Invalid case fields: {', '.join(invalid_fields)}")
+        return True
+    
     def validate_file_fields(self, input_fields):
-        invalid_fields = [field for field in input_fields if field not in self.file_endpt_fields]
+        """
+        Function to validate file fields specified by the user against the fields available in the GDC API's files endpoint
+
+        Args:
+        input_fields (list): A list of fields to validate
+
+        Returns:
+        bool: True if all fields are valid, False otherwise
+        """
+        invalid_fields = [field for field in input_fields if field not in self.endpt_fields['files']]
         if invalid_fields:
             raise ValueError(f"Invalid file fields: {', '.join(invalid_fields)}")
+        return True
+    
     def validate_annotation_fields(self, input_fields):
-        invalid_fields = [field for field in input_fields if field not in self.annotation_endpt_fields]
+        """
+        Function to validate annotation fields specified by the user against the fields available in the GDC API's annotation endpoint
+
+        Args:
+        input_fields (list): A list of fields to validate
+
+        Returns:
+        bool: True if all fields are valid, False otherwise
+        """
+        invalid_fields = [field for field in input_fields if field not in self.endpt_fields['annotation']]
         if invalid_fields:
             raise ValueError(f"Invalid annotation fields: {', '.join(invalid_fields)}")
+        return True
+    
+
+    def get_files_facet_data(self, url, facet_key, method_name):
+        facet_key_value = self.imp_facet_keys.get(facet_key, None)
+        print(facet_key_value)
+        if facet_key_value is None:
+            raise ValueError(f"Invalid facet_key: {facet_key}")
+        
+        if getattr(self, facet_key, None) is None:
+            params = self.get_files_endpt_facet_filter(method_name=method_name)
+            print(params)
+            data = self.create_single_facet_df(url=url, facet_key_value=facet_key_value, params=params)
+            data.columns = ['count', f"{facet_key_value}"]
+        return data

@@ -1,21 +1,30 @@
 import json
-import re
-import src.Connectors.gdc_fields as gdc_fld
-import src.Connectors.gdc_field_validator as gdc_vld
-
+import requests
+import re 
+import src.Connectors.gdc_endpt_base as gdc_endpt_base
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
 GDC filter class and high-level API functions
 
 @author: Abhilash Dhal
-@date:  2024_22_27
+@date:  2024_06_07
 """
-class GDCFilters(gdc_fld.GDCQueryFields):
-    def __init__(self, endpt) -> None:
-        super().__init__(endpt)
-        self.gdc_vld = gdc_vld.GDCValidator()
+class GDCQueryFilters(gdc_endpt_base.GDCEndptBase):
+    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
+        super().__init__(homepage, endpt)
+        self.endpt = endpt
 
     def generate_filters(self, filter_list, operation='and'):
+        """
+        Generic function to generate filters based on given specifications.
+
+        Args:
+        filter_list (list of dicts): Each dictionary contains the field name and the corresponding values list.
+        operation (str): The operation to perform on the filters. Default is 'and'.
+
+        Returns:
+        dict: A filter dictionary that can be used to query data based on the given filter specifications.
+        """
         # Initialize the main filters dictionary
         filters = {
             "op": operation,
@@ -61,11 +70,16 @@ class GDCFilters(gdc_fld.GDCQueryFields):
         } 
         return filters_for_query 
     
-    def create_age_filter(self, other_filter_specs):
-        raise NotImplementedError()
-    
-    
     def all_projects_by_exp_filter(self, experimental_strategy):
+        """
+        Returns a filter dictionary for retrieving all projects based on the given experimental strategy.
+
+        Parameters:
+        experimental_strategy (str): The experimental strategy to filter projects by.
+
+        Returns:
+        dict: A filter dictionary that can be used to query projects based on the experimental strategy.
+        """
         filters = {
             "op": "in",
             "content":
@@ -74,7 +88,27 @@ class GDCFilters(gdc_fld.GDCQueryFields):
                 "value": experimental_strategy
             }
         }
-        return filters 
+        return filters
+    
+    def projects_by_disease_filter(self, disease_type):
+        """
+        Returns a filter dictionary for retrieving projects based on the given disease type.
+
+        Parameters:
+        disease_type (str): The disease type to filter projects by.
+
+        Returns:
+        dict: A filter dictionary that can be used to query projects based on the disease type.
+        """
+        filters = {
+            "op": "in",
+            "content":
+            {
+                "field": "cases.diagnoses.primary_diagnosis",
+                "value": disease_type
+            }
+        }
+        return filters
     
     def all_diseases(self):
         raise NotImplementedError()
@@ -113,6 +147,20 @@ class GDCFilters(gdc_fld.GDCQueryFields):
         return filter_for_query
     
     def rna_seq_disease_filter(self, disease_list=None):
+        """
+        Filter for RNA-Seq data based on disease list.
+        
+        This function generates a filter specification for querying RNA-Seq data based on the provided disease list.
+        The default filter specifications include files with experimental strategy "RNA-Seq", data type "Gene Expression Quantification",
+        and analysis workflow type "STAR - Counts". If a disease list is provided, an additional filter specification is added
+        to filter for cases with primary diagnosis matching the diseases in the list.
+        
+        Args:
+            disease_list (list, optional): A list of diseases to filter for. Defaults to None.
+        
+        Returns:
+            dict: The filter specification for querying RNA-Seq data.
+        """
         default_filter_specs = [
             ("files.experimental_strategy", ["RNA-Seq"]),
             ("data_type", ["Gene Expression Quantification"]),
@@ -126,108 +174,52 @@ class GDCFilters(gdc_fld.GDCQueryFields):
         filter_for_query = self.create_and_filters(combined_filter_specs)
         return filter_for_query
     
-    
+
+class GDCFacetFilters(gdc_endpt_base.GDCEndptBase):
+    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
+        super().__init__(homepage, endpt)
+
+        # Mapping of method names to facet keys for different endpoints 
+
+        # This contains facets from file endpt that are used in the API
+        self.imp_facet_keys = {
+            'list_of_primary_sites_flt': 'project.primary_site',
+            'list_of_exp_flt': 'experimental_strategy',
+            'list_of_projects_flt': 'project.program.name'
+        }
+
+    def create_single_facet_filter(self, facet_key: str, sort_order: str = 'asc'):
+        """
+        Generic function to create a single facet filter for a given facet key for any GDC endpt.
+
+        ARGS:
+        facet_key (str): The facet key to filter on.
+        sort_order (str): The sort order for the facet values. Default is 'asc'.
+
+        Returns:
+        dict: A dictionary containing the facet filter.
+        """
+        return {
+            'facets': facet_key,
+            'from': 0,
+            'size': 0,
+            'sort': f'{facet_key}:{sort_order}'
+        }
+
+    def get_files_endpt_facet_filter(self, method_name: str):
+        """
+        Function to get facet filter for the files endpoint based on the method name.
+
+        Args:
+        method_name (str): The method name to get the facet filter for.
+
+        Returns:
+        dict: The facet filter for the given method name.
+        """
+        facet_key_value = self.imp_facet_keys.get(method_name)
+        if facet_key_value is not None:
+            return self.create_single_facet_filter(facet_key_value)
+        else:
+            raise ValueError(f"No facet key found for facet_key '{method_name}'")
 
 
-
-##### Need to be re-tested
-
-    # # Output the filter list to verify its contents
-    # final_filters = self.create_filters(combined_filter_specs)
-    # filters_for_query = filters = {
-    #     "op": "and",
-    #     "content": final_filters
-    # } 
-
-
-    # def primary_site_filter(self, ps_value:list)->None:
-    #     # cases_endpt = "https://api.gdc.cancer.gov/cases"
-    #     if ps_value is None:
-    #         raise ValueError('Please provide a valid list of primary sites')
-        
-
-    #     filters = {
-    #         "op": "in",
-    #         "content":{
-    #             "field": "cases.primary_site",
-    #             "value": ps_value
-    #             }
-    #         }
-
-    #     return filters
-
-    # def projects_by_disease_filter(self,  disease_type:list):
-    #     filters = {
-    #         "op": "in",
-    #         "content": {
-    #             "field": "projects.disease_type",
-    #             "value": disease_type
-    #         }
-    #     }
-    #     return filters
-    
-    # def ps_race_gender_exp_filter(self, ps_list:list=None, race_list:list=None, exp_list:list=None, gender_list:list=['male', 'female']):
-        
-    #     filters = {
-    #         "op": "and",
-    #         "content":[
-    #             {
-    #             "op": "in",
-    #             "content":{
-    #                 "field": "cases.project.primary_site",
-    #                 "value": ps_list
-    #                 }
-    #             },
-    #             {
-    #             "op": "in",
-    #             "content":{
-    #                 "field": "cases.demographic.race",
-    #                 "value": race_list
-    #                 }
-    #             },
-    #             {
-    #             "op": "in",
-    #             "content":{
-    #                 "field": "cases.demographic.gender",
-    #                 "value": gender_list
-    #                 }
-    #             },
-    #             {
-    #             "op": "in",
-    #             "content":{
-    #                 "field": "files.experimental_strategy",
-    #                 "value": exp_list
-    #                 }
-    #             }
-    #         ]
-    #     }
-    #     return filters
-
-    # def primary_site_exp_filter(self, primary_sites:list, experimental_strategies:list, data_formats:list):
-    #     filters = {
-    #         "op": "and",
-    #         "content": [
-    #             {
-    #                 "op": "in",
-    #                 "content": {
-    #                     "field": "cases.project.primary_site",
-    #                     "value": primary_sites
-    #                 }
-    #             },
-    #             {
-    #                 "op": "in",
-    #                 "content": {
-    #                     "field": "files.experimental_strategy",
-    #                     "value": experimental_strategies
-    #                 }
-    #             },
-    #             {
-    #                 "op": "in",
-    #                 "content": {
-    #                     "field": "files.data_format",
-    #                     "value": data_formats
-    #                 }
-    #             }
-    #         ]
-    #     }
-    #     return filters
