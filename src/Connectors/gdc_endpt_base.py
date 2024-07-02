@@ -1,8 +1,5 @@
 import json
 import requests
-
-import src.Connectors.gdc_filters as gdc_flt
-import src.Connectors.gdc_fields as gdc_fld
 import re
 import pandas as pd 
 from abc import abstractmethod
@@ -15,7 +12,7 @@ GDC Base Utils class and high-level API functions
 @date:  2024_22_27
 """
 class GDCEndptBase:
-    def __init__(self, homepage='https://api.gdc.cancer.gov', endpt=None):
+    def __init__(self, homepage:str='https://api.gdc.cancer.gov', endpt:str=None):
         self.endpt = endpt
         self.homepage = homepage
         self.headers = {
@@ -23,20 +20,20 @@ class GDCEndptBase:
         }
 
     def make_endpt_url(self, endpt:str):
-        if self.endpt is not None:
+        if self.endpt is None:
             return f"{self.homepage}/{endpt}"
         else:
-            return None
+            return f"{self.homepage}/{self.endpt}"
 
 ####### COMMON API calls for GDC ####################################################
     @abstractmethod
-    def get_json_data(self, url, params):
+    def get_json_data(self, url:str, params: dict):
         response = requests.get(url, params = params)
         json_data = json.loads(response.text)
         return json_data
 
     @abstractmethod
-    def make_params_dict(self, filters, fields, size=100, format='tsv'):
+    def make_params_dict(self, filters:dict, fields: list[str], size:int=100, format:str='tsv'):
         params = {
             "filters": json.dumps(filters),
             "fields": fields,
@@ -46,7 +43,7 @@ class GDCEndptBase:
         return params
     
 
-    def get_response(self, url, params):
+    def get_response(self, url:str, params:str):
         """
         Function to get response from GDC API 
 
@@ -61,7 +58,7 @@ class GDCEndptBase:
         return response
 
 
-    def query(self, endpoint, params=None, method='GET', data=None):
+    def query(self, endpoint:str, params:dict=None, method:str='GET', data=None):
         """
         General purpose method to query GDC API.
         """
@@ -78,7 +75,7 @@ class GDCEndptBase:
             print(f"Error: {response.status_code}, Response: {response.text}")
             response.raise_for_status()
             
-    def download_by_file_id(self, file_id):
+    def download_by_file_id(self, file_id:str):
         data_endpt = "{}/data/{}".format(self.homepage, file_id)
 
         response = requests.get(data_endpt, headers = {"Content-Type": "application/json"})
@@ -90,32 +87,15 @@ class GDCEndptBase:
         with open(file_name, "wb") as output_file:
             output_file.write(response.content)
 
-    def create_single_facet_df(self, url, facet_key:str, params:dict):
+    def create_single_facet_df(self, url:str, facet_key_value:str, params:dict):
         response = self.get_response(url, params=params)
         data = response.json()
-        facet_df = pd.DataFrame(data['data']['aggregations'][facet_key]['buckets'])
-        facet_df['key'] = facet_df['key'].apply(lambda x: x['key'])
+        facet_df = pd.DataFrame(data['data']['aggregations'][facet_key_value]['buckets'])
         return facet_df
     
     def get_files_facet_data(self, facet_key, method_name):
         raise NotImplementedError("Method will be implemented in child class")
 
-
-    # @abstractmethod
-    # def search(self, endpoint, filters, fields, size=100, format='json'):
-    #     """
-    #     Search data in the GDC using filters and expansion, now including format handling.
-    #     """
-    #     data = {
-    #         'filters': json.dumps(filters),
-    #         'fields': ','.join(fields),
-    #         'format': format,
-    #         'size': size
-    #     }
-    #     return self.query(endpoint, method='POST', data=data)
-##### Need to update this check tomorrow ###############################
-    # def check_valid_endpt(self):
-    #     return self.query(self.endpt)
 
 ### Methods to be added based on application by user/bioinformatician/ 
 ### 1. Get list of all disease_types available on gdc platform 

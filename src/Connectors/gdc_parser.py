@@ -83,8 +83,7 @@ class GDCParser:
         df.drop(columns=[col for col in df.columns if 'treatment_or_therapy' in col and col != 'treatment_or_therapy'], inplace=True)
         return df
 
-    def get_longitudinal_data_q_op(self, data):
-        raise NotImplementedError()
+
 
 # def create_projects_by_ps_gender_race_exp_df(self, json_data):
 #     df = pd.DataFrame(json_data['data']['hits'])

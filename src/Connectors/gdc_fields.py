@@ -1,16 +1,18 @@
 
 import json
 import src.Connectors.gdc_field_validator as gdc_vld
+import src.Connectors.gdc_filters as gdc_flt 
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
 GDC fields class and high-level API functions
 
 @author: Abhilash Dhal
-@date:  2024_22_27
+@date:  2024_06_07
 """
 
-class GDCQueryFields():
+class GDCQueryFields(gdc_flt.GDCFacetFilters):
     def __init__(self, endpt) -> None:
+        super().__init__()
 
         self.endpts = ['cases', 'annotation', 'projects', 'files']
         if endpt not in self.endpts:
@@ -59,16 +61,16 @@ class GDCQueryFields():
         ]
 
         self.dft_rna_seq_star_count_data_fields = ['file_id', 
-                                                   'file_name', 
-                                                   'experimental_strategy', 'data_type', 
-                                                   'cases.case_id', 'analysis.workflow_type',
-                                                   "cases.diagnoses.last_known_disease_status",
-                                                   "cases.diagnoses.primary_diagnosis",
-                                                   "cases.diagnoses.tumor_stage",
-                                                   "cases.diagnoses.tumor_grade",
-                                                   "cases.diagnoses.treatments.treatment_or_therapy",
-                                                   "cases.diagnoses.days_to_last_follow_up",
-                                                   "cases.project.primary_site"]
+                                                'file_name', 
+                                                'experimental_strategy', 'data_type', 
+                                                'cases.case_id', 'analysis.workflow_type',
+                                                "cases.diagnoses.last_known_disease_status",
+                                                "cases.diagnoses.primary_diagnosis",
+                                                "cases.diagnoses.tumor_stage",
+                                                "cases.diagnoses.tumor_grade",
+                                                "cases.diagnoses.treatments.treatment_or_therapy",
+                                                "cases.diagnoses.days_to_last_follow_up",
+                                                "cases.project.primary_site"]
         
     def update_fields(self, field_name, new_fields):
         """
