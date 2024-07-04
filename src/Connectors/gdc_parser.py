@@ -81,5 +81,6 @@ class GDCJson2DfParser:
 
         # Drop original treatments columns if they are no longer needed
         df.drop(columns=[col for col in df.columns if 'treatment_or_therapy' in col and col != 'treatment_or_therapy'], inplace=True)
+        df = df.drop_duplicates(subset='file_id')
         return df
  

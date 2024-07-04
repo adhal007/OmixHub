@@ -139,3 +139,7 @@ class GDCEndptBase:
         with open(file_name, "wb") as output_file:
             output_file.write(response.content)
     
+
+        # print(file_name)
+        # with open(file_name, "wb") as output_file:
+        #     output_file.write(response.content)
