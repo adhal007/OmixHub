@@ -61,15 +61,27 @@ class GDCQueryDefaultFields:
 
         self.dft_rna_seq_star_count_data_fields = ['file_id', 
                                                 'file_name', 
-                                                'experimental_strategy', 'data_type', 
-                                                'cases.case_id', 'analysis.workflow_type',
+                                                'experimental_strategy', 
+                                                'data_type','platform', 
+                                                'cases.case_id',
                                                 "cases.diagnoses.last_known_disease_status",
                                                 "cases.diagnoses.primary_diagnosis",
                                                 "cases.diagnoses.tumor_stage",
                                                 "cases.diagnoses.tumor_grade",
                                                 "cases.diagnoses.treatments.treatment_or_therapy",
                                                 "cases.diagnoses.days_to_last_follow_up",
-                                                "cases.project.primary_site"]
+                                                'cases.diagnoses.age_at_diagnosis',
+                                                'cases.diagnoses.days_to_death',
+                                                "cases.project.primary_site",
+                                                'analysis.workflow_type',
+                                                'cases.demographic.ethnicity',
+                                                'cases.demographic.gender',
+                                                'cases.demographic.race',
+                                                'cases.diagnoses.tissue_or_organ_of_origin',
+                                                'cases.exposures.bmi',
+                                                'cases.exposures.alcohol_history',
+                                                'cases.exposures.years_smoked'
+                                                ]
         
     def update_fields(self, field_name, new_fields):
         """

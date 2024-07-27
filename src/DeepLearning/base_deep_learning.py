@@ -1,5 +1,3 @@
-
-
 class BaseDL:
     def __init__(self, model_name, model_dict) -> None:
         dft_model_dict = {

@@ -46,14 +46,16 @@ class GDCEngine:
         self._default_params = {
             'endpt': 'files',
             'homepage': 'https://api.gdc.cancer.gov',
-            'ps_list': None,
+            'cases.project.primary_site': None,
             'new_fields': None,
-            'race_list': None,
-            'gender_list': None,
-            'data_type': 'RNASeq'
+            'cases.demographic.race': None,
+            'cases.demographic.gender': None,
+            'files.experimental_strategy': None,
+            'data_type': None
         }
         ## public attributes 
         self.params = self._default_params | params
+        self._query_params = params 
         
         ## private attributes
         self._files_endpt = gdc_files.GDCFilesEndpt()
@@ -64,7 +66,8 @@ class GDCEngine:
         self._fields = gdc_fields.GDCQueryDefaultFields(self.params['endpt'])
         self._validator = gdc_vld.GDCValidator()
         self._parser = gdc_prs.GDCJson2DfParser(self._files_endpt, self._cases_endpt, self._projects_endpt)
-        self._data_types = ['RNASeq', 'SNP', 'WGSSeq', 'miRNASeq', 'Methylation', 'CNV']
+        self._exp_types = ['RNA-Seq', 'SNP', 'Total RNA-Seq']
+        self._data_types = ['Gene Expression Quantification', 'Exon Expression Quantification', 'Isoform Expression Quantification', 'Splice Junction Quantification']
     
 
         
@@ -95,6 +98,20 @@ class GDCEngine:
             raise ValueError(f"Data type '{self.params['data_type']}' not supported. Choose from {self._data_types}")
         return True
     
+    def _check_exp_type(self):
+        """
+        Check if the specified experiment type is supported.
+
+        Raises:
+            ValueError: If the specified experiment type is not supported.
+
+        Returns:
+            bool: True if the experiment type is supported, False otherwise.
+        """
+        if self.params['files.experimental_strategy'] not in self._exp_types:
+            raise ValueError(f"Experiment type '{self.params['exp_type']}' not supported. Choose from {self._exp_types}")
+        return True
+    
     def _get_raw_data(self, response):
         """
         Get the raw data from the API response.
@@ -106,6 +123,9 @@ class GDCEngine:
             pd.DataFrame: The raw data as a pandas DataFrame.
         """
         urlData = response.content
+        
+        ## Need to add a check for 1 line files 
+        
         rawData = pd.read_csv(io.StringIO(urlData.decode('utf-8')), sep="\t", header=1)
         return rawData
     
@@ -135,12 +155,12 @@ class GDCEngine:
         rs = (grequests.get(u, headers = {"Content-Type": "application/json"}) for u in file_id_url_map.values())
         responses = grequests.map(rs)
         file_id_response_map = dict(zip(file_id_url_map.keys(), responses))
-        responses = [r for r in file_id_response_map.values()]
+        responses = [r for r in file_id_response_map.values() if r.status_code == 200 or r is not None]
         rawData = [self._get_raw_data(r) for r in responses]
         rawDataMap = dict(zip(file_id_url_map.keys(), rawData))
         return rawDataMap
-         
-    def get_normalized_RNA_seq_metadata(self):
+
+    def get_normalized_RNA_seq_metadata(self, filtered: bool = True):
         """
         Fetch the normalized RNA sequencing metadata.
 
@@ -149,12 +169,11 @@ class GDCEngine:
                 - metadata (pd.DataFrame): The metadata as a pandas DataFrame.
                 - filters (dict): The filters used to fetch the metadata.
         """
-        json_data, filters = self._files_endpt.fetch_rna_seq_star_counts_data(ps_list=self.params['ps_list'],new_fields=self.params['new_fields'],
-                                                                              gender_list=self.params['gender_list'],race_list=self.params['race_list'])
-        metadata = self._parser.create_df_from_rna_star_count_q_op(json_data)
+        json_data, filters = self._files_endpt.fetch_rna_seq_star_counts_data(params=self._query_params)
+        metadata = self._parser.create_df_from_rna_star_count_q_op(json_data, filtered=filtered)
         return {'metadata': metadata, 'filters': filters}
-
-    def make_RNA_seq_data_matrix(self, rawDataMap: dict[str, pd.DataFrame], metadata: pd.DataFrame):
+    
+    def make_RNA_seq_data_matrix(self, rawDataMap: dict[str, pd.DataFrame], metadata: pd.DataFrame, feature_col='fpkm_unstranded'):
         """
         Create a data matrix for RNA sequencing data.
 
@@ -165,11 +184,11 @@ class GDCEngine:
         Returns:
             pd.DataFrame: The RNA sequencing data matrix.
         """
-        df_list = []
+        df_list= []
         for key, value in rawDataMap.items():
             df_tmp = value.dropna()
             cols = df_tmp[['gene_name']].to_numpy().flatten()
-            df_tmp = df_tmp[['fpkm_uq_unstranded']].T
+            df_tmp = df_tmp[[feature_col]].T
             df_tmp.columns = cols
             df_tmp['file_id'] = key
             df_list.append(df_tmp)

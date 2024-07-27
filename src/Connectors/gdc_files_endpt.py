@@ -14,45 +14,79 @@ GDC Files Endpt Class and high-level API functions Only Returns JSON like Object
 @date:  2024_06_07
 """
 class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
+    """
+    A class representing the GDC Files Endpoint.
+
+    This class provides methods to interact with the GDC Files API endpoint and fetch RNA-Seq STAR counts data.
+
+    Args:
+        homepage (str, optional): The base URL of the GDC API. Defaults to 'https://api.gdc.cancer.gov'.
+        endpt (str, optional): The endpoint name. Defaults to 'files'.
+
+    Attributes:
+        gdc_flt (GDCQueryFilters): An instance of the GDCQueryFilters class for handling query filters.
+        gdc_fld (GDCQueryDefaultFields): An instance of the GDCQueryDefaultFields class for handling default fields.
+        gdc_vld (GDCValidator): An instance of the GDCValidator class for validating fields.
+
+    """
+
     def __init__(self, homepage='https://api.gdc.cancer.gov', endpt='files'):
         super().__init__(homepage, endpt='files')
-        # if self.check_valid_endpt():
         self.gdc_flt = gdc_flt.GDCQueryFilters()
         self.gdc_fld = gdc_fld.GDCQueryDefaultFields(self.endpt)
         self.gdc_vld = gdc_vld.GDCValidator()
 
-######### APPLICATION ORIENTED python functions ################################################
-################################################################################################
-    def fetch_rna_seq_star_counts_data(self, new_fields:list[str]=None, ps_list:list[str]=None, race_list:list[str]=None, gender_list:list[str]=None):
-        if ps_list is None:
+    def fetch_rna_seq_star_counts_data(self, params: dict):
+        """
+        Fetches RNA-Seq STAR counts data from the GDC Files API endpoint.
+
+        This method fetches RNA-Seq STAR counts data from the GDC Files API endpoint based on the provided parameters.
+
+        Args:
+            params (dict): A dictionary containing the parameters for the API request.
+                accepted keys:
+                - cases.project.primary_site (list): A list of primary sites to filter the data.
+                - new_fields (list): A list of additional fields to include in the metadata. Default is None.
+                - data_type (str): The type of data to fetch. Default is 'RNA-Seq'.
+
+        Returns:
+            tuple: A tuple containing the JSON data response and the applied filters.
+
+        Raises:
+            ValueError: If the list of primary sites is not provided or if the provided field is not in the list of fields by GDC.
+
+        """
+        param_keys = params.keys()
+        print(param_keys)     
+        if params["cases.project.primary_site"] is None:
             raise ValueError("List of primary sites must be provided") 
-        if new_fields is None:
+        
+        if "new_fields" not in list(param_keys):
+            fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
+        elif params["new_fields"] is None:
             fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
         else:
-            ## Adding logic for checking fields
-            endpt_fields = self.gdc_vld.endpt_fields[self.endpt]
+            endpt_fields = self.endpt_fields[self.endpt]
+            new_fields = params["new_fields"]
             for x in new_fields:
-                ## create file_endpt_fields in gdc_vld
                 if x not in endpt_fields:
                     raise ValueError("Field provided is not in the list of fields by GDC")
             self.gdc_fld.update_fields('dft_rna_seq_star_count_data_fields', new_fields)
             fields = self.gdc_fld.dft_rna_seq_star_count_data_fields        
         fields = ",".join(fields)
+        print(fields)
 
-
-        filters = self.gdc_flt.rna_seq_star_count_filter(ps_list=ps_list, race_list=race_list, gender_list=gender_list)
-        # Here a GET is used, so the filter parameters should be passed as a JSON string.
-        print(filters)
-        params = {
+        
+        filters = self.gdc_flt.rna_seq_update_filter_by_dtype(params)
+        url_params = {
             "filters": json.dumps(filters),
             "fields": fields,
             "format": "json",
             "size": "50000"
             }
-        print(params)
-        
+
         url = self.make_endpt_url(self.endpt)
-        response = requests.get(url=url, params = params)
+        response = requests.get(url=url, params=url_params)
         json_data = json.loads(response.text)
         return json_data, filters
     

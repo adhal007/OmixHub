@@ -53,7 +53,7 @@ class GDCQueryFilters:
         list of dicts: List containing filter dictionaries.
         """
         filters = []
-        for field, values in filter_specs:
+        for field, values in filter_specs.items():
             filter_op = {
                 "op": "in",
                 "content": {
@@ -110,39 +110,61 @@ class GDCQueryFilters:
         return filters
 
     
-    def rna_seq_star_count_filter(self, ps_list=None, race_list=None, gender_list=None):
+    def rna_seq_template_filter(self, params=None):
         """
         Function to filer for 1) Primary Site 2) Race 3) Demography
 
         Args:
-        ps_list (list of string items): Each string item contains the primary site available.
-        race_list (list of string items): Each string item contains race info from GDC
-        gender_list (list of string items): Each string item contains gender info
+        params (dict, optional): A dictionary containing the filter specifications. Defaults to None.
+            accepted keys:
+            - cases.project.primary_site (list): A list of primary sites to filter the data.
+            - cases.demographic.race 
+            - cases.demographic.gender 
+            - data_type (str): The type of data to fetch. Default is 'RNA-Seq'.
+            - files.experimental_strategy (list): A list of experimental strategies to filter the data.
+            - analysis.workflow_type (list): A list of workflow types to filter the data.
         
         Returns:
         json_query: nested json object to be fed into query for GDC.
         """
-        default_filter_specs = [
-            ("files.experimental_strategy", ["RNA-Seq"]),
-            ("data_type", ["Gene Expression Quantification"]),
-            ("analysis.workflow_type", ["STAR - Counts"])
-        ]
-        # Start with default filters
-        combined_filter_specs = default_filter_specs.copy()
-
-        # Append conditionally based on the content of user inputs
-        if ps_list:
-            combined_filter_specs.append(("cases.project.primary_site", ps_list))
-
-        if race_list:
-            combined_filter_specs.append(("cases.demographic.race", race_list))
-
-        if gender_list:
-            combined_filter_specs.append(("cases.demographic.gender", gender_list))
-
-        filter_for_query = self.create_and_filters(combined_filter_specs)
-        return filter_for_query
+        default_filter_specs = {
+            "files.experimental_strategy": ['RNA-Seq'],
+            "data_type": ['Gene Expression Quantification'],
+            "analysis.workflow_type": ['STAR - Counts'],
+            "cases.project.primary_site": ['*'],
+            "cases.demographic.race": ['*'],
+            "cases.demographic.gender": ['*']
+        }
+        
+        if params is not None:
+            combined_filter_specs = default_filter_specs | params  
+        else:
+            combined_filter_specs = default_filter_specs          
+        return combined_filter_specs 
     
+    def rna_seq_update_filter_by_dtype(self, params: dict=None):
+        """
+        Function to update the filter for RNA-Seq data based on the data type.
+        
+        This function updates the filter specification for querying RNA-Seq data based on the provided data type.
+        
+        Args:
+            params (dict, optional): A dictionary containing the parameters for the API request. Defaults to None.
+                accepted keys:
+                - data_type (str): The type of data to fetch. Default is 'Gene Expression Quantification'.
+        Returns:
+            dict: The updated filter specification for querying RNA-Seq data.
+        """
+        filters = self.rna_seq_template_filter(params=params)
+        if params is None:
+            data_type = 'Gene Expression Quantification'
+        else:
+            data_type = params['data_type']
+        
+        filters_upd = filters | {"data_type": [data_type]}
+        filter_for_query = self.create_and_filters(filters_upd)
+        return filter_for_query
+        
     def rna_seq_disease_filter(self, disease_list=None):
         """
         Filter for RNA-Seq data based on disease list.
@@ -170,7 +192,7 @@ class GDCQueryFilters:
         
         filter_for_query = self.create_and_filters(combined_filter_specs)
         return filter_for_query
-    
+        
     def all_diseases(self):
         raise NotImplementedError()
     
