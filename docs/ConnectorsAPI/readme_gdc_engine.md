@@ -25,6 +25,6 @@ The `GDCEngine` class is responsible for fetching and processing data from the G
 - `_get_raw_data`: Get the raw data from the API response.
 - `_make_file_id_url_map`: Create a mapping of file IDs to download URLs.
 - `_get_urls_content`: Download the content from the specified URLs.
-- `get_normalized_RNA_seq_metadata`: Fetch the normalized RNA sequencing metadata.
-- `make_RNA_seq_data_matrix`: Create a data matrix for RNA sequencing data.
-- `run`: Run the GDCEngine to fetch and process the data.
+- `_get_rna_seq_metadata`: Fetch the RNA sequencing metadata from GDC.
+- `_make_RNA_seq_data_matrix`: Create a data matrix for RNA sequencing data.
+- `run_rna_seq_data_matrix_creation`: Run the GDCEngine to fetch and process the data.

@@ -30,18 +30,6 @@ class GDCEndptBase:
         # self._list_of_tumor_types = None
         # self._list_of_primary_diagnoses = None
 
-
-    # @property
-    # def list_of_programs(self):
-    #     return self.get_files_facet_data(url=self.projects_endpt_url, facet_key='list_of_projects_flt', method_name='list_of_projects_flt')
-
-    # @property
-    # def list_of_primary_sites(self):
-    #     return self.get_files_facet_data(url=self.cases_endpt_url, facet_key='list_of_primary_sites_flt', method_name='list_of_primary_sites_flt')
-
-    # @property
-    # def list_of_exp_strategies(self):
-    #     return self.get_files_facet_data(url=self.files_endpt_url, facet_key='list_of_exp_flt', method_name='list_of_exp_flt')
     
     ### These properties should be in the base class
     @property
@@ -59,16 +47,16 @@ class GDCEndptBase:
     @property
     def endpt_fields(self):
         if self._endpt_fields is None:
-            self._endpt_fields = {endpt: self.get_endpt_fields(endpt) for endpt in self._endpts.keys()}
+            self._endpt_fields = {endpt: self._get_endpt_fields(endpt) for endpt in self._endpts.keys()}
         return self._endpt_fields
     
-    def make_endpt_url(self, endpt:str):
+    def _make_endpt_url(self, endpt:str):
         if self.endpt is None:
             return f"{self.homepage}/{endpt}"
         else:
             return f"{self.homepage}/{self.endpt}"
         
-    def get_endpt_fields(self, endpt:str):
+    def _get_endpt_fields(self, endpt:str):
         url = f'{self.homepage}/{endpt}/{self._mapping}'
         # Send a GET request
         response = requests.get(url)
@@ -77,7 +65,7 @@ class GDCEndptBase:
     
     def _get_endpt_url(self, endpt):
         if getattr(self, f'_{endpt}_endpt_url') is None:
-            setattr(self, f'_{endpt}_endpt_url', self.make_endpt_url(self._endpts[endpt]))
+            setattr(self, f'_{endpt}_endpt_url', self._make_endpt_url(self._endpts[endpt]))
         return getattr(self, f'_{endpt}_endpt_url')
     
     
@@ -86,15 +74,6 @@ class GDCEndptBase:
         response = requests.get(url, params = params)
         json_data = json.loads(response.text)
         return json_data
-
-    def make_params_dict(self, filters:dict, fields: list[str], size:int=100, format:str='tsv'):
-        params = {
-            "filters": json.dumps(filters),
-            "fields": fields,
-            "format": format,
-            "size": "100"
-            }
-        return params
     
     @staticmethod
     def get_response(url:str, params:str):
@@ -140,6 +119,20 @@ class GDCEndptBase:
             output_file.write(response.content)
     
 
+### Redundant code: Will possibly be used in hindsight
         # print(file_name)
         # with open(file_name, "wb") as output_file:
         #     output_file.write(response.content)
+        
+
+    # @property
+    # def list_of_programs(self):
+    #     return self.get_files_facet_data(url=self.projects_endpt_url, facet_key='list_of_projects_flt', method_name='list_of_projects_flt')
+
+    # @property
+    # def list_of_primary_sites(self):
+    #     return self.get_files_facet_data(url=self.cases_endpt_url, facet_key='list_of_primary_sites_flt', method_name='list_of_primary_sites_flt')
+
+    # @property
+    # def list_of_exp_strategies(self):
+    #     return self.get_files_facet_data(url=self.files_endpt_url, facet_key='list_of_exp_flt', method_name='list_of_exp_flt')

@@ -4,12 +4,13 @@ GDC Query Filters
 The `GDCQueryFilters` class provides methods to generate filter dictionaries for querying data based on various specifications.
 
 Methods:
-- `generate_filters(filter_list, operation='and')`: Generates a filter dictionary based on given specifications.
-- `create_and_filters(filter_specs)`: Creates a list of filters based on given specifications.
+
+- `create_and_filters(filter_specs, op_specs)`: Creates a list of filters based on given specifications.
+  - Arguments: 
+  - `filter_specs`: contains key, value pair for a set of fields that can be queries in the gdc API.
+  - `op_specs`: contains key, value pair denoting the type of operation for the field that is being queried.
 - `all_projects_by_exp_filter(experimental_strategy)`: Returns a filter dictionary for retrieving all projects based on the given experimental strategy.
-- `projects_by_disease_filter(disease_type)`: Returns a filter dictionary for retrieving projects based on the given disease type.
-- `rna_seq_star_count_filter(ps_list=None, race_list=None, gender_list=None)`: Generates a filter specification for querying RNA-Seq data based on primary site, race, and gender.
-- `rna_seq_disease_filter(disease_list=None)`: Generates a filter specification for querying RNA-Seq data based on disease list.
+- `rna_seq_data_filter(ps_list=None, race_list=None, gender_list=None)`: Generates a filter specification for querying RNA Seq data in GDC Database.
 - `all_diseases()`: Returns a filter dictionary for retrieving all diseases.
 
 -----------------

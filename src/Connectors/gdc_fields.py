@@ -80,7 +80,8 @@ class GDCQueryDefaultFields:
                                                 'cases.diagnoses.tissue_or_organ_of_origin',
                                                 'cases.exposures.bmi',
                                                 'cases.exposures.alcohol_history',
-                                                'cases.exposures.years_smoked'
+                                                'cases.exposures.years_smoked',
+                                                'cases.samples.tissue_type'
                                                 ]
         
     def update_fields(self, field_name, new_fields):

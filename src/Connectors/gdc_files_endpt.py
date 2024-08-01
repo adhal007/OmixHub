@@ -36,7 +36,7 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
         self.gdc_fld = gdc_fld.GDCQueryDefaultFields(self.endpt)
         self.gdc_vld = gdc_vld.GDCValidator()
 
-    def fetch_rna_seq_star_counts_data(self, params: dict):
+    def rna_seq_query_to_json(self, params: dict, op_params=None):
         """
         Fetches RNA-Seq STAR counts data from the GDC Files API endpoint.
 
@@ -58,8 +58,8 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
         """
         param_keys = params.keys()
         print(param_keys)     
-        if params["cases.project.primary_site"] is None:
-            raise ValueError("List of primary sites must be provided") 
+        # if params["cases.project.primary_site"] is None:
+        #     raise ValueError("List of primary sites must be provided") 
         
         if "new_fields" not in list(param_keys):
             fields = self.gdc_fld.dft_rna_seq_star_count_data_fields
@@ -77,7 +77,7 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
         print(fields)
 
         
-        filters = self.gdc_flt.rna_seq_update_filter_by_dtype(params)
+        filters  = self.gdc_flt.rna_seq_data_filter(params, op_params=op_params)
         url_params = {
             "filters": json.dumps(filters),
             "fields": fields,
@@ -85,7 +85,7 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
             "size": "50000"
             }
 
-        url = self.make_endpt_url(self.endpt)
+        url = self._make_endpt_url(self.endpt)
         response = requests.get(url=url, params=url_params)
         json_data = json.loads(response.text)
         return json_data, filters

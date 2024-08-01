@@ -51,7 +51,8 @@ class GDCEngine:
             'cases.demographic.race': None,
             'cases.demographic.gender': None,
             'files.experimental_strategy': None,
-            'data_type': None
+            'data_type': None,
+            'op_params': None
         }
         ## public attributes 
         self.params = self._default_params | params
@@ -66,9 +67,10 @@ class GDCEngine:
         self._fields = gdc_fields.GDCQueryDefaultFields(self.params['endpt'])
         self._validator = gdc_vld.GDCValidator()
         self._parser = gdc_prs.GDCJson2DfParser(self._files_endpt, self._cases_endpt, self._projects_endpt)
+        self._op_params = self.params['op_params']
         self._exp_types = ['RNA-Seq', 'SNP', 'Total RNA-Seq']
         self._data_types = ['Gene Expression Quantification', 'Exon Expression Quantification', 'Isoform Expression Quantification', 'Splice Junction Quantification']
-    
+        self._available_feature_norms = ['fpkm_unstranded', 'tpm_unstranded']
 
         
     def set_params(self, **params: dict) -> None:
@@ -160,20 +162,20 @@ class GDCEngine:
         rawDataMap = dict(zip(file_id_url_map.keys(), rawData))
         return rawDataMap
 
-    def get_normalized_RNA_seq_metadata(self, filtered: bool = True):
+    def _get_rna_seq_metadata(self):
         """
-        Fetch the normalized RNA sequencing metadata.
+        Fetch all the samples for RNA-Sequencing metadata
 
         Returns:
             dict: A dictionary containing the metadata and filters.
                 - metadata (pd.DataFrame): The metadata as a pandas DataFrame.
                 - filters (dict): The filters used to fetch the metadata.
         """
-        json_data, filters = self._files_endpt.fetch_rna_seq_star_counts_data(params=self._query_params)
-        metadata = self._parser.create_df_from_rna_star_count_q_op(json_data, filtered=filtered)
+        json_data, filters = self._files_endpt.rna_seq_query_to_json(params=self._query_params)
+        metadata = self._parser.make_df_rna_seq(json_data)
         return {'metadata': metadata, 'filters': filters}
     
-    def make_RNA_seq_data_matrix(self, rawDataMap: dict[str, pd.DataFrame], metadata: pd.DataFrame, feature_col='fpkm_unstranded'):
+    def _make_rna_seq_data_matrix(self, rawDataMap: dict[str, pd.DataFrame], metadata: pd.DataFrame, feature_col='fpkm_unstranded'):
         """
         Create a data matrix for RNA sequencing data.
 
@@ -195,7 +197,7 @@ class GDCEngine:
         rna_seq_data_matrix = pd.concat(df_list)
         return rna_seq_data_matrix
     
-    def run(self):
+    def run_rna_seq_data_matrix_creation(self):
         """
         Run the GDCEngine to fetch and process the data.
 
@@ -203,11 +205,11 @@ class GDCEngine:
             pd.DataFrame: The processed data matrix for machine learning.
         """
         if self._check_data_type():
-            metadata = self.get_normalized_RNA_seq_metadata()
+            metadata = self._get_rna_seq_metadata()
             file_ids = metadata['metadata']['file_id'].to_list()
             file_id_url_map = self._make_file_id_url_map(file_ids)
             rawDataMap = self._get_urls_content(file_id_url_map)
-            rna_seq_data_matrix = self.make_RNA_seq_data_matrix(rawDataMap, metadata['metadata'])
+            rna_seq_data_matrix = self._make_rna_seq_data_matrix(rawDataMap, metadata['metadata'])
             ml_data_matrix = rna_seq_data_matrix.merge(metadata['metadata'], on='file_id')
             return ml_data_matrix
     
