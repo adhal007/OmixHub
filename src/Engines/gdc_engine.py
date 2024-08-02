@@ -8,6 +8,7 @@ import src.Connectors.gdc_filters as gdc_filters
 import src.Connectors.gdc_fields as gdc_fields
 import src.Connectors.gdc_parser as gdc_prs
 import src.Connectors.gdc_field_validator as gdc_vld
+from tqdm import tqdm
 import pandas as pd
 import requests
 import re 
@@ -113,7 +114,24 @@ class GDCEngine:
         if self.params['files.experimental_strategy'] not in self._exp_types:
             raise ValueError(f"Experiment type '{self.params['exp_type']}' not supported. Choose from {self._exp_types}")
         return True
-    
+    # def _get_raw_data(self, response):
+    #     if response is None or response.status_code != 200:
+    #         return None
+    #     content = response.content.decode('utf-8')
+    #     lines = content.splitlines()
+    #     if len(lines) <= 1:
+    #         # Handle the case where there's only one line or empty content
+    #         print(f"Discarding response with insufficient data: {response.url}")
+    #         return None
+        
+    #     # Continue with the usual parsing logic, assuming valid data
+    #     # Example: Parse the content as a DataFrame, etc.
+    #     try:
+    #         data = pd.read_csv(pd.compat.StringIO(content), header=1)
+    #     except pd.errors.ParserError:
+    #         print(f"Error parsing data from {response.url}")
+    #         return None
+    #     return data  
     def _get_raw_data(self, response):
         """
         Get the raw data from the API response.
@@ -124,11 +142,20 @@ class GDCEngine:
         Returns:
             pd.DataFrame: The raw data as a pandas DataFrame.
         """
-        urlData = response.content
+        if response is None or response.status_code != 200:
+            return None
+        content = response.content.decode('utf-8')
+        lines = content.splitlines()
+        if len(lines) <= 1:
+            # Handle the case where there's only one line or empty content
+            print(f"Discarding response with insufficient data: {response.url}")
+            return None
+        
+        # urlData = response.content
         
         ## Need to add a check for 1 line files 
         
-        rawData = pd.read_csv(io.StringIO(urlData.decode('utf-8')), sep="\t", header=1)
+        rawData = pd.read_csv(io.StringIO(content), sep="\t", header=1)
         return rawData
     
     def _make_file_id_url_map(self, file_ids: list[str]):
@@ -187,13 +214,14 @@ class GDCEngine:
             pd.DataFrame: The RNA sequencing data matrix.
         """
         df_list= []
-        for key, value in rawDataMap.items():
-            df_tmp = value.dropna()
-            cols = df_tmp[['gene_name']].to_numpy().flatten()
-            df_tmp = df_tmp[[feature_col]].T
-            df_tmp.columns = cols
-            df_tmp['file_id'] = key
-            df_list.append(df_tmp)
+        for key, value in tqdm(rawDataMap.items()):
+            if value is not None:
+                df_tmp = value.dropna()
+                cols = df_tmp[['gene_name']].to_numpy().flatten()
+                df_tmp = df_tmp[[feature_col]].T
+                df_tmp.columns = cols
+                df_tmp['file_id'] = key
+                df_list.append(df_tmp)
         rna_seq_data_matrix = pd.concat(df_list)
         return rna_seq_data_matrix
     
