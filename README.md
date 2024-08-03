@@ -1,44 +1,37 @@
-## Main 
 
 ### Overview
-We want to build an integrated platform for well known ML and DL based classification, feature selection and other bioinformatics for high dimensional NGS data. Here is a list of existing and upcoming projects for different omics datasets and modules of different ML/AI methods and models for biomarker discovery and disease classification.
+<!-- We want to build an integrated platform for well known ML and DL based classification, feature selection and other bioinformatics for high dimensional NGS data. Here is a list of existing and upcoming projects for different omics datasets and modules of different ML/AI methods and models for biomarker discovery and disease classification. -->
 
-#### High Level Objective:
-In NGS datasets for kidney cancer or other complex diseases, apply known or new ML models to identify patterns of gene expression to serve as a template for bio-informatics learning for aspiring scientists/researchers/students in the field.
+OmixHub is a platform that interfaces with GDC using python to help users to apply ML based analysis on different sequencing data. Currently we **support only for RNA-Seq based datasets** from genomic data commons (GDC)
 
-### Immediate/Short term focus for prototype:
-**Dataset:**
+1. **Cohort Creation** of Tumor and Normal Samples from GDC 
+2. **Bioinformatics analysis:** 
+   1. Application of PyDESeq2 and GSEA in a single pipeline.
+   2. Uses unstranded counts from GDC files
+  
+3. **Classical ML analysis:** 
+   1. Applying clustering, supervised ML and outlier sum statistics.
+   2. Uses FPKM unstranded normalized gene expression values.
 
-Focus on kidney cancer dataset (RNA-Seq) analysis  as our input data (tabular form) 
+4. **Custom API Connections**:
+   1. Querying GDC using complex json filters ([Methods in src.Connectors for GDC API search and retrieval using custom queries](./src/README.md))
+   2. Interacting with MongoDB database in a pythonic manner (**DOCS coming soon**). 
+   3. Interacting with Google cloud BigQuery in a pythonic manner (**DOCS coming soon**).  
+    
+<!-- #### High Level Objective:
+In NGS datasets for kidney cancer or other complex diseases, apply known or new ML models to identify patterns of gene expression to serve as a template for bio-informatics learning for aspiring scientists/researchers/students in the field. -->
 
-N x P matrix where N - number of unique patients, P - number of features (genes from RNA-Seq expression)
+### GETTING STARTED:
+1. Clone the repository 
+2. Create the correct conda enviroment for OmixHub: `conda env create -f environment.yaml`
+3. Create a RNA Seq unstranded counts' cohort of tumor and normal samples by primary site: ([jupyter_notebook](./docs/CohortCreation/create_RNA_seq_df_for_pydeseq.md))
+4. Differential gene expression analysis PyDeSeq for tumor vs normal samples ([jupyter notebook](./notebooks/pydeseq_gsea.ipynb)). 
+5. Gene Set Enrichment Analysis(GSEA) on differentially expressed genes([jupyter notebook]()). 
 
-This contain gene expression quantification data (definition for the gene expression, RNA-Seq data, etc) can be found here RNA-Seq - GDC Docs 
 
-**Methods/Applications for UI:** Here is a list of what applications we expect to have for our initial release:
 
-- **Cohort Selector:** Click button availability to select a cohort from GDC using queries for the following parameters:
-  - primary_site: 60+ available sites eg: Lung, Kidney, Throat, etc
-  - gender: Male, Female or Both
-  - experimental_strategy: Only RNA-Seq for now. In the future we would add in the order of prioritization  
-    - SNP (Genotyping data)
-    - miRNA-seq 
-    - WGS data
-  - demography: White, latino, etc 
 
-- **Modules for analysis:**
-  - Classical ML: 
-    - Supervised ML for disease vs control classification 
-      - Multi-label multi-output classification 
-      - Single-Label classification 
-    - Biomarker identification using feature selection
-      - Outlier Sum Statistics 
-      - Differential Gene Expression using pydeseq wrapper 
-      - Feature importances from different classifiers 
-    - Unsupervised ML:
-      - Bayesian optimized (Hyper-Opt) clustering (KNN) using UMap embeddings
-    - Semi-supervised ML:
-      - Iterative GMM + PCA for cohort stratification for niche disease-control applications 
+
   <!-- - Deep-learning:
     - Auto-encoders 
     - CNN’s
@@ -46,16 +39,11 @@ This contain gene expression quantification data (definition for the gene expres
   - Bayesian ML
   - Knowledge Graphs and NLP  -->
 
-#### Codebase
+### Codebase
 ```md
 OmicsProjects
    ├── src
    │   ├── ClassicML
-   │   │   ├── init.py
-   │   │   ├── DimRedMappers
-   │   │   ├── DGE
-   │   │   └── OutlierStatMethods
-   │   │   ├── Supervised
    │   ├── CustomLogger   
    │   ├── Connectors
    │   ├── PlotUtils
@@ -77,7 +65,7 @@ OmicsProjects
 - [Module for differential expression of RNA-Seq](https://github.com/adhal007/OmixHub/blob/main/src/pydeseq_utils.py) -->
 
   
-#### Projects/Analysis (Application of Methods)
+<!-- #### Projects/Analysis (Application of Methods)
 ###### A. Characterization of kidney cancer using RNA-Seq transcriptome profiline
 - Analysis 1: Supervised ML models for classification of kidney cancer subtypes using bulk RNA-Seq Data 
   - [Evaluation of multi-output classifier models(Jupyter NB)](/docs/SupervisedLearningApplication/docs/workflow.md)
@@ -86,16 +74,16 @@ OmicsProjects
 
 - Analysis 2: Differential expression of kidney cancer subtypes by single factor and multi-factor methods
   <!-- - [Summary]() -->
-  - [Notebook workflow](/docs/DeSeqApplication/docs/workflow.md)
+  <!-- - [Notebook workflow](/docs/DeSeqApplication/docs/workflow.md)
 
 - Analysis 3: Bayesian optimized stratification of Kidney-Cancer Subtypes by dimensionality reduction and clustering
     - [Notebook workflow](/docsUmapApplication/docs/workflow.md)
 
 - Analysis 4: Application of Outlier Statistic Methods for differential gene expression
-  (To be updated with workflow notebooks)
- 
+  (To be updated with workflow notebooks) -->
 
-## Future work
+
+<!-- ## Future work
 **Development**:
 
 - UI Prototype Release
@@ -124,10 +112,16 @@ OmicsProjects
 - Develop a module for Hi-C data analysis
 - Develop a module for Hi-Seq data analysis -->
 
-**Application work**:
+<!-- **Application work**:
 - Autoimmune disease characterization by omics methods 
 - Other cancers 
-- Deep learning
+- Deep learning --> 
 
 ### ADDITIONAL CODE DOCS:
+- **Application Examples**
+  - [Outlier sum statistics](./docs/OutlierMethodsApplication/docs/workflow.md)
+  - [Supervised ML using Ensemble models on kidney cancer data](./docs/SuperviseLearningEnsembleApplication/workflow.md)
+  - [Clustering using bayesian optimized parameters of kidney cancer sub-types from TCGA](./docs/UmapApplication/docs/workflow.md)
+  - [Analysis of differentially expressed genes functionally]((./notebooks/pydeseq_gsea.ipynb))
+- [Roadmap for future developments](./docs/UI%20Prototype/roadmap.md)
 - [Methods in src.Connectors for GDC API search and retrieval using custom queries](./src/README.md)
