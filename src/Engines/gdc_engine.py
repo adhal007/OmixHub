@@ -114,24 +114,7 @@ class GDCEngine:
         if self.params['files.experimental_strategy'] not in self._exp_types:
             raise ValueError(f"Experiment type '{self.params['exp_type']}' not supported. Choose from {self._exp_types}")
         return True
-    # def _get_raw_data(self, response):
-    #     if response is None or response.status_code != 200:
-    #         return None
-    #     content = response.content.decode('utf-8')
-    #     lines = content.splitlines()
-    #     if len(lines) <= 1:
-    #         # Handle the case where there's only one line or empty content
-    #         print(f"Discarding response with insufficient data: {response.url}")
-    #         return None
-        
-    #     # Continue with the usual parsing logic, assuming valid data
-    #     # Example: Parse the content as a DataFrame, etc.
-    #     try:
-    #         data = pd.read_csv(pd.compat.StringIO(content), header=1)
-    #     except pd.errors.ParserError:
-    #         print(f"Error parsing data from {response.url}")
-    #         return None
-    #     return data  
+
     def _get_raw_data(self, response):
         """
         Get the raw data from the API response.
@@ -225,7 +208,36 @@ class GDCEngine:
         rna_seq_data_matrix = pd.concat(df_list)
         return rna_seq_data_matrix
     
-    def run_rna_seq_data_matrix_creation(self):
+    def _process_data_matrix_rna_seq(self, meta, primary_site=None, downstream_analysis='DE'):
+        if primary_site is not None:
+            sub_meta = meta[meta['primary_site'] == primary_site].reset_index(drop=True)
+        else:
+            sub_meta = meta.copy()
+        chunks = sub_meta.shape[0]//50
+        chunk_ls = []
+        if downstream_analysis == 'DE':
+            feature_col_for_extraction = 'unstranded'
+        elif downstream_analysis == 'ML':
+            feature_col_for_extraction = 'fpkm_uq_unstranded'
+            
+        for chunk_i in tqdm(range(chunks)):
+            sub_meta_i = sub_meta.iloc[chunk_i*50:(chunk_i*50+50), :].reset_index(drop=True)
+            file_ids = sub_meta_i['file_id'].to_list()
+            file_id_url_map =  self._make_file_id_url_map(file_ids)
+            rawDataMap = self._get_urls_content(file_id_url_map)
+            ids_with_none = [key for key in rawDataMap.keys() if rawDataMap[key] is None]
+            rna_seq_data_matrix = self._make_rna_seq_data_matrix(rawDataMap, sub_meta_i, feature_col=feature_col_for_extraction)
+            
+            sub_meta_sub_i = sub_meta_i[~sub_meta_i['file_id'].isin(ids_with_none)]
+            rna_seq_data_matrix['tissue_type'] = sub_meta_sub_i['tissue_type'].to_numpy()
+            rna_seq_data_matrix['sample_type'] = sub_meta_sub_i['sample_type'].to_numpy()
+            rna_seq_data_matrix['primary_site'] = sub_meta_sub_i['primary_site'].to_numpy()
+            rna_seq_data_matrix['case_id'] = sub_meta_sub_i['case_id'].to_numpy()
+            chunk_ls.append(rna_seq_data_matrix)
+        df = pd.concat(chunk_ls)
+        return df  
+    
+    def run_rna_seq_data_matrix_creation(self, primary_site, downstream_analysis='DE'):
         """
         Run the GDCEngine to fetch and process the data.
 
@@ -233,12 +245,9 @@ class GDCEngine:
             pd.DataFrame: The processed data matrix for machine learning.
         """
         if self._check_data_type():
-            metadata = self._get_rna_seq_metadata()
-            file_ids = metadata['metadata']['file_id'].to_list()
-            file_id_url_map = self._make_file_id_url_map(file_ids)
-            rawDataMap = self._get_urls_content(file_id_url_map)
-            rna_seq_data_matrix = self._make_rna_seq_data_matrix(rawDataMap, metadata['metadata'])
-            ml_data_matrix = rna_seq_data_matrix.merge(metadata['metadata'], on='file_id')
+            rna_seq_metadata = self._get_rna_seq_metadata()
+            meta = rna_seq_metadata['metadata']
+            ml_data_matrix = self._process_data_matrix_rna_seq(meta=meta, primary_site=primary_site, downstream_analysis=downstream_analysis)
             return ml_data_matrix
     
     

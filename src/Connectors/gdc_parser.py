@@ -50,6 +50,7 @@ class GDCJson2DfParser:
             if t.get('treatment_or_therapy') in ['yes', 'no']), 'unknown'),
         'last_known_disease_status': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('last_known_disease_status'),
         'tissue_type': data.get('cases', [{}])[0].get('samples', [{}])[0].get('tissue_type'),
+        'sample_type': data.get('cases', [{}])[0].get('samples', [{}])[0].get('sample_type'), 
         'race': data.get('cases', [{}])[0].get('demographic', {}).get('race'),
         'gender': data.get('cases', [{}])[0].get('demographic', {}).get('gender'),
         'ethnicity': data.get('cases', [{}])[0].get('demographic', {}).get('ethnicity'),
