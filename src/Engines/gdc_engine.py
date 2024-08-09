@@ -127,6 +127,7 @@ class GDCEngine:
         """
         if response is None or response.status_code != 200:
             return None
+        
         content = response.content.decode('utf-8')
         lines = content.splitlines()
         if len(lines) <= 1:
@@ -167,7 +168,7 @@ class GDCEngine:
         rs = (grequests.get(u, headers = {"Content-Type": "application/json"}) for u in file_id_url_map.values())
         responses = grequests.map(rs)
         file_id_response_map = dict(zip(file_id_url_map.keys(), responses))
-        responses = [r for r in file_id_response_map.values() if r.status_code == 200 or r is not None]
+        responses = [r for r in file_id_response_map.values()]
         rawData = [self._get_raw_data(r) for r in responses]
         rawDataMap = dict(zip(file_id_url_map.keys(), rawData))
         return rawDataMap
@@ -200,7 +201,7 @@ class GDCEngine:
         for key, value in tqdm(rawDataMap.items()):
             if value is not None:
                 df_tmp = value.dropna()
-                cols = df_tmp[['gene_name']].to_numpy().flatten()
+                cols = df_tmp[['gene_id']].to_numpy().flatten()
                 df_tmp = df_tmp[[feature_col]].T
                 df_tmp.columns = cols
                 df_tmp['file_id'] = key
