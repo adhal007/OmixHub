@@ -17,13 +17,13 @@ class Analysis:
         elif analysis_type == 'ML':
             feature_col = 'expr_unstr_tpm'
 
-        expr_unstr_df = data_from_bq[].apply(pd.Series)
+        expr_unstr_df = data_from_bq[feature_col].apply(pd.Series)
 
         # Optionally rename the new columns to something meaningful
         expr_unstr_df.columns = gene_ids_or_gene_cols
 
         # Concatenate the expanded columns back to the original dataframe
-        exp_df = pd.concat([data_from_bq.drop(columns=['expr_unstr_count']), expr_unstr_df], axis=1)   
+        exp_df = pd.concat([data_from_bq.drop(columns=[feature_col]), expr_unstr_df], axis=1)   
         return exp_df 
 
     def counts_from_bq_df(self, exp_df:pd.DataFrame, gene_ids_or_gene_cols: list):
