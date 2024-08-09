@@ -29,8 +29,15 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 5. Gene Set Enrichment Analysis(GSEA) on differentially expressed genes([jupyter notebook]()). 
 
 
+### Using GRADIO App for RNA-Seq Data:
 
+Currently this is restricted to Users. If you want to try this ou or contribute to this reach out to me via [adhalbiophysics@gmail.com](mailto:adhalbiophysics@gmail.com) with your interest.
 
+Running the app:
+1. `git clone https://github.com/adhal007/OmixHub.git`
+2. Create omixhub conda environment using `conda env create -f environment.yml`
+3. Run gradio app `python3 app_gradio.py`
+4. Check out the [app navigation documentation](./docs/UI%20Prototype/gradio_use.md).
 
   <!-- - Deep-learning:
     - Auto-encoders 
