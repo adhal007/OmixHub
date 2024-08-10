@@ -68,7 +68,17 @@ class BigQueryQueries(BigQueryUtils):
         super().__init__(project_id)
         self.dataset_id = dataset_id
         self.table_id = table_id
+    
+    def get_primary_site_options(self):
+        query = f"""
+        SELECT DISTINCT primary_site
+        FROM `{self.dataset_id}.{self.table_id}`
+        """
 
+        query_job = self._client.query(query)
+        results = query_job.result()
+        return [row.primary_site for row in results]
+          
     def get_primary_diagnosis_options(self, primary_site):
         query = f"""
         SELECT DISTINCT primary_diagnosis
