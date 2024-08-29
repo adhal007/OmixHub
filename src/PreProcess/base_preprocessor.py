@@ -1,26 +1,33 @@
-
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 import src.CustomLogger.custom_logger
+
 logger = src.CustomLogger.custom_logger.CustomLogger()
 
+
 class BaseDataProcessor:
-    def __init__(self, data:pd.DataFrame, x_cols: list[str], y_cols: list[str], unique_id_col: str) -> None:
+    def __init__(
+        self,
+        data: pd.DataFrame,
+        x_cols: list[str],
+        y_cols: list[str],
+        unique_id_col: str,
+    ) -> None:
         """
         Initialize the DataQualityChecker with a DataFrame.
 
         Args:
             data (pd.DataFrame): The input DataFrame.
             x_cols: patients
-            y_cols: gene ids 
+            y_cols: gene ids
         """
         self.data = data
         self.x_cols = x_cols
-        self.y_cols = y_cols 
-        self.unique_id_col = unique_id_col  
-        
-        self.logger = logger.custlogger(loglevel='DEBUG')
+        self.y_cols = y_cols
+        self.unique_id_col = unique_id_col
+
+        self.logger = logger.custlogger(loglevel="DEBUG")
         self.logger.debug("Initialized Quality Checker class")
         if self.data is None:
             raise ValueError("No data provided")
@@ -50,8 +57,7 @@ class BaseDataProcessor:
         Returns:
             bool: True if there is missing data, False otherwise.
         """
-        missing_data = self.data.isnull().sum().sum() > 0
-        return missing_data
+        return self.data.isnull().values.any()
 
     def check_duplicate_data(self):
         """
@@ -80,10 +86,14 @@ class BaseDataProcessor:
             iqr = q3 - q1
             lower_bound = q1 - 1.5 * iqr
             upper_bound = q3 + 1.5 * iqr
-            outliers |= ((self.data[col] < lower_bound) | (self.data[col] > upper_bound)).any()
+            outliers |= (
+                (self.data[col] < lower_bound) | (self.data[col] > upper_bound)
+            ).any()
         return outliers
 
-    def split_data(self, data, target_column, test_size=0.2, validation_size=0.2, random_state=None):
+    def split_data(
+        self, data, target_column, test_size=0.2, validation_size=0.2, random_state=None
+    ):
         """
         Split the data into training, test, and validation cohorts.
 
@@ -98,12 +108,19 @@ class BaseDataProcessor:
         """
         X = data.drop(columns=[target_column])
         y = data[target_column]
-        X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=(test_size + validation_size), random_state=random_state)
-        X_test, X_validation, y_test, y_validation = train_test_split(X_temp, y_temp, test_size=validation_size/(test_size + validation_size), random_state=random_state)
+        X_train, X_temp, y_train, y_temp = train_test_split(
+            X, y, test_size=(test_size + validation_size), random_state=random_state
+        )
+        X_test, X_validation, y_test, y_validation = train_test_split(
+            X_temp,
+            y_temp,
+            test_size=validation_size / (test_size + validation_size),
+            random_state=random_state,
+        )
         splits = {
-            'train': (X_train, y_train),
-            'test': (X_test, y_test),
-            'validation': (X_validation, y_validation)
+            "train": (X_train, y_train),
+            "test": (X_test, y_test),
+            "validation": (X_validation, y_validation),
         }
         return splits
 
@@ -123,7 +140,9 @@ class BaseDataProcessor:
         test_ids = set(test.index)
         validation_ids = set(validation.index)
 
-        leakage = (len(train_ids.intersection(test_ids)) > 0) or (len(train_ids.intersection(validation_ids)) > 0)
+        leakage = (len(train_ids.intersection(test_ids)) > 0) or (
+            len(train_ids.intersection(validation_ids)) > 0
+        )
         return leakage
 
     def check_data_drift(self, train, test, validation, numerical_columns):
@@ -145,16 +164,17 @@ class BaseDataProcessor:
 
         drift = False
         for col in numerical_columns:
-            train_mean = train_stats[col]['mean']
-            test_mean = test_stats[col]['mean']
-            validation_mean = validation_stats[col]['mean']
+            train_mean = train_stats[col]["mean"]
+            test_mean = test_stats[col]["mean"]
+            validation_mean = validation_stats[col]["mean"]
 
-            train_std = train_stats[col]['std']
-            test_std = test_stats[col]['std']
-            validation_std = validation_stats[col]['std']
+            train_std = train_stats[col]["std"]
+            test_std = test_stats[col]["std"]
+            validation_std = validation_stats[col]["std"]
 
-            drift |= ((np.abs(train_mean - test_mean) > 2 * (train_std + test_std)) or
-                      (np.abs(train_mean - validation_mean) > 2 * (train_std + validation_std)))
+            drift |= (np.abs(train_mean - test_mean) > 2 * (train_std + test_std)) or (
+                np.abs(train_mean - validation_mean) > 2 * (train_std + validation_std)
+            )
         return drift
 
     def check_data_skew(self, train, test, validation, numerical_columns):
@@ -174,7 +194,9 @@ class BaseDataProcessor:
         test_skew = test[numerical_columns].skew()
         validation_skew = validation[numerical_columns].skew()
 
-        skew = (train_skew - test_skew).abs().max() > 0.5 or (train_skew - validation_skew).abs().max() > 0.5
+        skew = (train_skew - test_skew).abs().max() > 0.5 or (
+            train_skew - validation_skew
+        ).abs().max() > 0.5
         return skew
 
     def check_data_bias(self, train, test, validation, target_column):
@@ -194,7 +216,9 @@ class BaseDataProcessor:
         test_bias = test[target_column].value_counts(normalize=True)
         validation_bias = validation[target_column].value_counts(normalize=True)
 
-        bias = (train_bias - test_bias).abs().max() > 0.1 or (train_bias - validation_bias).abs().max() > 0.1
+        bias = (train_bias - test_bias).abs().max() > 0.1 or (
+            train_bias - validation_bias
+        ).abs().max() > 0.1
         return bias
 
     def check_data_noise(self, train, test, validation, numerical_columns):
@@ -216,15 +240,20 @@ class BaseDataProcessor:
             test_std = test[col].std()
             validation_std = validation[col].std()
 
-            noise |= ((np.abs(train_std - test_std) > 0.5 * train_std) or
-                      (np.abs(train_std - validation_std) > 0.5 * train_std))
+            noise |= (np.abs(train_std - test_std) > 0.5 * train_std) or (
+                np.abs(train_std - validation_std) > 0.5 * train_std
+            )
         return noise
 
     def get_patient_overlap_train_test_split(self):
-        raise NotImplementedError("Subclasses must implement the 'get_patient_overlap_train_test_split' method.")
+        raise NotImplementedError(
+            "Subclasses must implement the 'get_patient_overlap_train_test_split' method."
+        )
 
     def get_set_sampling_train_test_split(self):
-        raise NotImplementedError("Subclasses must implement the 'get_set_sampling_train_test_split' method.")
+        raise NotImplementedError(
+            "Subclasses must implement the 'get_set_sampling_train_test_split' method."
+        )
 
 
 # Example usage:
