@@ -28,21 +28,35 @@ Connectors
 
 2. GDC Filters
 ^^^^^^^^^^^^^^
-.. autoclass:: src.Connectors.gdc_filters.GDCFilters
+.. autoclass:: src.Connectors.gdc_filters.GDCQueryFilters
    :members:
    :undoc-members:
    :show-inheritance:
 
    .. rubric:: Methods
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.__init__
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.create_and_filters
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.all_projects_by_exp_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.rna_seq_data_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.all_diseases
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.create_single_facet_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.get_files_endpt_facet_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.create_single_facet_df
-   .. autofunction:: src.Connectors.gdc_filters.GDCFilters.get_files_facet_data
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.__init__
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.create_and_filters
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.all_projects_by_exp_filter
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.rna_seq_data_filter
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.all_diseases
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.create_single_facet_filter
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.get_files_endpt_facet_filter
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.create_single_facet_df
+   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.get_files_facet_data
+
+
+.. autoclass:: src.Connectors.gdc_filters.GDCFacetFilters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+   .. rubric:: Methods
+   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.__init__
+   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.create_single_facet_filter
+   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.get_files_endpt_facet_filter
+   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.create_single_facet_df
+   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.get_files_facet_data
+
 
 3. GDC Parser
 ^^^^^^^^^^^^^
@@ -58,21 +72,21 @@ Connectors
 
 4. Google Cloud Connector
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: src.Connectors.google_cloud_conn.GoogleCloudConn
+.. autoclass:: src.Connectors.google_cloud_conn.BigQueryUtils
    :members:
    :undoc-members:
    :show-inheritance:
 
    .. rubric:: Methods
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.__init__
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.table_exists
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.dataset_exists
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.upload_df_to_bq
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.create_bigquery_table_with_schema
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.df_to_json
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.load_json_data
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.create_identifier
-   .. autofunction:: src.Connectors.google_cloud_conn.GoogleCloudConn.upload_partitioned_clustered_table
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.__init__
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.table_exists
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.dataset_exists
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.upload_df_to_bq
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.create_bigquery_table_with_schema
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.df_to_json
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.load_json_data
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.create_identifier
+   .. autofunction:: src.Connectors.google_cloud_conn.BigQueryUtils.upload_partitioned_clustered_table
 
 Engines
 -------
