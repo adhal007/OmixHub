@@ -20,3 +20,5 @@ seaborn
 shap
 tqdm
 umap_learn
+sphinx
+sphinx-automodapi
