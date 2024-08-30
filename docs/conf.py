@@ -3,7 +3,7 @@ import sys
 
 # Add the 'src' directory to sys.path
 sys.path.insert(0, os.path.abspath('../'))
-
+sys.path.insert(0, os.path.abspath('../src'))
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information -----------------------------------------------------
@@ -13,7 +13,7 @@ copyright = '2024, Abhilash Dhal'
 author = 'Abhilash Dhal'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.7'
+release = '0.6.8'
 
 # -- General configuration ---------------------------------------------------
 
