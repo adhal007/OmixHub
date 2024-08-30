@@ -1,15 +1,14 @@
-
 OmixHub Documentation
 ======================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents
 
    overview
    getting_started
    applications
-   modules  
+   modules  # Link to your modules.rst file
    additional_code_docs
    references
 

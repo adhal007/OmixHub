@@ -17,34 +17,46 @@ import io
 
 class GDCEngine:
     """
-    A class representing the GDCEngine.
-
-    The GDCEngine is responsible for fetching and processing data from the GDC (Genomic Data Commons) API.
-    It provides methods to set parameters, fetch metadata, and create data matrices for RNA sequencing data.
+    GDCEngine class to fetch and process data from the GDC API.
 
     Attributes:
-        params (dict): A dictionary containing the parameters for the GDCEngine.
-            - endpt (str): The endpoint for the GDC API. Default is 'files'.
-            - homepage (str): The homepage URL for the GDC API. Default is 'https://api.gdc.cancer.gov'.
-            - ps_list (list): A list of program names to filter the data. Default is None.
-            - new_fields (list): A list of additional fields to include in the metadata. Default is None.
-            - race_list (list): A list of races to filter the data. Default is None.
-            - gender_list (list): A list of genders to filter the data. Default is None.
-            - data_type (str): The type of data to fetch. Default is 'RNASeq'.
+        params (dict): Parameters for the GDCEngine.
+        _query_params (dict): Query parameters for the GDC API.
+        _default_params (dict): Default parameters for the GDCEngine.
 
     Methods:
-        set_params: Set the parameters for the GDCEngine.
-        _check_data_type: Check if the specified data type is supported.
-        _get_raw_data: Get the raw data from the API response.
-        _make_file_id_url_map: Create a mapping of file IDs to download URLs.
-        _get_urls_content: Download the content from the specified URLs.
-        get_normalized_RNA_seq_metadata: Fetch the normalized RNA sequencing metadata.
-        make_RNA_seq_data_matrix: Create a data matrix for RNA sequencing data.
-        run: Run the GDCEngine to fetch and process the data.
+        set_params(params: dict) -> None:
+            Set the parameters for the GDCEngine.
 
+        _check_data_type(data_type: str) -> bool:
+            Check if the specified data type is supported.
+
+        _get_raw_data() -> dict:
+            Get the raw data from the API response.
+
+        _make_file_id_url_map(data: dict) -> dict:
+            Create a mapping of file IDs to download URLs.
+
+        _get_urls_content(urls: list) -> list:
+            Download the content from the specified URLs.
+
+        get_normalized_RNA_seq_metadata() -> pd.DataFrame:
+            Fetch the normalized RNA sequencing metadata.
+
+        make_RNA_seq_data_matrix() -> pd.DataFrame:
+            Create a data matrix for RNA sequencing data.
+
+        run() -> None:
+            Run the GDCEngine to fetch and process the data.
     """
 
     def __init__(self, **params: dict) -> None:
+        """
+        Initialize the GDCEngine with the given parameters.
+
+        Args:
+            **params (dict): Parameters to initialize the GDCEngine.
+        """
         self._default_params = {
             "endpt": "files",
             "homepage": "https://api.gdc.cancer.gov",

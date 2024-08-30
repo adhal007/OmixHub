@@ -13,7 +13,7 @@ copyright = '2024, Abhilash Dhal'
 author = 'Abhilash Dhal'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.1'
+release = '0.6.3'
 
 # -- General configuration ---------------------------------------------------
 
@@ -22,12 +22,9 @@ release = '0.6.1'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
+    'sphinx.ext.napoleon',  # For Google style docstrings
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.todo',
-    'sphinx.ext.mathjax',
-  # Example custom extension from src
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -65,4 +62,4 @@ autodoc_member_order = 'bysource'
 # -- Options for todo extension ----------------------------------------------
 
 # Include TODOs in the output
-todo_include_todos = True
+# todo_include_todos = True

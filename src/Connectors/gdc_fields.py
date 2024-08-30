@@ -89,8 +89,8 @@ class GDCQueryDefaultFields:
         """
         General method to update field lists based on the field name and new fields.
         
-        :param field_name: The name of the field list to update.
-        :param new_fields: List of new fields to replace the existing ones.
+            field_name: The name of the field list to update.
+            new_fields: List of new fields to replace the existing ones.
         """
         if new_fields is not None and isinstance(new_fields, list):
             if hasattr(self, field_name):

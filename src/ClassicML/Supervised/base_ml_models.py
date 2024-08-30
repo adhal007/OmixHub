@@ -57,11 +57,11 @@ class BaseEnsembleClf:
 
         The code has been expanded to be more generalizable to other sklearn models with any number of features.
 
-        :param X_train: training data
-        :param y_train: training labels
-        :param X_val: validation data
-        :param y_val: validation labels
-        :return: dictionary of model scores, model names, chain jaccard scores, and chains
+            X_train: training data
+            y_train: training labels
+            X_val: validation data
+            y_val: validation labels
+        Returns: dictionary of model scores, model names, chain jaccard scores, and chains
         """
         ## can probabaly use multiprocessing.Pool here to parallelize the training of each model
         ovr_jaccard_scores = {}
@@ -108,9 +108,9 @@ class BaseEnsembleClf:
     def test_clf(self, X_test, y_test, model_outs):
         """
         Test a multi-label classifier using Logistic Regression.
-        :param X_test: test data (pandas dataframe of samples x features)
-        :param y_test: test labels (pandas dataframe of samples x labels)
-        :param chains: list of classifier chains (output of train_clf)
+            X_test: test data (pandas dataframe of samples x features)
+            y_test: test labels (pandas dataframe of samples x labels)
+            chains: list of classifier chains (output of train_clf)
         return: ensemble_jaccard_score
         """
         testing_scores = {}
@@ -131,9 +131,9 @@ class BaseEnsembleClf:
     def plot_performance(self, model_scores, model_names, chain_jaccard_scores):
         """
         Plot the performance of the ensemble vs. independent classifier chains
-        :param model_scores: list of scores for each model
-        :param model_names: list of names for each model
-        :param chain_jaccard_scores: list of scores for each chain
+            model_scores: list of scores for each model
+            model_names: list of names for each model
+            chain_jaccard_scores: list of scores for each chain
         """
         x_pos = np.arange(len(model_names))
         fig, ax = plt.subplots(figsize=(7, 4))
@@ -283,12 +283,12 @@ class BaseEnsembleClf:
 #     """
 #     Train multiple classifiers in parallel using multiprocessing.
 
-#     :param X_train: training data
-#     :param y_train: training labels
-#     :param X_val: validation data
-#     :param y_val: validation labels
-#     :param num_processes: number of processes to use in parallel, defaults to None (all available cores)
-#     :return: dictionary of model scores, model names, chain jaccard scores, and chains
+#         X_train: training data
+#         y_train: training labels
+#         X_val: validation data
+#         y_val: validation labels
+#         num_processes: number of processes to use in parallel, defaults to None (all available cores)
+#     Returns: dictionary of model scores, model names, chain jaccard scores, and chains
 #     """
 #     train_func = partial(self._train_single_clf, X_train=X_train, y_train=y_train, X_val=X_val, y_val=y_val)
     

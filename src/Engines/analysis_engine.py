@@ -7,11 +7,39 @@ import gseapy as gp
 import numpy as np
 
 class Analysis:
+    """
+    Analysis class to perform data analysis based on the specified analysis type.
+
+    Attributes:
+        data_from_bq (pd.DataFrame): The input data from BigQuery.
+        analysis_type (str): The type of analysis to perform.
+    """
     def __init__(self, data_from_bq:pd.DataFrame, analysis_type:str) -> None:
+        """
+        Initialize the Analysis class with the given data and analysis type.
+
+        Args:
+            data_from_bq (pd.DataFrame): The input data from BigQuery.
+            analysis_type (str): The type of analysis to perform.
+        """
         self.data_from_bq = data_from_bq
         self.analysis_type = analysis_type 
     
     def expand_data_from_bq(self, data_from_bq, gene_ids_or_gene_cols, analysis_type):
+        """
+        Expand the data from BigQuery by separating 'expr_unstr_count' or 'expr_unstr_tpm' into separate columns.
+
+        Args:
+            data_from_bq (pd.DataFrame): The input data from BigQuery.
+            gene_ids_or_gene_cols (list): The list of gene IDs or gene column names.
+            analysis_type (str): The type of analysis to perform. Should be either 'DE' or 'ML'.
+
+        Raises:
+            Warning: If no analysis type is specified.
+
+        Returns:
+            pd.DataFrame: The expanded DataFrame with separated columns.
+        """
         if analysis_type is None:
             raise Warning("No analysis type was specified")
             return None
@@ -31,6 +59,20 @@ class Analysis:
         return exp_df 
 
     def counts_from_bq_df(self, exp_df:pd.DataFrame, gene_ids_or_gene_cols: list):
+        """
+        Expand the data from BigQuery by separating 'expr_unstr_count' or 'expr_unstr_tpm' into separate columns.
+
+        Args:
+            data_from_bq (pd.DataFrame): The input data from BigQuery.
+            gene_ids_or_gene_cols (list): The list of gene IDs or gene column names.
+            analysis_type (str): The type of analysis to perform. Should be either 'DE' or 'ML'.
+
+        Raises:
+            Warning: If no analysis type is specified.
+
+        Returns:
+            pd.DataFrame: The expanded DataFrame with separated columns.
+        """
         gene_ids_or_gene_cols.append('case_id') 
         counts = exp_df[gene_ids_or_gene_cols]
         counts.set_index('case_id', inplace=True)
@@ -38,7 +80,13 @@ class Analysis:
         
     def metadata_for_pydeseq(self, exp_df:pd.DataFrame):
         """
-        This function will take the expanded data from bigquery and then create a metadata for pydeseq
+        Create metadata for PyDeSeq from the expanded DataFrame.
+
+        Args:
+            exp_df (pd.DataFrame): The expanded DataFrame containing expression data.
+
+        Returns:
+            pd.DataFrame: Metadata DataFrame with 'Sample' and 'Condition' columns.
         """
         metadata = exp_df[['case_id', 'tissue_type']]
         metadata.columns = ['Sample', 'Condition']
@@ -46,6 +94,16 @@ class Analysis:
         return metadata     
     
     def run_pydeseq(self, metadata, counts):
+        """
+        Run Gene Set Enrichment Analysis (GSEA) on the given DataFrame.
+
+        Args:
+            df_de (pd.DataFrame): DataFrame containing differential expression results.
+            gene_set (str): The gene set to use for GSEA.
+
+        Returns:
+            tuple: A tuple containing the GSEA results DataFrame and the plot axes.
+        """
         pydeseq_obj = pydeseq_utils.PyDeSeqWrapper(count_matrix=counts, metadata=metadata, design_factors='Condition', groups = {'group1':'Tumor', 'group2':'Normal'})
         design_factor = 'Condition'
         result = pydeseq_obj.run_deseq(design_factor=design_factor, group1 = 'Tumor', group2 = 'Normal')

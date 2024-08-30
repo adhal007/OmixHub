@@ -74,7 +74,7 @@ class MongoDBConnector:
     #     """
     #     Creates a MongoDBAtlasVectorSearch object using the connection string, database, and collection names, along with the OpenAI embeddings and index configuration.
 
-    #     :return: MongoDBAtlasVectorSearch object
+    #     Returns: MongoDBAtlasVectorSearch object
     #     """
     #     vector_search = MongoDBAtlasVectorSearch.from_texts(
     #         texts=[context_list],
