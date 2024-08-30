@@ -10,7 +10,32 @@ from gseapy.plot import gseaplot
 import gseapy as gp
 from gseapy import dotplot
 import matplotlib.pyplot as plt
+# to save your figure, make sure that ``ofname`` is not None
+
 import numpy as np
+
+# Assuming gene set options are static or fetched from a file
+# GENE_SETS = pd.read_csv('/path_to_gene_sets/gene_sets.csv')['gene_set'].tolist()
+
+# def pydeseq2_analysis(project_id, dataset_id, table_id, primary_site, primary_diagnosis, gene_set):
+#     bq_queries = gcp_bq_py.BigQueryQueries(project_id, dataset_id, table_id)
+#     df = bq_queries.get_df_for_pydeseq(primary_site, primary_diagnosis)
+#     # Assuming an_eng.Analysis handles the PyDESeq2 execution
+#     analysis = an_eng.Analysis(df, analysis_type='DE')
+#     # Run analysis
+#     res_pydeseq = analysis.run_pydeseq()
+#     # Save results to a CSV for download
+#     res_pydeseq.to_csv('/mnt/data/pydeseq_results.csv', index=False)
+#     return '/mnt/data/pydeseq_results.csv', res_pydeseq.head()
+
+# def run_gsea(project_id, dataset_id, table_id, primary_site, primary_diagnosis, pydeseq_results_path, gene_set):
+#     # Assume this function takes PyDESeq2 results and a gene set, then runs GSEA
+#     bq_queries = gcp_bq_py.BigQueryQueries(project_id, dataset_id, table_id)
+#     df = bq_queries.get_df_for_pydeseq(primary_site, primary_diagnosis)
+#     analysis = an_eng.Analysis(df, analysis_type='DE')
+#     gsea_results = analysis.run_gsea(pydeseq_results_path, gene_set)
+#     gsea_results.to_csv('/mnt/data/gsea_results.csv', index=False)
+#     return '/mnt/data/gsea_results.csv', gsea_results.head()
 
 
 def generate_histogram(project_id, dataset_id, table_id, primary_site, primary_diagnosis):

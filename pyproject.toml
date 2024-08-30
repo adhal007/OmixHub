@@ -5,3 +5,18 @@ tests-root = "tests"
 test-framework = "unittest"
 ignore-paths = []
 formatter-cmds = ["black $file"]
+
+[project]
+version = "0.6.0"
+authors = [
+  {name = "Abhilash Dhal", email = "adhalbiophysics@gmail.com"}
+]
+description = "Hub for Omics Data Science"
+readme = "README.md"
+
+[project.urls]
+Homepage = "https://example.com"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/me/spam.git"
+"Bug Tracker" = "https://github.com/me/spam/issues"
+Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"

@@ -231,22 +231,22 @@ class GDCEngine:
         return rna_seq_data_matrix
 
     def _process_data_matrix_rna_seq(
-        self, meta, primary_site=None, downstream_analysis="DE"
+        self, meta, primary_site=None, downstream_analysis="DE", num_chunks=50
     ):
         if primary_site is not None:
             sub_meta = meta[meta["primary_site"] == primary_site].reset_index(drop=True)
         else:
             sub_meta = meta.copy()
-        chunks = sub_meta.shape[0] // 50
+        chunks = sub_meta.shape[0] // num_chunks
         chunk_ls = []
         if downstream_analysis == "DE":
             feature_col_for_extraction = "unstranded"
         elif downstream_analysis == "ML":
-            feature_col_for_extraction = "fpkm_uq_unstranded"
+            feature_col_for_extraction = "tpm_unstranded"
 
         for chunk_i in tqdm(range(chunks)):
             sub_meta_i = sub_meta.iloc[
-                chunk_i * 50 : (chunk_i * 50 + 50), :
+                chunk_i * num_chunks : (chunk_i * num_chunks + num_chunks), :
             ].reset_index(drop=True)
             file_ids = sub_meta_i["file_id"].to_list()
             file_id_url_map = self._make_file_id_url_map(file_ids)
@@ -287,5 +287,6 @@ class GDCEngine:
                 meta=meta,
                 primary_site=primary_site,
                 downstream_analysis=downstream_analysis,
+                
             )
             return ml_data_matrix

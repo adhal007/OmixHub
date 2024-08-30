@@ -4,17 +4,15 @@
 
 OmixHub is a platform that interfaces with GDC using python to help users to apply ML based analysis on different sequencing data. Currently we **support only for RNA-Seq based datasets** from genomic data commons (GDC)
 
-1. **Cohort Creation** of Tumor and Normal Samples from GDC 
+1. **Cohort Creation** of Bulk RNA Seq Tumor and Normal Samples from GDC. 
 2. **Bioinformatics analysis:** 
    1. Application of PyDESeq2 and GSEA in a single pipeline.
-   2. Uses unstranded counts from GDC files
   
 3. **Classical ML analysis:** 
    1. Applying clustering, supervised ML and outlier sum statistics.
-   2. Uses FPKM unstranded normalized gene expression values.
 
 4. **Custom API Connections**:
-   1. Querying GDC using complex json filters ([Methods in src.Connectors for GDC API search and retrieval using custom queries](./src/README.md))
+   1. Search and retrieval of Cancer Data cohorts from GDC using complex json filters ([Methods in src.Connectors for GDC API search and retrieval using custom queries](./src/README.md))
    2. Interacting with MongoDB database in a pythonic manner (**DOCS coming soon**). 
    3. Interacting with Google cloud BigQuery in a pythonic manner (**DOCS coming soon**).  
     
@@ -22,22 +20,35 @@ OmixHub is a platform that interfaces with GDC using python to help users to app
 In NGS datasets for kidney cancer or other complex diseases, apply known or new ML models to identify patterns of gene expression to serve as a template for bio-informatics learning for aspiring scientists/researchers/students in the field. -->
 
 ### GETTING STARTED:
-1. Clone the repository 
+1. Clone the repository `git clone https://github.com/adhal007/OmixHub.git` 
 2. Create the correct conda enviroment for OmixHub: `conda env create -f environment.yaml`
-3. Create a RNA Seq unstranded counts' cohort of tumor and normal samples by primary site: ([jupyter_notebook](./docs/CohortCreation/create_RNA_seq_df_for_pydeseq.md))
-4. Differential gene expression analysis PyDeSeq for tumor vs normal samples ([jupyter notebook](./notebooks/pydeseq_gsea.ipynb)). 
-5. Gene Set Enrichment Analysis(GSEA) on differentially expressed genes([jupyter notebook]()). 
 
+#### Applications
 
-### Using GRADIO App for RNA-Seq Data:
+1. **RNA Seq Cohort Creation of tumor and normal samples by primary site**
+   1. [Example Jupyter Notebook](./tutorial_notebooks/cohort_creation_rna_seq.ipynb)
+   2. **Code:**
+  ```
+  import grequests
+  import src.Engines.gdc_engine as gdc_engine
+  from importlib import reload
+  reload(gdc_engine)
 
-Currently this is restricted to Users. If you want to try this ou or contribute to this reach out to me via [adhalbiophysics@gmail.com](mailto:adhalbiophysics@gmail.com) with your interest.
+  ## Create Dataset for differential gene expression
+  rna_seq_DGE_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Kidney', downstream_analysis='DE')
 
-Running the app:
-1. `git clone https://github.com/adhal007/OmixHub.git`
-2. Create omixhub conda environment using `conda env create -f environment.yml`
-3. Run gradio app `python3 app_gradio.py`
-4. Check out the [app navigation documentation](./docs/UI%20Prototype/gradio_use.md).
+  ## Create Dataset for machine learning analysis
+  rna_seq_DGE_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Kidney', downstream_analysis='ML') 
+  ```
+
+2. **Differential gene expression(DGE)  + Gene set enrichment analysis(GSEA) for tumor vs normal samples**  
+   1. [Example jupyter notebook](./tutorial_notebooks/pydeseq_gsea.ipynb)
+3. **Using GRADIO App for DGE + GSEA**:
+   1. Currently this is restricted to Users. If you want to try this ou or contribute to this reach out to me via [adhalbiophysics@gmail.com](mailto:adhalbiophysics@gmail.com) with your interest.
+   2. Running the app:
+      1. After completing the steps in getting started, follow the next steps
+      2. Run gradio app `python3 app_gradio.py`
+      3. Check out the [app navigation documentation](./docs/UI%20Prototype/gradio_use.md).
 
   <!-- - Deep-learning:
     - Auto-encoders 
@@ -46,19 +57,7 @@ Running the app:
   - Bayesian ML
   - Knowledge Graphs and NLP  -->
 
-### Codebase
-```md
-OmicsProjects
-   ├── src
-   │   ├── ClassicML
-   │   ├── CustomLogger   
-   │   ├── Connectors
-   │   ├── PlotUtils
-   │   ├── PreProcess 
-   └── README.md
-   └── <jupyter_nb1.ipynb> 
-   └── <jupyter_nb2.ipynb>
-   ```
+
 <!-- #### Modules developed:
 
 - [Module for Genomic Data Commons API accession, querying, search and retrieval](https://github.com/adhal007/OmixHub/tree/main/src/Connectors)
