@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import FunctionTransformer
 
 
-import src.ClassicMl.DimRedMappers.clusterer
+import src.ClassicML.DimRedMappers.clusterer
 import pandas as pd
 import umap
 
