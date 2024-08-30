@@ -7,9 +7,9 @@ OmixHub Documentation
 
    overview
    getting_started
+   modules  
+   examples
    applications
-   modules  # Link to your modules.rst file
-   additional_code_docs
    references
 
 Indices and tables
