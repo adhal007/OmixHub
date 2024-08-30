@@ -44,7 +44,9 @@ This contain gene expression quantification data (definition for the gene expres
 3. **Functional Annotation**
    1. The goal here is to showcase if genes that are identified as potential drug targets will have some level of tumor toxicity and non-specificity.
    2. [Paper on BayesTS](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10028977/#S5):
-      1. Describes a new method using 1) a normalized RNA count matrix, 2) tissue distribution profiles and 3) protein expression labels (Methods) to infer tumor toxicity or specificity.
+      1. Quantifying Tumor Specificity using Bayesian probabilistic modeling for drug target discovery and prioritization
+      2. Describes a new method using 1) a normalized RNA count matrix, 2) tissue distribution profiles and 3) protein expression labels (Methods) to infer tumor toxicity or specificity.
+      3. [Github](https://github.com/frankligy/BayesTS/tree/main)
    3. [Datasets for annotation of proteins of DGE](https://www.proteinatlas.org/about/download) 
    4. [Characterizing tumor toxicity in Gene therapy targets from Bulk RNA-Sequencing](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10028977/#S5)
    5. [Bayesian Framework for identifying gene expression outliers in individual sample of RNA-Seq data](https://ascopubs.org/doi/10.1200/CCI.19.00095)
