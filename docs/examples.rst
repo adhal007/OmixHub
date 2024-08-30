@@ -26,8 +26,10 @@ Example 1. Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons
 
       # Create Dataset for machine learning analysis
       rna_seq_ML_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Kidney', downstream_analysis='ML')
+**************************************************
 
 Example 2. Run an analysis for Differential Gene Expression (DE) and Gene Set Enrichment Analysis (GSEA)
+**************************************************
 .. code-block:: python
 
     """This example demonstrates how to create a data matrix for Differential gene expression (DE) or machine learning analysis.
