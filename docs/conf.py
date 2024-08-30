@@ -13,7 +13,7 @@ copyright = '2024, Abhilash Dhal'
 author = 'Abhilash Dhal'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.3'
+release = '0.6.4'
 
 # -- General configuration ---------------------------------------------------
 
@@ -25,6 +25,8 @@ extensions = [
     'sphinx.ext.napoleon',  # For Google style docstrings
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx_automodapi.automodapi',
+    'sphinx_automodapi.smart_resolver'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
