@@ -3,7 +3,7 @@ import sys
 
 # Add the 'src' directory to sys.path
 sys.path.insert(0, os.path.abspath('../'))
-sys.path.insert(0, os.path.abspath('../src'))
+# sys.path.insert(0, os.path.abspath('../src'))
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information -----------------------------------------------------
@@ -26,7 +26,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx_automodapi.automodapi',
-    'sphinx_automodapi.smart_resolver'
+    'sphinx_automodapi.smart_resolver',
+    'sphinx.ext.viewcode'
 ]
 autodoc_default_options = {
     'members': True,
