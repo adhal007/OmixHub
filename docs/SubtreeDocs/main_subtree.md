@@ -1,8 +1,14 @@
 
+
 ### Subtree
 ```md
 OmixHub
    ├── docs
+   │   ├── index.rst
+   │   ├── conf.py  
+   │   ├── getting_started.rst
+   │   ├── modules.rst 
+   │   ├── <other_pages>.rst  
    ├── tests
    ├── tutorial notebooks
    ├── src
@@ -19,4 +25,4 @@ OmixHub
    └── requirements.txt
    └── pyproject.toml 
    └── app_gradio.py
-   ```
+```

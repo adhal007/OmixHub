@@ -10,7 +10,7 @@ import pandas as pd
 import umap
 
 
-class umap_embedder:
+class UMAPEmbedder:
     def __init__(self, 
                  data, 
                  embedding_type = None,

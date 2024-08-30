@@ -6,7 +6,7 @@ from gseapy.plot import gseaplot
 import gseapy as gp
 import numpy as np
 
-class Analysis:
+class AnalysisEngine:
     """
     Analysis class to perform data analysis based on the specified analysis type.
 
@@ -23,7 +23,7 @@ class Analysis:
             analysis_type (str): The type of analysis to perform.
         """
         self.data_from_bq = data_from_bq
-        self.analysis_type = analysis_type 
+        self.analysis_type = analysis_type
     
     def expand_data_from_bq(self, data_from_bq, gene_ids_or_gene_cols, analysis_type):
         """
@@ -135,5 +135,6 @@ class Analysis:
         return out_df, axs
      
     def data_for_ml(self):
-        raise NotImplementedError()
+        raise NotImplementedError("This method is not implemented yet")
+        
     
