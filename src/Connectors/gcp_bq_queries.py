@@ -1,5 +1,5 @@
 from google.cloud import bigquery
-from google.cloud import bigquery_storage
+from google.cloud import bigquery_storage_v1
 from google.cloud.exceptions import NotFound
 import pandas as pd
 
@@ -8,7 +8,7 @@ class BigQueryUtils:
     def __init__(self, project_id) -> None:
         self.project_id = project_id
         self._client = bigquery.Client(project=self.project_id)
-        self._bqstorage_client = bigquery_storage.BigQueryReadClient()
+        self._bqstorage_client = bigquery_storage_v1.BigQueryReadClient()
 
     def table_exists(self, table_ref):
         try:

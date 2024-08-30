@@ -39,11 +39,6 @@ Connectors
    .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.all_projects_by_exp_filter
    .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.rna_seq_data_filter
    .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.all_diseases
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.create_single_facet_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.get_files_endpt_facet_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.create_single_facet_df
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.get_files_facet_data
-
 
 .. autoclass:: src.Connectors.gdc_filters.GDCFacetFilters
    :members:

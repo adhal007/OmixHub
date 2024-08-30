@@ -26,3 +26,4 @@ sphinx-rtd-theme
 google-cloud-bigquery
 google-cloud-storage
 google-cloud 
+google-cloud-bigquery-storage
