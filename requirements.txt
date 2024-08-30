@@ -23,3 +23,6 @@ umap_learn
 sphinx
 sphinx-automodapi
 sphinx-rtd-theme
+google-cloud-bigquery
+google-cloud-storage
+google-cloud 
