@@ -106,7 +106,7 @@ class RNASeqPreProcessor(bp.BaseDataProcessor):
         else:
             return self._non_overlap_samples
     
-    def get_patient_overlap_train_test_split(self)
+    def get_patient_overlap_train_test_split(self):
         patient_overlap_splits = self.split_data(self.duplicate_samples, self.unique_id_col)
         return patient_overlap_splits
 
