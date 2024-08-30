@@ -25,10 +25,10 @@ author = "Abhilash Dhal"
 # -- General configuration ---------------------------------------------------
 # -- General configuration
 
-extensions = [
-    "src.Engines.gdc_engine.py",
-    "src.Engines.analysis_engine.py"
-]
+# extensions = [
+#     "src.Engines.gdc_engine.py",
+#     "src.Engines.analysis_engine.py"
+# ]
 
 intersphinx_mapping = {
     "rtd": ("https://docs.readthedocs.io/en/stable/", None),
