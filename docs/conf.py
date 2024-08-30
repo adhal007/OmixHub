@@ -27,7 +27,7 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
-    'Engines'  # Example custom extension from src
+  # Example custom extension from src
 ]
 
 # Add any paths that contain templates here, relative to this directory.
