@@ -9,6 +9,7 @@ OmixHub Documentation
    overview
    getting_started
    applications
+   modules  
    additional_code_docs
    references
 
