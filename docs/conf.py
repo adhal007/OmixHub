@@ -16,7 +16,8 @@
 
 
 # -- Project information -----------------------------------------------------
-import os, sys; sys.path.append(os.path.abspath('src'))
+import os, sys; 
+sys.path.append(os.path.abspath('src'))
 project = "OmixHub"
 copyright = "2024, OmixHub"
 author = "Abhilash Dhal"
@@ -25,19 +26,19 @@ author = "Abhilash Dhal"
 # -- General configuration ---------------------------------------------------
 # -- General configuration
 
-# extensions = [
-#     "src.Engines.gdc_engine.py",
-#     "src.Engines.analysis_engine.py"
-# ]
+extensions = [
+    "Engines.gdc_engine.py",
+    "Engines.analysis_engine.py"
+]
+language = 'en'
+# intersphinx_mapping = {
+#     "rtd": ("https://docs.readthedocs.io/en/stable/", None),
+#     "python": ("https://docs.python.org/3/", None),
+#     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+# }
+# intersphinx_disabled_domains = ["std"]
 
-intersphinx_mapping = {
-    "rtd": ("https://docs.readthedocs.io/en/stable/", None),
-    "python": ("https://docs.python.org/3/", None),
-    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
-}
-intersphinx_disabled_domains = ["std"]
-
-templates_path = ["_templates"]
+# templates_path = ["_templates"]
 
 # -- Options for EPUB output
 epub_show_urls = "footnote"
