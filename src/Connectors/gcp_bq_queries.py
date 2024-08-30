@@ -1,7 +1,8 @@
 from google.cloud import bigquery
 from google.cloud import bigquery_storage
 from google.cloud.exceptions import NotFound
-import pandas as pd 
+import pandas as pd
+
 
 class BigQueryUtils:
     def __init__(self, project_id) -> None:
@@ -15,7 +16,7 @@ class BigQueryUtils:
             return True
         except NotFound:
             return False
-    
+
     def dataset_exists(self, dataset_id):
         try:
             self._client.get_dataset(dataset_id)  # Make an API request.
@@ -27,7 +28,9 @@ class BigQueryUtils:
 
     def upload_df_to_bq(self, table_id, df):
         job_config = bigquery.LoadJobConfig(
-            source_format=bigquery.SourceFormat.CSV, skip_leading_rows=1, autodetect=True,
+            source_format=bigquery.SourceFormat.CSV,
+            skip_leading_rows=1,
+            autodetect=True,
         )
 
         job = self._client.load_table_from_dataframe(
@@ -35,31 +38,38 @@ class BigQueryUtils:
         )
         return job
 
-    def create_bigquery_table_with_schema(self, table_id, schema, partition_field=None, clustering_fields=None):
-        if not self.table_exists(table_id):
+    def create_bigquery_table_with_schema(
+        self, table_id, schema, partition_field=None, clustering_fields=None
+    ):
+        try:
+            table = self._client.get_table(table_id)
+            print("Table Already Exists")
+            return None
+        except NotFound:
             table = bigquery.Table(table_id, schema=schema)
             if partition_field:
                 table.range_partitioning = bigquery.RangePartitioning(
                     field=partition_field,
-                    range_=bigquery.PartitionRange(start=0, end=100000000, interval=1000000),
+                    range_=bigquery.PartitionRange(
+                        start=0, end=100000000, interval=1000000
+                    ),
                 )
             if clustering_fields:
                 table.clustering_fields = clustering_fields
             table = self._client.create_table(table)
             print(f"Created table {table.project}.{table.dataset_id}.{table.table_id}")
             return table
-        else:
-            print("Table Already Exists")
-            return None
 
-    def df_to_json(self, df, file_path='data.json'):
-        df.to_json(file_path, orient='records', lines=True)
+    def df_to_json(self, df, file_path="data.json"):
+        df.to_json(file_path, orient="records", lines=True)
 
     def load_json_data(self, json_object, schema, table_id):
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON, schema=schema
         )
-        job = self._client.load_table_from_json(json_object, table_id, job_config=job_config)
+        job = self._client.load_table_from_json(
+            json_object, table_id, job_config=job_config
+        )
         return job
 
 
@@ -68,7 +78,7 @@ class BigQueryQueries(BigQueryUtils):
         super().__init__(project_id)
         self.dataset_id = dataset_id
         self.table_id = table_id
-    
+
     def get_primary_site_options(self):
         query = f"""
         SELECT DISTINCT primary_site
@@ -78,7 +88,7 @@ class BigQueryQueries(BigQueryUtils):
         query_job = self._client.query(query)
         results = query_job.result()
         return [row.primary_site for row in results]
-          
+
     def get_primary_diagnosis_options(self, primary_site):
         query = f"""
         SELECT DISTINCT primary_diagnosis
@@ -112,7 +122,9 @@ class BigQueryQueries(BigQueryUtils):
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
                 bigquery.ScalarQueryParameter("primary_site", "STRING", primary_site),
-                bigquery.ScalarQueryParameter("primary_diagnosis", "STRING", primary_diagnosis)
+                bigquery.ScalarQueryParameter(
+                    "primary_diagnosis", "STRING", primary_diagnosis
+                ),
             ]
         )
         query_job = self._client.query(query, job_config=job_config)
@@ -126,8 +138,8 @@ class BigQueryQueries(BigQueryUtils):
 
         # # Concatenate the expanded columns back to the original dataframe
         # df = pd.concat([df.drop(columns=['expr_unstr_count']), expr_unstr_df], axis=1)
-        return df 
-    
+        return df
+
     def get_all_primary_diagnosis_for_primary_site(self, primary_site):
 
         query = f"""
@@ -150,6 +162,6 @@ class BigQueryQueries(BigQueryUtils):
         query_job = self._client.query(query, job_config=job_config)
         result = query_job.result()  # Wait for the query job to complete.
         df = result.to_dataframe()
-        value_counts_df = df['primary_diagnosis'].value_counts().reset_index()
-        value_counts_df.columns = ['primary_diagnosis', 'number_of_cases']
+        value_counts_df = df["primary_diagnosis"].value_counts().reset_index()
+        value_counts_df.columns = ["primary_diagnosis", "number_of_cases"]
         return value_counts_df
