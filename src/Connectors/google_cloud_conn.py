@@ -6,25 +6,67 @@ import json
 
 
 class BigQueryUtils:
+    """
+    Utility class for interacting with Google BigQuery.
+
+    Attributes:
+        project_id (str): The Google Cloud project ID.
+        _client (bigquery.Client): The BigQuery client.
+    """
+
     def __init__(self, project_id) -> None:
+        """
+        Initialize the BigQueryUtils class.
+
+        Args:
+            project_id (str): The Google Cloud project ID.
+        """
         self.project_id = project_id
         self._client = bigquery.Client(project=self.project_id)
 
-    def table_exists(self, table_ref):
+    def table_exists(self, table_ref) -> bool:
+        """
+        Check if a BigQuery table exists.
+
+        Args:
+            table_ref (str): The reference to the BigQuery table.
+
+        Returns:
+            bool: True if the table exists, False otherwise.
+        """
         try:
             self._client.get_table(table_ref)
             return True
         except NotFound:
             return False
 
-    def dataset_exists(self, dataset_id):
+    def dataset_exists(self, dataset_id) -> bool:
+        """
+        Check if a BigQuery dataset exists.
+
+        Args:
+            dataset_id (str): The ID of the BigQuery dataset.
+
+        Returns:
+            bool: True if the dataset exists, False otherwise.
+        """
         try:
             self._client.get_dataset(dataset_id)  # Make an API request.
             return True
         except NotFound:
             return False
 
-    def upload_df_to_bq(self, table_id, df):
+    def upload_df_to_bq(self, table_id, df) -> bigquery.LoadJob:
+        """
+        Upload a DataFrame to a BigQuery table.
+
+        Args:
+            table_id (str): The ID of the BigQuery table.
+            df (pd.DataFrame): The DataFrame to upload.
+
+        Returns:
+            bigquery.LoadJob: The load job object.
+        """
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.CSV,
             skip_leading_rows=1,
@@ -38,7 +80,19 @@ class BigQueryUtils:
 
     def create_bigquery_table_with_schema(
         self, table_id, schema, partition_field=None, clustering_fields=None
-    ):
+    ) -> bigquery.Table:
+        """
+        Create a BigQuery table with a specified schema, partitioning, and clustering.
+
+        Args:
+            table_id (str): The ID of the BigQuery table.
+            schema (list): The schema of the BigQuery table.
+            partition_field (str, optional): The field to partition the table by. Defaults to None.
+            clustering_fields (list, optional): The fields to cluster the table by. Defaults to None.
+
+        Returns:
+            bigquery.Table: The created BigQuery table object, or None if the table already exists.
+        """
         if not self.table_exists(table_id):
             table = bigquery.Table(table_id, schema=schema)
             if partition_field:
@@ -57,12 +111,33 @@ class BigQueryUtils:
             print("Table Already Exists")
             return None
 
-    def df_to_json(self, df, file_path="data.json"):
+    def df_to_json(self, df, file_path="data.json") -> dict:
+        """
+        Convert a DataFrame to a JSON object and save it to a file.
+
+        Args:
+            df (pd.DataFrame): The DataFrame to convert.
+            file_path (str, optional): The path to save the JSON file. Defaults to "data.json".
+
+        Returns:
+            dict: The JSON object.
+        """
         json_data = df.to_json(file_path, orient="records", lines=True)
         json_object = json.loads(json_data)
         return json_object
 
-    def load_json_data(self, json_object, schema, table_id):
+    def load_json_data(self, json_object, schema, table_id) -> bigquery.LoadJob:
+        """
+        Load JSON data into a BigQuery table.
+
+        Args:
+            json_object (dict): The JSON object to load.
+            schema (list): The schema of the BigQuery table.
+            table_id (str): The ID of the BigQuery table.
+
+        Returns:
+            bigquery.LoadJob: The load job object.
+        """
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON, schema=schema
         )
@@ -71,7 +146,17 @@ class BigQueryUtils:
         )
         return job
 
-    def create_identifier(self, row, existing_identifiers):
+    def create_identifier(self, row, existing_identifiers) -> int:
+        """
+        Create a unique identifier for a row based on specific fields.
+
+        Args:
+            row (pd.Series): The row of data.
+            existing_identifiers (set): A set of existing identifiers to avoid duplicates.
+
+        Returns:
+            int: The unique identifier.
+        """
         identifier_str = (
             f"{row['primary_site']}_{row['tissue_type']}_{row['primary_diagnosis']}"
         )
@@ -95,7 +180,21 @@ class BigQueryUtils:
         primary_site_col,
         tissue_type_col,
         primary_diagnosis_col,
-    ):
+    ) -> bigquery.LoadJob:
+        """
+        Upload a DataFrame to a partitioned and clustered BigQuery table.
+
+        Args:
+            table_id (str): The ID of the BigQuery table.
+            df (pd.DataFrame): The DataFrame to upload.
+            schema (list): The schema of the BigQuery table.
+            primary_site_col (str): The column name for the primary site.
+            tissue_type_col (str): The column name for the tissue type.
+            primary_diagnosis_col (str): The column name for the primary diagnosis.
+
+        Returns:
+            bigquery.LoadJob: The load job object.
+        """
         existing_identifiers = set()
         df["group_identifier"] = df.apply(
             lambda row: self.create_identifier(row, existing_identifiers), axis=1
@@ -109,20 +208,3 @@ class BigQueryUtils:
         job.result()  # Wait for the job to complete
         print("Data loaded successfully.")
         return job
-
-
-############## Redundant functions ##################################################################################
-# def upload_partitioned_df_to_bq(self, table_id, df, clust_flds):
-#     for fld in clust_flds:
-#         if fld not in df.columns:
-#             raise ValueError(f"Incorrect clustering fields provided: Should be one of {','.join(df.columns)}")
-#     job_config = bigquery.LoadJobConfig(
-#         source_format=bigquery.SourceFormat.CSV,
-#         skip_leading_rows=1,
-#         clustering_fields=clust_flds,
-#     )
-
-#     job = self._client.load_table_from_dataframe(
-#         df, table_id, job_config=job_config
-#     )
-#     return job

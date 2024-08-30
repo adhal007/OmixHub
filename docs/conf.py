@@ -13,7 +13,7 @@ copyright = '2024, Abhilash Dhal'
 author = 'Abhilash Dhal'
 
 # The full version, including alpha/beta/rc tags
-release = '0.6.8'
+release = '0.7.0'
 
 # -- General configuration ---------------------------------------------------
 

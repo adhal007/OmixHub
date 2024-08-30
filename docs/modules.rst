@@ -55,15 +55,15 @@ Connectors
 
 3. GDC Parser
 ^^^^^^^^^^^^^
-.. autoclass:: src.Connectors.gdc_parser.GDCParser
+.. autoclass:: src.Connectors.gdc_parser.GDCJson2DfParser
    :members:
    :undoc-members:
    :show-inheritance:
 
    .. rubric:: Methods
-   .. autofunction:: src.Connectors.gdc_parser.GDCParser.__init__
-   .. autofunction:: src.Connectors.gdc_parser.GDCParser.get_unnested_dict_for_rna_seq
-   .. autofunction:: src.Connectors.gdc_parser.GDCParser.make_df_rna_seq
+   .. autofunction:: src.Connectors.gdc_parser.GDCJson2DfParser.__init__
+   .. autofunction:: src.Connectors.gdc_parser.GDCJson2DfParser.get_unnested_dict_for_rna_seq
+   .. autofunction:: src.Connectors.gdc_parser.GDCJson2DfParser.make_df_rna_seq
 
 4. Google Cloud Connector
 ^^^^^^^^^^^^^^^^^^^^^^^^^
