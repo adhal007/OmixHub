@@ -7,12 +7,12 @@ As the package has not been published on PyPi yet, it CANNOT be install using pi
 
 For now, the suggested method is to clone the repository and view the example notebooks.
 
-
 Example 1. Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons (GDC)
 **************************************************
 .. code-block:: python
 
-    """This example demonstrates how to create a data matrix for Differential gene expression (DE) or machine learning analysis.
+    """
+    This example demonstrates how to create a data matrix for Differential gene expression (DE) or machine learning analysis.
     You can select the primary site of the samples and the downstream analysis you want to perform.
     """
 
@@ -32,7 +32,8 @@ Example 2. Run an analysis for Differential Gene Expression (DE) and Gene Set En
 **************************************************
 .. code-block:: python
 
-    """This example demonstrates how to create a data matrix for Differential gene expression (DE) or machine learning analysis.
+    """
+    This example demonstrates how to create a data matrix for Differential gene expression (DE) or machine learning analysis.
     You can select the primary site of the samples and the downstream analysis you want to perform.
     """
 

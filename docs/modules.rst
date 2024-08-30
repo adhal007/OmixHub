@@ -1,32 +1,23 @@
-Modules
-=======
+API Reference
+=============
 
-.. automodapi:: src.Connectors
-   :no-inheritance-diagram:
-   :no-main-docstr:
-   :noindex:
+.. toctree::
+   :maxdepth: 2
+   :caption: Modules
+=================
 
-.. automodapi:: src.Engines
-   :no-inheritance-diagram:
-   :no-main-docstr:
-   :noindex:
+This package has two modules, detailed below.  
 
-.. .. automodapi:: src.ClassicML.OutlierStatMethods
-..    :no-inheritance-diagram:
-..    :no-main-docstr:
-..    :noindex:
+Connectors
+----------
+.. automodule:: src.Connectors
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. .. automodapi:: src.ClassicML.DimRedMappers
-..    :no-inheritance-diagram:
-..    :no-main-docstr:
-..    :noindex:
-
-.. .. automodapi:: src.base_ml_models
-..    :no-inheritance-diagram:
-..    :no-main-docstr:
-..    :noindex:
-
-.. .. automodapi:: src.pydeseq_utils
-..    :no-inheritance-diagram:
-..    :no-main-docstr:
-..    :noindex:
+Engines
+-------
+.. automodule:: src.Engines
+   :members:
+   :undoc-members:
+   :show-inheritance:
