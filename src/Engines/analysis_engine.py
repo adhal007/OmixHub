@@ -114,15 +114,18 @@ class AnalysisEngine:
         results_df_filtered['nlog10'] = -1*np.log10(results_df_filtered.padj)
         return results_df_filtered
     
-    def run_gsea(self, df_de:pd.DataFrame, gene_set):
+    def get_gsea_pre_rank(self, df_de:pd.DataFrame, gene_set:list[str], num_permutations:int):
         df = df_de.copy()
         df['Rank'] = -np.log10(df.padj)*df.log2FoldChange
         df = df.sort_values('Rank', ascending = False).reset_index(drop = True)
         df = df.rename(columns = {'gene_name': 'Gene'})
         ranking = df[['Gene', 'Rank']]
-        pre_res = gp.prerank(rnk = ranking, gene_sets = gene_set, seed = 6, permutation_num = 100)
+        pre_res = gp.prerank(rnk = ranking, gene_sets = gene_set, seed = 6, permutation_num = num_permutations) 
+        return pre_res
+    
+    def run_gsea(self, df_de:pd.DataFrame, gene_set):
+        pre_res = self.get_gsea_pre_rank(df_de, gene_set, 1000)
         out = []
-
         for term in list(pre_res.results):
             out.append([term,
                     pre_res.results[term]['fdr'],
