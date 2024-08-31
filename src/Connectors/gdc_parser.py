@@ -61,7 +61,10 @@ class GDCJson2DfParser:
         """
         unnested_data = {
             'id': data.get('id'),
+            'submitter_id': data.get('submitter_id'),
             'case_id': data.get('cases', [{}])[0].get('case_id'),
+            'sample_id': data.get('cases', [{}])[0].get('samples', [{}])[0].get('sample_id'),
+            'case_id3': data.get('cases', [{}])[0].get('samples', [{}])[0].get('annotations', [{}])[0].get('case_id'),
             'alcohol_history': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('alcohol_history'),
             'years_smoked': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('years_smoked'),
             'tissue_or_organ_of_origin': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tissue_or_organ_of_origin'),

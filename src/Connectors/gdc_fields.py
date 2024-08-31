@@ -60,10 +60,14 @@ class GDCQueryDefaultFields:
         ]
 
         self.dft_rna_seq_star_count_data_fields = ['file_id', 
-                                                'file_name', 
+                                                'file_name',
+                                                'submitter_id', 
                                                 'experimental_strategy', 
                                                 'data_type','platform', 
                                                 'cases.case_id',
+                                                'cases.annotations.case_id',
+                                                'cases.samples.annotations.case_id',
+                                                'cases.samples.sample_id',
                                                 "cases.diagnoses.last_known_disease_status",
                                                 "cases.diagnoses.primary_diagnosis",
                                                 "cases.diagnoses.tumor_stage",
