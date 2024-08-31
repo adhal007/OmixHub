@@ -105,10 +105,89 @@ class GDCQueryFilters:
         raise NotImplementedError()
 
 
+# class GDCFacetFilters:
+#     def __init__(self):
+#         # Mapping of method names to facet keys for different endpoints
+#         # This contains facets from file endpt that are used in the API
+#         self._imp_facet_keys = {
+#             "list_of_primary_sites_flt": "project.primary_site",
+#             "list_of_exp_flt": "experimental_strategy",
+#             "list_of_projects_flt": "project.program.name",
+#         }
+
+#     def create_single_facet_filter(self, facet_key: str, sort_order: str = "asc"):
+#         """
+#         Generic function to create a single facet filter for a given facet key for any GDC endpt.
+
+#         ARGS:
+#         facet_key (str): The facet key to filter on.
+#         sort_order (str): The sort order for the facet values. Default is 'asc'.
+
+#         Returns:
+#         dict: A dictionary containing the facet filter.
+#         """
+#         return {
+#             "facets": facet_key,
+#             "from": 0,
+#             "size": 0,
+#             "sort": f"{facet_key}:{sort_order}",
+#         }
+
+#     def get_files_endpt_facet_filter(self, method_name: str):
+#         """
+#         Function to get facet filter for the files endpoint based on the method name.
+
+#         Args:
+#         method_name (str): The method name to get the facet filter for.
+
+#         Returns:
+#         dict: The facet filter for the given method name.
+#         """
+#         facet_key_value = self._imp_facet_keys.get(method_name)
+#         if facet_key_value is None:
+#             raise ValueError(f"No facet key found for facet_key '{method_name}'")
+#         # Inlined `create_single_facet_filter` functionality here
+#         return {
+#             "facets": facet_key_value,
+#             "from": 0,
+#             "size": 0,
+#             "sort": f"{facet_key_value}:asc",
+#         }
+
+#     def create_single_facet_df(self, url: str, facet_key_value: str, params: dict):
+#         response = gdc_endpt_base.GDCEndptBase.get_response(url, params=params)
+#         data = response.json()
+#         facet_df = pd.DataFrame(
+#             data["data"]["aggregations"][facet_key_value]["buckets"]
+#         )
+#         return facet_df
+
+#     def get_files_facet_data(self, url, facet_key, method_name):
+#         facet_key_value = self._imp_facet_keys.get(facet_key, None)
+#         print(facet_key_value)
+#         if facet_key_value is None:
+#             raise ValueError(f"Invalid facet_key: {facet_key}")
+
+#         if getattr(self, facet_key, None) is None:
+#             params = self.get_files_endpt_facet_filter(method_name=method_name)
+#             print(params)
+#             data = self.create_single_facet_df(
+#                 url=url, facet_key_value=facet_key_value, params=params
+#             )
+#             data.columns = ["count", f"{facet_key_value}"]
+#         return data
+
 class GDCFacetFilters:
+    """
+    GDCFacetFilters class for creating and managing facet filters for GDC queries.
+    """
+
     def __init__(self):
+        """
+        Initialize the GDCFacetFilters class.
+        """
         # Mapping of method names to facet keys for different endpoints
-        # This contains facets from file endpt that are used in the API
+        # This contains facets from file endpoint that are used in the API
         self._imp_facet_keys = {
             "list_of_primary_sites_flt": "project.primary_site",
             "list_of_exp_flt": "experimental_strategy",
@@ -117,14 +196,14 @@ class GDCFacetFilters:
 
     def create_single_facet_filter(self, facet_key: str, sort_order: str = "asc"):
         """
-        Generic function to create a single facet filter for a given facet key for any GDC endpt.
+        Create a single facet filter for a given facet key for any GDC endpoint.
 
-        ARGS:
-        facet_key (str): The facet key to filter on.
-        sort_order (str): The sort order for the facet values. Default is 'asc'.
+        Args:
+            facet_key (str): The facet key to filter on.
+            sort_order (str): The sort order for the facet values. Default is 'asc'.
 
         Returns:
-        dict: A dictionary containing the facet filter.
+            dict: A dictionary containing the facet filter.
         """
         return {
             "facets": facet_key,
@@ -135,18 +214,20 @@ class GDCFacetFilters:
 
     def get_files_endpt_facet_filter(self, method_name: str):
         """
-        Function to get facet filter for the files endpoint based on the method name.
+        Get facet filter for the files endpoint based on the method name.
 
         Args:
-        method_name (str): The method name to get the facet filter for.
+            method_name (str): The method name to get the facet filter for.
 
         Returns:
-        dict: The facet filter for the given method name.
+            dict: The facet filter for the given method name.
+
+        Raises:
+            ValueError: If no facet key is found for the given method name.
         """
         facet_key_value = self._imp_facet_keys.get(method_name)
         if facet_key_value is None:
             raise ValueError(f"No facet key found for facet_key '{method_name}'")
-        # Inlined `create_single_facet_filter` functionality here
         return {
             "facets": facet_key_value,
             "from": 0,
@@ -155,6 +236,17 @@ class GDCFacetFilters:
         }
 
     def create_single_facet_df(self, url: str, facet_key_value: str, params: dict):
+        """
+        Create a DataFrame from a single facet filter.
+
+        Args:
+            url (str): The URL to send the request to.
+            facet_key_value (str): The facet key value to filter on.
+            params (dict): The parameters for the request.
+
+        Returns:
+            pd.DataFrame: The resulting DataFrame.
+        """
         response = gdc_endpt_base.GDCEndptBase.get_response(url, params=params)
         data = response.json()
         facet_df = pd.DataFrame(
@@ -163,6 +255,20 @@ class GDCFacetFilters:
         return facet_df
 
     def get_files_facet_data(self, url, facet_key, method_name):
+        """
+        Get facet data for the files endpoint.
+
+        Args:
+            url (str): The URL to send the request to.
+            facet_key (str): The facet key to filter on.
+            method_name (str): The method name to get the facet filter for.
+
+        Returns:
+            pd.DataFrame: The resulting DataFrame.
+
+        Raises:
+            ValueError: If the facet key is invalid.
+        """
         facet_key_value = self._imp_facet_keys.get(facet_key, None)
         print(facet_key_value)
         if facet_key_value is None:
@@ -176,8 +282,6 @@ class GDCFacetFilters:
             )
             data.columns = ["count", f"{facet_key_value}"]
         return data
-
-
 ### Redundant functions that might be useful in hindsight
 # def generate_filters(self, filter_list, operation='and'):
 #     """

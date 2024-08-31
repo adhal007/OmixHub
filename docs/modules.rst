@@ -49,11 +49,15 @@ Connectors
 
 4. Google Cloud Connector
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: src.Connectors.google_cloud_conn.BigQueryUtils
+.. autoclass:: src.Connectors.gcp_bq_queries.BigQueryUtils
    :members:
    :undoc-members:
    :show-inheritance:
 
+.. autoclass:: src.Connectors.gcp_bq_queries.BigQueryQueries
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Engines
 -------

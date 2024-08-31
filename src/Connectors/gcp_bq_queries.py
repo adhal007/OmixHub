@@ -5,19 +5,52 @@ import pandas as pd
 
 
 class BigQueryUtils:
+    """
+    Utility class for interacting with Google BigQuery.
+
+    Attributes:
+        project_id (str): The Google Cloud project ID.
+        _client (bigquery.Client): The BigQuery client.
+        _bqstorage_client (bigquery_storage_v1.BigQueryReadClient): The BigQuery storage client.
+    """
+
     def __init__(self, project_id) -> None:
+        """
+        Initialize the BigQueryUtils class.
+
+        Args:
+            project_id (str): The Google Cloud project ID.
+        """
         self.project_id = project_id
         self._client = bigquery.Client(project=self.project_id)
         self._bqstorage_client = bigquery_storage_v1.BigQueryReadClient()
 
-    def table_exists(self, table_ref):
+    def table_exists(self, table_ref) -> bool:
+        """
+        Check if a BigQuery table exists.
+
+        Args:
+            table_ref (str): The reference to the BigQuery table.
+
+        Returns:
+            bool: True if the table exists, False otherwise.
+        """
         try:
             self._client.get_table(table_ref)
             return True
         except NotFound:
             return False
 
-    def dataset_exists(self, dataset_id):
+    def dataset_exists(self, dataset_id) -> bool:
+        """
+        Check if a BigQuery dataset exists.
+
+        Args:
+            dataset_id (str): The ID of the BigQuery dataset.
+
+        Returns:
+            bool: True if the dataset exists, False otherwise.
+        """
         try:
             self._client.get_dataset(dataset_id)  # Make an API request.
             print(f"Dataset {dataset_id} already exists")
@@ -26,7 +59,17 @@ class BigQueryUtils:
             print(f"Dataset {dataset_id} is not found")
             return False
 
-    def upload_df_to_bq(self, table_id, df):
+    def upload_df_to_bq(self, table_id, df) -> bigquery.LoadJob:
+        """
+        Upload a DataFrame to a BigQuery table.
+
+        Args:
+            table_id (str): The ID of the BigQuery table.
+            df (pd.DataFrame): The DataFrame to upload.
+
+        Returns:
+            bigquery.LoadJob: The load job object.
+        """
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.CSV,
             skip_leading_rows=1,
@@ -40,7 +83,19 @@ class BigQueryUtils:
 
     def create_bigquery_table_with_schema(
         self, table_id, schema, partition_field=None, clustering_fields=None
-    ):
+    ) -> bigquery.Table:
+        """
+        Create a BigQuery table with a specified schema, partitioning, and clustering.
+
+        Args:
+            table_id (str): The ID of the BigQuery table.
+            schema (list): The schema of the BigQuery table.
+            partition_field (str, optional): The field to partition the table by. Defaults to None.
+            clustering_fields (list, optional): The fields to cluster the table by. Defaults to None.
+
+        Returns:
+            bigquery.Table: The created BigQuery table object, or None if the table already exists.
+        """
         try:
             table = self._client.get_table(table_id)
             print("Table Already Exists")
@@ -60,10 +115,28 @@ class BigQueryUtils:
             print(f"Created table {table.project}.{table.dataset_id}.{table.table_id}")
             return table
 
-    def df_to_json(self, df, file_path="data.json"):
+    def df_to_json(self, df, file_path="data.json") -> None:
+        """
+        Convert a DataFrame to a JSON file.
+
+        Args:
+            df (pd.DataFrame): The DataFrame to convert.
+            file_path (str, optional): The path to save the JSON file. Defaults to "data.json".
+        """
         df.to_json(file_path, orient="records", lines=True)
 
-    def load_json_data(self, json_object, schema, table_id):
+    def load_json_data(self, json_object, schema, table_id) -> bigquery.LoadJob:
+        """
+        Load JSON data into a BigQuery table.
+
+        Args:
+            json_object (dict): The JSON object to load.
+            schema (list): The schema of the BigQuery table.
+            table_id (str): The ID of the BigQuery table.
+
+        Returns:
+            bigquery.LoadJob: The load job object.
+        """
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON, schema=schema
         )
@@ -74,12 +147,34 @@ class BigQueryUtils:
 
 
 class BigQueryQueries(BigQueryUtils):
-    def __init__(self, project_id, dataset_id, table_id):
+    """
+    Class for executing queries on Google BigQuery.
+
+    Attributes:
+        dataset_id (str): The ID of the BigQuery dataset.
+        table_id (str): The ID of the BigQuery table.
+    """
+
+    def __init__(self, project_id, dataset_id, table_id) -> None:
+        """
+        Initialize the BigQueryQueries class.
+
+        Args:
+            project_id (str): The Google Cloud project ID.
+            dataset_id (str): The ID of the BigQuery dataset.
+            table_id (str): The ID of the BigQuery table.
+        """
         super().__init__(project_id)
         self.dataset_id = dataset_id
         self.table_id = table_id
 
-    def get_primary_site_options(self):
+    def get_primary_site_options(self) -> list:
+        """
+        Get distinct primary site options from the BigQuery table.
+
+        Returns:
+            list: A list of distinct primary site options.
+        """
         query = f"""
         SELECT DISTINCT primary_site
         FROM `{self.dataset_id}.{self.table_id}`
@@ -89,7 +184,16 @@ class BigQueryQueries(BigQueryUtils):
         results = query_job.result()
         return [row.primary_site for row in results]
 
-    def get_primary_diagnosis_options(self, primary_site):
+    def get_primary_diagnosis_options(self, primary_site) -> list:
+        """
+        Get distinct primary diagnosis options for a given primary site from the BigQuery table.
+
+        Args:
+            primary_site (str): The primary site to filter by.
+
+        Returns:
+            list: A list of distinct primary diagnosis options.
+        """
         query = f"""
         SELECT DISTINCT primary_diagnosis
         FROM `{self.dataset_id}.{self.table_id}`
@@ -104,7 +208,17 @@ class BigQueryQueries(BigQueryUtils):
         results = query_job.result()
         return [row.primary_diagnosis for row in results]
 
-    def get_df_for_pydeseq(self, primary_site, primary_diagnosis):
+    def get_df_for_pydeseq(self, primary_site, primary_diagnosis) -> pd.DataFrame:
+        """
+        Get a DataFrame for PyDeSeq analysis based on primary site and primary diagnosis.
+
+        Args:
+            primary_site (str): The primary site to filter by.
+            primary_diagnosis (str): The primary diagnosis to filter by.
+
+        Returns:
+            pd.DataFrame: The resulting DataFrame.
+        """
         query = f"""
         SELECT
             case_id,
@@ -130,18 +244,18 @@ class BigQueryQueries(BigQueryUtils):
         query_job = self._client.query(query, job_config=job_config)
         result = query_job.result()  # Wait for the query job to complete.
         df = result.to_dataframe()
-        # Expand 'expr_unstr_count' into separate columns using apply with pd.Series
-        # expr_unstr_df = df['expr_unstr_count'].apply(pd.Series)
-
-        # # Optionally rename the new columns to something meaningful
-        # expr_unstr_df.columns = [f'expr_unstr_count_{i}' for i in expr_unstr_df.columns]
-
-        # # Concatenate the expanded columns back to the original dataframe
-        # df = pd.concat([df.drop(columns=['expr_unstr_count']), expr_unstr_df], axis=1)
         return df
 
-    def get_all_primary_diagnosis_for_primary_site(self, primary_site):
+    def get_all_primary_diagnosis_for_primary_site(self, primary_site) -> pd.DataFrame:
+        """
+        Get all primary diagnoses for a given primary site from the BigQuery table.
 
+        Args:
+            primary_site (str): The primary site to filter by.
+
+        Returns:
+            pd.DataFrame: A DataFrame with primary diagnoses and their counts.
+        """
         query = f"""
         SELECT
             case_id,
