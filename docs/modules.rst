@@ -33,24 +33,12 @@ Connectors
    :undoc-members:
    :show-inheritance:
 
-   .. rubric:: Methods
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.__init__
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.create_and_filters
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.all_projects_by_exp_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.rna_seq_data_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCQueryFilters.all_diseases
 
 .. autoclass:: src.Connectors.gdc_filters.GDCFacetFilters
    :members:
    :undoc-members:
    :show-inheritance:
 
-   .. rubric:: Methods
-   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.__init__
-   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.create_single_facet_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.get_files_endpt_facet_filter
-   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.create_single_facet_df
-   .. autofunction:: src.Connectors.gdc_filters.GDCFacetFilters.get_files_facet_data
 
 
 3. GDC Parser
@@ -60,10 +48,7 @@ Connectors
    :undoc-members:
    :show-inheritance:
 
-   .. rubric:: Methods
-   .. autofunction:: src.Connectors.gdc_parser.GDCJson2DfParser.__init__
-   .. autofunction:: src.Connectors.gdc_parser.GDCJson2DfParser.get_unnested_dict_for_rna_seq
-   .. autofunction:: src.Connectors.gdc_parser.GDCJson2DfParser.make_df_rna_seq
+
 
 4. Google Cloud Connector
 ^^^^^^^^^^^^^^^^^^^^^^^^^
