@@ -1,5 +1,5 @@
-# The `GDCEngine` class is a Python class that facilitates fetching and processing RNA sequencing
-# metadata and data from the Genomic Data Commons API.
+import gevent.monkey
+gevent.monkey.patch_all(thread=False, select=False)
 import grequests
 import src.Connectors.gdc_files_endpt as gdc_files
 import src.Connectors.gdc_cases_endpt as gdc_cases
@@ -13,7 +13,8 @@ import pandas as pd
 import requests
 import re
 import io
-
+# The `GDCEngine` class is a Python class that facilitates fetching and processing RNA sequencing
+# metadata and data from the Genomic Data Commons API.
 
 class GDCEngine:
     """

@@ -1,120 +1,106 @@
+from __future__ import annotations
+### External Imports
 import json
-import requests
-import pandas as pd
-import src.Connectors.gdc_endpt_base as gdc_endpt_base
+from pandas import json_normalize
+import pandas as pd 
+from flatten_json import flatten
+import numpy as np
+### Internal Imports
+import src.Connectors.gdc_files_endpt as gdc_files
+import src.Connectors.gdc_cases_endpt as gdc_cases 
+import src.Connectors.gdc_projects_endpt as gdc_projects
+import re
+
 
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
-GDC filter class and high-level API functions
-
+GDC Parser for processing json_data objects into dataframes 
+This is in facade object style to allow different endpt subsytems (Files, Cases or Projects)
+to perform queries 
 @author: Abhilash Dhal
-@date:  2024_06_07
+@date:  2024_06_04
 """
-
-
-class GDCQueryFilters:
+class GDCJson2DfParser:
     """
-    GDCQueryFilters class for creating and managing filters for GDC queries.
+    GDCJson2DfParser class for processing JSON data objects into DataFrames.
+
+    This class uses a facade object style to allow different endpoint subsystems (Files, Cases, or Projects)
+    to perform queries.
+
+    Attributes:
+        _files_sub (gdc_files.GDCFilesEndpt): The files endpoint subsystem.
+        _cases_sub (gdc_cases.GDCCasesEndpt): The cases endpoint subsystem.
+        _projs_sub (gdc_projects.GDCProjectsEndpt): The projects endpoint subsystem.
     """
-    def __init__(self):
-        """
-        Initialize the GDCQueryFilters class.
-        """
-        pass
 
-    def create_and_filters(self, filter_specs, op_specs):
+    def __init__(self, 
+                 gdc_files_sub: gdc_files.GDCFilesEndpt, 
+                 gdc_cases_sub: gdc_cases.GDCCasesEndpt,
+                 gdc_projs_sub: gdc_projects.GDCProjectsEndpt) -> None:
         """
-        Create a list of filters based on given specifications.
+        Initialize the GDCJson2DfParser class.
 
         Args:
-            filter_specs (dict): Each key-value pair contains the field name and the corresponding values list.
-            op_specs (dict): Each key-value pair contains the field name and the corresponding operation.
-
-        Returns:
-            dict: A dictionary containing the combined filters for the query.
+            gdc_files_sub (gdc_files.GDCFilesEndpt): The files endpoint subsystem.
+            gdc_cases_sub (gdc_cases.GDCCasesEndpt): The cases endpoint subsystem.
+            gdc_projs_sub (gdc_projects.GDCProjectsEndpt): The projects endpoint subsystem.
         """
-        filters = []
-        for field, values in filter_specs.items():
-            op = op_specs[field]
-            filter_op = {"op": op, "content": {"field": field, "value": values}}
-            filters.append(filter_op)
+        self._files_sub = gdc_files_sub or gdc_files.GDCFilesEndpt()
+        self._cases_sub = gdc_cases_sub or gdc_cases.GDCCasesEndpt()
+        self._projs_sub = gdc_projs_sub or gdc_projects.GDCProjectsEndpt() 
 
-        filters_for_query = {"op": "and", "content": filters}
-        return filters_for_query
-
-    def all_projects_by_exp_filter(self, experimental_strategy):
+    def get_unnested_dict_for_rna_seq(self, data: dict) -> dict:
         """
-        Return a filter dictionary for retrieving all projects based on the given experimental strategy.
+        Extract and handle missing data from RNA sequencing JSON data.
 
         Args:
-            experimental_strategy (str): The experimental strategy to filter projects by.
+            data (dict): The JSON data to process.
 
         Returns:
-            dict: A filter dictionary that can be used to query projects based on the experimental strategy.
+            dict: The unnested data dictionary.
         """
-        filters = {
-            "op": "in",
-            "content": {
-                "field": "files.experimental_strategy",
-                "value": experimental_strategy,
-            },
+        unnested_data = {
+            'id': data.get('id'),
+            'case_id': data.get('cases', [{}])[0].get('case_id'),
+            'alcohol_history': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('alcohol_history'),
+            'years_smoked': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('years_smoked'),
+            'tissue_or_organ_of_origin': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tissue_or_organ_of_origin'),
+            'days_to_last_follow_up': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('days_to_last_follow_up'),
+            'age_at_diagnosis': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('age_at_diagnosis'),
+            'primary_diagnosis': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('primary_diagnosis'),
+            'primary_site': data.get('cases', [{}])[0].get('project', {}).get('primary_site'),
+            'tumor_grade': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tumor_grade'),
+            'treatment_or_therapy': next(
+                (t.get('treatment_or_therapy') for t in data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('treatments', [])
+                if t.get('treatment_or_therapy') in ['yes', 'no']), 'unknown'),
+            'last_known_disease_status': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('last_known_disease_status'),
+            'tissue_type': data.get('cases', [{}])[0].get('samples', [{}])[0].get('tissue_type'),
+            'sample_type': data.get('cases', [{}])[0].get('samples', [{}])[0].get('sample_type'), 
+            'race': data.get('cases', [{}])[0].get('demographic', {}).get('race'),
+            'gender': data.get('cases', [{}])[0].get('demographic', {}).get('gender'),
+            'ethnicity': data.get('cases', [{}])[0].get('demographic', {}).get('ethnicity'),
+            'file_name': data.get('file_name'),
+            'file_id': data.get('file_id'),
+            'data_type': data.get('data_type'),
+            'workflow_type': data.get('analysis', {}).get('workflow_type'),
+            'experimental_strategy': data.get('experimental_strategy')
         }
-        return filters
-
-    def rna_seq_data_filter(self, field_params=None, op_params=None):
+        return unnested_data 
+    
+    def make_df_rna_seq(self, json_data: dict) -> pd.DataFrame:
         """
-        Filter for RNA sequencing data based on various parameters.
+        Create a DataFrame from RNA sequencing JSON data.
 
         Args:
-            field_params (dict, optional): A dictionary containing the filter specifications. Defaults to None.
-                Accepted keys:
-                - cases.project.primary_site (list): A list of primary sites to filter the data.
-                - cases.demographic.race (list): A list of races to filter the data.
-                - cases.demographic.gender (list): A list of genders to filter the data.
-                - data_type (str): The type of data to fetch. Default is 'RNA-Seq'.
-                - files.experimental_strategy (list): A list of experimental strategies to filter the data.
-                - analysis.workflow_type (list): A list of workflow types to filter the data.
-            op_params (dict, optional): A dictionary containing the operation specifications. Defaults to None.
+            json_data (dict): The JSON data to process.
 
         Returns:
-            dict: A nested JSON object to be used as a query for GDC.
+            pd.DataFrame: The resulting DataFrame.
         """
-        default_filter_specs = {
-            "files.experimental_strategy": ["RNA-Seq"],
-            "data_type": ["Gene Expression Quantification"],
-            "analysis.workflow_type": ["STAR - Counts"],
-            "cases.demographic.race": ["*"],
-            "cases.demographic.gender": ["*"],
-        }
-
-        default_op_specs = {key: "in" for key in default_filter_specs.keys()}
-        if field_params is not None:
-            combined_filter_specs = default_filter_specs | field_params
-        else:
-            combined_filter_specs = default_filter_specs
-
-        if op_params is not None:
-            if sorted(list(op_params.keys())) != sorted(
-                list(combined_filter_specs.keys())
-            ):
-                op_specs = default_op_specs
-                raise Warning(
-                    "The query operations are not defined correctly. Using 'in' operation for all query params"
-                )
-            else:
-                op_specs = default_op_specs | op_params
-        else:
-            op_specs = default_op_specs
-        filter_for_query = self.create_and_filters(combined_filter_specs, op_specs)
-        return filter_for_query
-
-    def all_diseases(self):
-        """
-        Placeholder method for retrieving all diseases.
-
-        Raises:
-            NotImplementedError: This method is not yet implemented.
-        """
-        raise NotImplementedError()
-
-
+        parsed_data = list()
+        entries = json_data['data']['hits']
+        for entry in entries:
+            unnested_data = self.get_unnested_dict_for_rna_seq(entry)
+            parsed_data.append(unnested_data) 
+        df = pd.DataFrame(parsed_data)
+        return df 

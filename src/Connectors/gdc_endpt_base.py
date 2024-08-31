@@ -2,8 +2,6 @@ import json
 import requests
 import re
 import pandas as pd
-from abc import abstractmethod
-
 # Example of usage
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.

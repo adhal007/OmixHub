@@ -1,8 +1,7 @@
-from google.cloud import bigquery
-from google.cloud import bigquery_storage_v1
-from google.cloud.exceptions import NotFound
+from google.cloud import bigquery, bigquery_storage_v1
+from google.api_core.exceptions import NotFound
 import pandas as pd
-
+import json
 
 class BigQueryUtils:
     """
@@ -127,7 +126,7 @@ class BigQueryUtils:
 
     def load_json_data(self, json_object, schema, table_id) -> bigquery.LoadJob:
         """
-        Load JSON data into a BigQuery table.
+        Load JSON data into a BigQuery table. If the table doesn't exist, it will create the table.
 
         Args:
             json_object (dict): The JSON object to load.
@@ -137,6 +136,9 @@ class BigQueryUtils:
         Returns:
             bigquery.LoadJob: The load job object.
         """
+        if not self.table_exists(table_id):
+            print(f"Table {table_id} does not exist, creating table...")
+            self.create_bigquery_table_with_schema(table_id, schema)
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON, schema=schema
         )
@@ -144,6 +146,19 @@ class BigQueryUtils:
             json_object, table_id, job_config=job_config
         )
         return job
+
+    def run_query(self, query):
+        """
+        Run a BigQuery SQL query and return the results as a DataFrame.
+
+        Args:
+            query (str): The SQL query to run.
+
+        Returns:
+            pd.DataFrame: The query results as a DataFrame.
+        """
+        query_job = self._client.query(query)
+        return query_job.result().to_dataframe()
 
 
 class BigQueryQueries(BigQueryUtils):

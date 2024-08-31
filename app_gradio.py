@@ -2,7 +2,7 @@ import pandas as pd
 import gradio as gr
 import matplotlib.pyplot as plt
 import seaborn as sns
-import src.Connectors.gcp_bq_queries as gcp_bq_py
+import src.Connectors.gcp_bigquery_utils as gcp_bq_py
 import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
 import src.Engines.analysis_engine as an_eng
 import pandas as pd
