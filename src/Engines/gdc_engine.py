@@ -1,9 +1,10 @@
 import gevent.monkey
 gevent.monkey.patch_all(thread=False, select=False)
 import grequests
-import src.Connectors.gdc_files_endpt as gdc_files
-import src.Connectors.gdc_cases_endpt as gdc_cases
-import src.Connectors.gdc_projects_endpt as gdc_projects
+import src.Connectors.gdc_endpt_base as gdc_endpt_base
+# import src.Connectors.gdc_files_endpt as gdc_files
+# import src.Connectors.gdc_cases_endpt as gdc_cases
+# import src.Connectors.gdc_projects_endpt as gdc_projects
 import src.Connectors.gdc_filters as gdc_filters
 import src.Connectors.gdc_fields as gdc_fields
 import src.Connectors.gdc_parser as gdc_prs
@@ -74,9 +75,14 @@ class GDCEngine:
         self._query_params = params
 
         ## private attributes
-        self._files_endpt = gdc_files.GDCFilesEndpt()
-        self._cases_endpt = gdc_cases.GDCCasesEndpt()
-        self._projects_endpt = gdc_projects.GDCProjectsEndpt()
+        # self._files_endpt = gdc_files.GDCFilesEndpt()
+        # self._cases_endpt = gdc_cases.GDCCasesEndpt()
+        # self._projects_endpt = gdc_projects.GDCProjectsEndpt()
+        
+        self._files_endpt = gdc_endpt_base.GDCEndptBase(endpt="files")
+        self._cases_endpt = gdc_endpt_base.GDCEndptBase(endpt="cases")
+        self._projects_endpt = gdc_endpt_base.GDCEndptBase(endpt="projects")
+         
         self._filters = gdc_filters.GDCQueryFilters()
         self._facet_filters = gdc_filters.GDCFacetFilters()
         self._fields = gdc_fields.GDCQueryDefaultFields(self.params["endpt"])
@@ -209,7 +215,7 @@ class GDCEngine:
                 - metadata (pd.DataFrame): The metadata as a pandas DataFrame.
                 - filters (dict): The filters used to fetch the metadata.
         """
-        json_data, filters = self._files_endpt.rna_seq_query_to_json(
+        json_data, filters = self._files_endpt._query_to_json(
             params=self._query_params
         )
         metadata = self._parser.make_df_rna_seq(json_data)

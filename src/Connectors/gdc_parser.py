@@ -6,9 +6,7 @@ import pandas as pd
 from flatten_json import flatten
 import numpy as np
 ### Internal Imports
-import src.Connectors.gdc_files_endpt as gdc_files
-import src.Connectors.gdc_cases_endpt as gdc_cases 
-import src.Connectors.gdc_projects_endpt as gdc_projects
+import src.Connectors.gdc_endpt_base as gdc_endpt_base
 import re
 
 
@@ -34,9 +32,9 @@ class GDCJson2DfParser:
     """
 
     def __init__(self, 
-                 gdc_files_sub: gdc_files.GDCFilesEndpt, 
-                 gdc_cases_sub: gdc_cases.GDCCasesEndpt,
-                 gdc_projs_sub: gdc_projects.GDCProjectsEndpt) -> None:
+                 gdc_files_sub: gdc_endpt_base.GDCEndptBase(endpt='files'), 
+                 gdc_cases_sub: gdc_endpt_base.GDCEndptBase(endpt='cases'),
+                 gdc_projects_sub: gdc_endpt_base.GDCEndptBase(endpt='projects')) -> None:
         """
         Initialize the GDCJson2DfParser class.
 
@@ -45,9 +43,9 @@ class GDCJson2DfParser:
             gdc_cases_sub (gdc_cases.GDCCasesEndpt): The cases endpoint subsystem.
             gdc_projs_sub (gdc_projects.GDCProjectsEndpt): The projects endpoint subsystem.
         """
-        self._files_sub = gdc_files_sub or gdc_files.GDCFilesEndpt()
-        self._cases_sub = gdc_cases_sub or gdc_cases.GDCCasesEndpt()
-        self._projs_sub = gdc_projs_sub or gdc_projects.GDCProjectsEndpt() 
+        self._files_sub = gdc_files_sub
+        self._cases_sub = gdc_cases_sub 
+        self._projs_sub = gdc_projects_sub 
 
     def get_unnested_dict_for_rna_seq(self, data: dict) -> dict:
         """
@@ -63,8 +61,10 @@ class GDCJson2DfParser:
             'id': data.get('id'),
             'submitter_id': data.get('submitter_id'),
             'case_id': data.get('cases', [{}])[0].get('case_id'),
-            'sample_id': data.get('cases', [{}])[0].get('samples', [{}])[0].get('sample_id'),
-            'case_id3': data.get('cases', [{}])[0].get('samples', [{}])[0].get('annotations', [{}])[0].get('case_id'),
+            'project_id': data.get('cases', [{}])[0].get('project', {}).get('project_id'),
+            'project_name': data.get('cases', [{}])[0].get('project', {}).get('project_name').lower().replace('-', '_'),
+            'program_id': data.get('cases', [{}])[0].get('project', {}).get('program', {}).get('program_id'),
+            'program_name': data.get('cases', [{}])[0].get('project', {}).get('program', {}).get('program_name'),
             'alcohol_history': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('alcohol_history'),
             'years_smoked': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('years_smoked'),
             'tissue_or_organ_of_origin': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tissue_or_organ_of_origin'),

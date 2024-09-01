@@ -36,7 +36,7 @@ class GDCFilesEndpt(gdc_endpt_base.GDCEndptBase):
         self.gdc_fld = gdc_fld.GDCQueryDefaultFields(self.endpt)
         self.gdc_vld = gdc_vld.GDCValidator()
 
-    def rna_seq_query_to_json(self, params: dict, op_params=None):
+    def _query_to_json(self, params: dict, op_params=None):
         """
         Fetches RNA-Seq STAR counts data from the GDC Files API endpoint.
 

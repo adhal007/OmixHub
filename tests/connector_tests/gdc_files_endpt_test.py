@@ -1,5 +1,5 @@
 import unittest
-from src.Connectors.gdc_files_endpt import GDCFilesEndpt
+from src.deprecated.gdc_files_endpt import GDCFilesEndpt
 
 class TestGDCFilesEndpt(unittest.TestCase):
     def setUp(self):

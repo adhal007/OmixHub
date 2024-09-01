@@ -3,7 +3,7 @@ from src.Connectors.gdc_cases_endpt import GDCCasesEndpt
 import src.Connectors.gdc_endpt_base as gdc_utils 
 import src.Connectors.gdc_field_validator as gdc_vd
 import src.Connectors.gdc_projects_endpt as gdc_proj
-import src.Connectors.gdc_files_endpt as gdc_files
+import src.deprecated.gdc_files_endpt as gdc_files
 import src.Connectors.gdc_parser as gdc_prs
 import json
 import requests 
