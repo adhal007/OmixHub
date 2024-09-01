@@ -22,15 +22,6 @@ Connectors
    :undoc-members:
    :show-inheritance:
 
-.. .. autoclass:: src.Connectors.gdc_cases_endpt.GDCCasesEndpt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
-
-.. .. autoclass:: src.Connectors.gdc_project_endpt.GDCProjectEndpt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
 
 2. GDC Filters
 ^^^^^^^^^^^^^^
