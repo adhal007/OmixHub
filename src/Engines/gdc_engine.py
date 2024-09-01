@@ -14,6 +14,9 @@ import pandas as pd
 import requests
 import re
 import io
+# import gevent.monkey
+# gevent.monkey.patch_all(thread=False, select=False)
+
 # The `GDCEngine` class is a Python class that facilitates fetching and processing RNA sequencing
 # metadata and data from the Genomic Data Commons API.
 
@@ -85,7 +88,7 @@ class GDCEngine:
          
         self._filters = gdc_filters.GDCQueryFilters()
         self._facet_filters = gdc_filters.GDCFacetFilters()
-        self._fields = gdc_fields.GDCQueryDefaultFields(self.params["endpt"])
+        self._fields = gdc_fields.GDCQueryDefaultFields()
         self._validator = gdc_vld.GDCValidator()
         self._parser = gdc_prs.GDCJson2DfParser(
             self._files_endpt, self._cases_endpt, self._projects_endpt
@@ -278,6 +281,7 @@ class GDCEngine:
             )
 
             sub_meta_sub_i = sub_meta_i[~sub_meta_i["file_id"].isin(ids_with_none)]
+            rna_seq_data_matrix["project_id"] = sub_meta_sub_i["project_id"].to_numpy()
             rna_seq_data_matrix["tissue_type"] = sub_meta_sub_i[
                 "tissue_type"
             ].to_numpy()

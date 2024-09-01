@@ -11,12 +11,8 @@ GDC fields class and high-level API functions
 """
 
 class GDCQueryDefaultFields:
-    def __init__(self, endpt) -> None:
-
-        self._endpts = gdc_endpt_base.GDCEndptBase()._endpts
-        if endpt not in self._endpts.keys():
-            raise ValueError(f"Endpoint has be either of {','.join(list(self._endpts.keys()))}")
-        self.endpt = endpt
+    def __init__(self):
+        pass
 
         self.dft_list_all_project_fields = [
             "project_id", "project_name", "program.name", "summary.experimental_strategies.experimental_strategy"

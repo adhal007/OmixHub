@@ -62,7 +62,7 @@ class GDCJson2DfParser:
             'submitter_id': data.get('submitter_id'),
             'case_id': data.get('cases', [{}])[0].get('case_id'),
             'project_id': data.get('cases', [{}])[0].get('project', {}).get('project_id'),
-            'project_name': data.get('cases', [{}])[0].get('project', {}).get('project_name').lower().replace('-', '_'),
+            'project_name': data.get('cases', [{}])[0].get('project', {}).get('project_name'),
             'program_id': data.get('cases', [{}])[0].get('project', {}).get('program', {}).get('program_id'),
             'program_name': data.get('cases', [{}])[0].get('project', {}).get('program', {}).get('program_name'),
             'alcohol_history': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('alcohol_history'),

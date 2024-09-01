@@ -41,14 +41,15 @@ class GDCEndptBase:
         self.homepage = homepage
         self.headers = {"Content-Type": "application/json"}
         self.gdc_flt = gdc_flt.GDCQueryFilters()
-        self.gdc_fld = gdc_fld.GDCQueryDefaultFields(self.endpt)
+        self.gdc_fld = gdc_fld.GDCQueryDefaultFields()
         self.gdc_vld = gdc_vld.GDCValidator()
         self._mapping = "_mapping"
         self._files_endpt_url = None
         self._projects_endpt_url = None
         self._cases_endpt_url = None
         self._endpt_fields = None
-
+                # if endpt not in self._endpts.keys():
+        #     raise ValueError(f"Endpoint has be either of {','.join(list(self._endpts.keys()))}")
     @property
     def files_endpt_url(self):
         """
@@ -93,6 +94,16 @@ class GDCEndptBase:
             }
         return self._endpt_fields
 
+    def _check_endpt_validity(self):
+        """
+        Check if the endpoint is valid.
+
+        Raises:
+            ValueError: If the endpoint is not valid.
+        """
+        if self.endpt not in self._endpts.keys():
+            raise ValueError(f"Endpoint has be either of {','.join(list(self._endpts.keys()))}")
+    
     def _make_endpt_url(self, endpt: str):
         """
         Construct the URL for a given endpoint.
