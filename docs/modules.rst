@@ -81,4 +81,10 @@ Engines
    :undoc-members:
    :show-inheritance:
 
+3. GDC Engine
+^^^^^^^^^^^^
+.. autoclass:: src.Engines.gdc_engine.GDCEngine
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
