@@ -31,4 +31,7 @@ Applications
 
       python3 app_gradio.py
 
-   - [App navigation documentation](../docs/UI%20Prototype/gradio_use.md).
+   App navigation documentation: 
+   .. code-block:: bash
+
+      cd ../tutorial_notebooks/docs/UI%20Prototype/gradio_use.md.

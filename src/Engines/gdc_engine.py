@@ -2,9 +2,7 @@ import gevent.monkey
 gevent.monkey.patch_all(thread=False, select=False)
 import grequests
 import src.Connectors.gdc_endpt_base as gdc_endpt_base
-# import src.Connectors.gdc_files_endpt as gdc_files
-# import src.Connectors.gdc_cases_endpt as gdc_cases
-# import src.Connectors.gdc_projects_endpt as gdc_projects
+
 import src.Connectors.gdc_filters as gdc_filters
 import src.Connectors.gdc_fields as gdc_fields
 import src.Connectors.gdc_parser as gdc_prs
@@ -14,8 +12,9 @@ import pandas as pd
 import requests
 import re
 import io
-# import gevent.monkey
-# gevent.monkey.patch_all(thread=False, select=False)
+import numpy as np
+import hashlib
+import json
 
 # The `GDCEngine` class is a Python class that facilitates fetching and processing RNA sequencing
 # metadata and data from the Genomic Data Commons API.
@@ -313,3 +312,45 @@ class GDCEngine:
                 
             )
             return ml_data_matrix
+
+    def create_identifier(self, row):
+        """
+        Create a unique identifier for a row based on specific fields. 
+        This will be useful for partitioning and clustering in BigQuery
+
+        Args:
+            row (pd.Series): The row of data containing 'primary_site', 'tissue_type', and 'primary_diagnosis'.
+
+        Returns:
+            int: The unique identifier.
+        """
+        identifier_str = f"{row['primary_site']}_{row['tissue_type']}_{row['primary_diagnosis']}"
+        return int(hashlib.md5(identifier_str.encode()).hexdigest(), 16) % (10 ** 8)
+
+    def get_data_for_bq(self, primary_site, downstream_analysis='DE', format='dataframe'):
+        """
+        Get data for BigQuery based on primary site and downstream analysis type.
+
+        Args:
+            primary_site (str): The primary site to filter by.
+            downstream_analysis (str, optional): The type of downstream analysis ('DE' or other). Defaults to 'DE'.
+            format (str, optional): The format of the output ('dataframe' or 'json'). Defaults to 'dataframe'.
+
+        Returns:
+            pd.DataFrame or dict: The data formatted as a DataFrame or JSON object.
+        """
+        cohort_metadata = self._get_rna_seq_metadata()
+        cohort_metadata = cohort_metadata['metadata']
+        df = self.run_rna_seq_data_matrix_creation(primary_site=primary_site, downstream_analysis=downstream_analysis)
+        df = df.set_index('file_id').reset_index()
+        gene_cols = df.columns.to_numpy()[1:60661]
+        df['expr_unstr_count'] = df[np.sort(gene_cols)].agg(list, axis=1)
+        df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
+        data_for_bq = df_unq[['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']]
+        data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender']], on=['file_id', 'case_id'])
+        if format == 'dataframe':
+            return data_bq_with_labels
+        elif format == 'json':
+            json_data = data_bq_with_labels.to_json(orient='records')
+            json_object = json.loads(json_data)
+            return json_object

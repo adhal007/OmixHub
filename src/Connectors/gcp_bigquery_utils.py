@@ -79,7 +79,7 @@ class BigQueryUtils:
             df, table_id, job_config=job_config
         )
         return job
-
+    
     def create_bigquery_table_with_schema(
         self, table_id, schema, partition_field=None, clustering_fields=None
     ) -> bigquery.Table:
