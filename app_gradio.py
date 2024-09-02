@@ -58,6 +58,8 @@ def retrieve_data(project_id, dataset_id, table_id, primary_site, primary_diagno
     df = bq_queries.get_df_for_pydeseq(primary_site, primary_diagnosis)
     data_from_bq = df.copy()
     analysis_cls = an_eng.AnalysisEngine(data_from_bq, analysis_type='DE')
+    if not analysis_cls.check_tumor_normal_counts():
+        raise ValueError("Tumor and Normal counts should be at least 10 each")
     gene_ids_or_gene_cols = list(pd.read_csv('/Users/abhilashdhal/Projects/personal_docs/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv')['gene_id'])
     exp_data = analysis_cls.expand_data_from_bq(data_from_bq, gene_ids_or_gene_cols, 'DE')
     counts_for_de = analysis_cls.counts_from_bq_df(exp_data, gene_ids_or_gene_cols)
@@ -144,7 +146,6 @@ def gradio_interface():
                 inputs=[project_id, dataset_id, table_id, primary_site, primary_diagnosis],
                 outputs=[primary_diagnosis_histogram]
             )
-
         
         with gr.Tab("Analysis"):
             with gr.Row():

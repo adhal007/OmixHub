@@ -113,57 +113,53 @@ Example 3. Run an analysis for Differential Gene Expression (DE) and Gene Set En
     You can select the primary site of the samples and the downstream analysis you want to perform.
     """
 
-    import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
-    import pandas as pd 
+    import pandas as pd
+    from importlib import reload
+    import src.Engines.analysis_engine as analysis_engine
+    import src.Connectors.gcp_bigquery_utils as gcp_bigquery_utils
+    reload(analysis_engine)
+    reload(gcp_bigquery_utils)
+    
+    # 1. Download Dataset from BigQuery for a given Primary Diagnosis By Primary Site and the Normal Tissue for the Primary site
+    project_id = 'rnaseqml'
+    dataset_id = 'rnaseqexpression'
+    table_id = 'expr_clustered_08082024'
+    bq_queries = gcp_bigquery_utils.BigQueryQueries(project_id=project_id, 
+                                                dataset_id=dataset_id,
+                                                table_id=table_id)
+    pr_site = 'Head and Neck'
+    pr_diag = 'Squamous cell carcinoma, NOS'
+    data_from_bq = bq_queries.get_df_for_pydeseq(primary_site=pr_site, primary_diagnosis=pr_diag)
+
+    # 2. Data Preprocessing for PyDeSeq and GSEA
+    # Intialize the Analysis Engine
+    analysis_eng = analysis_engine.AnalysisEngine(data_from_bq, analysis_type='DE')
+    if not analysis_eng.check_tumor_normal_counts():
+        raise ValueError("Tumor and Normal counts should be at least 10 each")
+    gene_ids_or_gene_cols_df = pd.read_csv('/Users/abhilashdhal/Projects/personal_docs/data/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv')
+    gene_ids_or_gene_cols = list(gene_ids_or_gene_cols_df['gene_id'].to_numpy())
+
+    # Expand the nested expression Data From BigQuery
+    exp_df = analysis_eng.expand_data_from_bq(data_from_bq, gene_ids_or_gene_cols=gene_ids_or_gene_cols, analysis_type='DE')
+
+    # Get Metadata and Counts for PyDeSeq
+    metadata = analysis_eng.metadata_for_pydeseq(exp_df=exp_df)
+    counts_for_de = analysis_eng.counts_from_bq_df(exp_df, gene_ids_or_gene_cols)
+
+    # 3. Run PyDeSeq
+    res_pydeseq = analysis_eng.run_pydeseq(metadata=metadata, counts=counts_for_de)
+
+    # Merge Gene Names as it is required for GSEA and more informative 
+    res_pydeseq_with_gene_names = pd.merge(res_pydeseq, gene_ids_or_gene_cols_df, left_on='index', right_on='gene_id')
+    
+    # 4. Run GSEA for the given Primary Diagnosis By Primary Site and the Normal Tissue for the Primary site using a gene set database
+    # Explore the gene set options from gseapy
     from gseapy.plot import gseaplot
     import gseapy as gp
-    import numpy as np
-    import matplotlib.pyplot as plt
     from gseapy import dotplot
-    ## Preprocess the data
-    ## Load the count data saved from example 1. 
-    rna_seq_DGE_data  = pd.read_csv('./de_gsea_data/kidney_unstr_tumor_normal.csv')
-    unique_data_by_case_id =  rna_seq_DGE_data.drop_duplicates(['case_id']).reset_index(drop=True)
-    kidney_cancer_count_data = unique_data_by_case_id.iloc[:, :60660].T
-    counts = kidney_cancer_count_data.copy().reset_index()
-    counts = counts.set_index('index')
-    counts = counts.T
-    counts = pd.concat([unique_data_by_case_id[['case_id']], counts],axis=1)  
+    gsea_options = gp.get_library_name()
+    print(gsea_options)
 
-    ## Run DE analysis
-    pydeseq_obj = pydeseq_utils.PyDeSeqWrapper(count_matrix=counts, metadata=metadata, design_factors='Condition', groups = {'group1':'Tumor', 'group2':'Normal'})
-    design_factor = 'Condition'
-    result = pydeseq_obj.run_deseq(design_factor=design_factor, group1 = 'Tumor', group2 = 'Normal')
-
-    ## Prepare the data for GSEA
-    results_df = result.results_df
-    results_df_filtered = results_df.dropna()
-    results_df_filtered = results_df_filtered.reset_index()
-    results_df_filtered['nlog10'] = -1*np.log10(results_df_filtered.padj)
-
-    ## Create ranking for GSEA
-    df = results_df_filtered.copy()
-    df['Rank'] = -np.log10(df.padj)*df.log2FoldChange
-    df = df.sort_values('Rank', ascending = False).reset_index(drop = True)
-    ranking = df[['Gene', 'Rank']]
-    pre_res = gp.prerank(rnk = ranking, gene_sets = 'RNA-Seq_Disease_Gene_and_Drug_Signatures_from_GEO', seed = 6, permutation_num = 100)
-
-    ## Plot the GSEA results
-    out = []
-    for term in list(pre_res.results):
-        out.append([term,
-                pre_res.results[term]['fdr'],
-                pre_res.results[term]['es'],
-                pre_res.results[term]['nes']])
-
-    out_df = pd.DataFrame(out, columns = ['Term','fdr', 'es', 'nes']).sort_values('fdr').reset_index(drop = True)
-    terms = pre_res.res2d.Term
-    axs = pre_res.plot(terms=terms[1]) 
-
-    # Create dotplot of most enrichment terms from Gene Set 
-    ax = dotplot(pre_res.res2d,
-                column="FDR q-val",
-                title='KEGG_2016',
-                cmap=plt.cm.viridis,
-                size=6, # adjust dot size
-                figsize=(4,5), cutoff=0.25, show_ring=False)
+    ## Select Gene Set, run GSEA and plot the results
+    gene_set = 'Human_Gene_Atlas'
+    result, plot = analysis_eng.run_gsea(res_pydeseq_with_gene_names, gene_set)
