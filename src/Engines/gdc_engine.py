@@ -1,8 +1,5 @@
-import gevent.monkey
-gevent.monkey.patch_all(thread=False, select=False)
 import grequests
 import src.Connectors.gdc_endpt_base as gdc_endpt_base
-
 import src.Connectors.gdc_filters as gdc_filters
 import src.Connectors.gdc_fields as gdc_fields
 import src.Connectors.gdc_parser as gdc_prs

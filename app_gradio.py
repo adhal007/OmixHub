@@ -1,17 +1,17 @@
+from src.Engines import AnalysisEngine as an_eng
+# Connectors.gcp_bigquery_utils, ClassicML.DGE.pydeseq_utils
+import src.Connectors.gcp_bigquery_utils as gcp_bq_py
+import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
+
 import pandas as pd
 import gradio as gr
 import matplotlib.pyplot as plt
 import seaborn as sns
-import src.Connectors.gcp_bigquery_utils as gcp_bq_py
-import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
-import src.Engines.analysis_engine as an_eng
 import pandas as pd
 from gseapy.plot import gseaplot
 import gseapy as gp
 from gseapy import dotplot
 import matplotlib.pyplot as plt
-# to save your figure, make sure that ``ofname`` is not None
-
 import numpy as np
 
 # Assuming gene set options are static or fetched from a file
@@ -57,7 +57,7 @@ def retrieve_data(project_id, dataset_id, table_id, primary_site, primary_diagno
     bq_queries = gcp_bq_py.BigQueryQueries(project_id, dataset_id, table_id)
     df = bq_queries.get_df_for_pydeseq(primary_site, primary_diagnosis)
     data_from_bq = df.copy()
-    analysis_cls = an_eng.Analysis(data_from_bq, analysis_type='DE')
+    analysis_cls = an_eng.AnalysisEngine(data_from_bq, analysis_type='DE')
     gene_ids_or_gene_cols = list(pd.read_csv('/Users/abhilashdhal/Projects/personal_docs/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv')['gene_id'])
     exp_data = analysis_cls.expand_data_from_bq(data_from_bq, gene_ids_or_gene_cols, 'DE')
     counts_for_de = analysis_cls.counts_from_bq_df(exp_data, gene_ids_or_gene_cols)
@@ -76,13 +76,13 @@ def update_primary_diagnosis_options(project_id, dataset_id, table_id, primary_s
 def pydeseq2_analysis(project_id, dataset_id, table_id, primary_site, primary_diagnosis):
     counts_for_de, metadata = retrieve_data(project_id, dataset_id, table_id, primary_site, primary_diagnosis)
     gene_ids_or_gene_cols = pd.read_csv('/Users/abhilashdhal/Projects/personal_docs/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv')
-    analysis_cls = an_eng.Analysis(data_from_bq=None, analysis_type='DE')
+    analysis_cls = an_eng.AnalysisEngine(data_from_bq=None, analysis_type='DE')
     res_pydeseq = analysis_cls.run_pydeseq(metadata=metadata, counts=counts_for_de)
     res_pydeseq_with_gene_names = pd.merge(res_pydeseq, gene_ids_or_gene_cols, left_on='index', right_on='gene_id')
     return res_pydeseq_with_gene_names 
 
 def gsea_analysis(res_pydeseq, gene_set):
-    analysis_cls = an_eng.Analysis(data_from_bq=None, analysis_type='DE')
+    analysis_cls = an_eng.AnalysisEngine(data_from_bq=None, analysis_type='DE')
     result, plot = analysis_cls.run_gsea(res_pydeseq, gene_set) 
     return result, plot
 

@@ -74,9 +74,9 @@ Engines
    :show-inheritance:
 
 
-2. GDC Engine
+2. BigQuery Engine
 ^^^^^^^^^^^^^
-.. autoclass:: src.Engines.gdc_engine.GDCEngine
+.. autoclass:: src.Engines.bigquery_engine.BigQueryEngine
    :members:
    :undoc-members:
    :show-inheritance:
