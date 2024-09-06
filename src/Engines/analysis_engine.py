@@ -29,7 +29,17 @@ class AnalysisEngine:
         """
         self.data_from_bq = data_from_bq
         self.analysis_type = analysis_type
-        
+
+    def check_tumor_normal_counts(self):
+        count_df = self.data_from_bq['tissue_type'].value_counts().reset_index()
+        count_df.columns = ['tissue_type', 'count']
+        if 'Tumor' in count_df['tissue_type'].values and 'Normal' in count_df['tissue_type'].values:
+            if count_df[count_df['tissue_type'] == 'Normal']['count'].values[0] < 10 or count_df[count_df['tissue_type'] == 'Tumor']['count'].values[0] < 10:
+                return False
+            else:
+                return True
+        else:
+            return False 
         
     def expand_data_from_bq(self, data_from_bq, gene_ids_or_gene_cols, analysis_type):
         """
