@@ -67,28 +67,38 @@ class GDCJson2DfParser:
             'program_name': data.get('cases', [{}])[0].get('project', {}).get('program', {}).get('program_name'),
             'alcohol_history': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('alcohol_history'),
             'years_smoked': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('years_smoked'),
+            'cigarettes_per_day': data.get('cases', [{}])[0].get('exposures', [{}])[0].get('cigarettes_per_day'),
             'tissue_or_organ_of_origin': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tissue_or_organ_of_origin'),
             'days_to_last_follow_up': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('days_to_last_follow_up'),
             'age_at_diagnosis': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('age_at_diagnosis'),
             'primary_diagnosis': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('primary_diagnosis'),
             'primary_site': data.get('cases', [{}])[0].get('project', {}).get('primary_site'),
             'tumor_grade': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tumor_grade'),
+            'tumor_stage': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('tumor_stage'),
             'treatment_or_therapy': next(
                 (t.get('treatment_or_therapy') for t in data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('treatments', [])
                 if t.get('treatment_or_therapy') in ['yes', 'no']), 'unknown'),
             'last_known_disease_status': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('last_known_disease_status'),
             'tissue_type': data.get('cases', [{}])[0].get('samples', [{}])[0].get('tissue_type'),
             'sample_type': data.get('cases', [{}])[0].get('samples', [{}])[0].get('sample_type'), 
+            'is_ffpe': data.get('cases', [{}])[0].get('samples', [{}])[0].get('is_ffpe'),
+            'preservation_method': data.get('cases', [{}])[0].get('samples', [{}])[0].get('preservation_method'),
             'race': data.get('cases', [{}])[0].get('demographic', {}).get('race'),
             'gender': data.get('cases', [{}])[0].get('demographic', {}).get('gender'),
             'ethnicity': data.get('cases', [{}])[0].get('demographic', {}).get('ethnicity'),
             'file_name': data.get('file_name'),
             'file_id': data.get('file_id'),
+            'file_size': data.get('file_size'),
             'data_type': data.get('data_type'),
+            'data_format': data.get('data_format'),
+            'data_category': data.get('data_category'),
             'workflow_type': data.get('analysis', {}).get('workflow_type'),
-            'experimental_strategy': data.get('experimental_strategy')
+            'workflow_version': data.get('analysis', {}).get('workflow_version'),
+            'experimental_strategy': data.get('experimental_strategy'),
+            'disease_type': data.get('cases', [{}])[0].get('project', {}).get('disease_type'),
+            'days_to_recurrence': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('days_to_recurrence')
         }
-        return unnested_data 
+        return unnested_data
     
     def make_df_rna_seq(self, json_data: dict) -> pd.DataFrame:
         """

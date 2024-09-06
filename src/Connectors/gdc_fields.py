@@ -86,6 +86,21 @@ class GDCQueryDefaultFields:
                                                 'cases.exposures.years_smoked',
                                                 'cases.samples.tissue_type',
                                                 'cases.samples.sample_type'
+                                                'cases.samples.is_ffpe',
+                                                'cases.samples.preservation_method',
+                                                'cases.diagnoses.tumor_stage',
+                                                'cases.diagnoses.tumor_grade',
+                                                'cases.diagnoses.age_at_diagnosis',
+                                                'cases.demographic.gender',
+                                                'cases.demographic.race',
+                                                'cases.demographic.ethnicity',
+                                                'cases.exposures.alcohol_history',
+                                                'cases.exposures.cigarettes_per_day',
+                                                'cases.exposures.years_smoked',
+                                                'cases.project.disease_type',
+                                                'experimental_strategy',
+                                                'analysis.workflow_type',
+                                                'cases.diagnoses.days_to_recurrence'
                                                 ]
         
     def update_fields(self, field_name, new_fields):

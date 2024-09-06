@@ -22,7 +22,282 @@ class GDCQueryFilters:
         Initialize the GDCQueryFilters class.
         """
         pass
+################# CREATED BY CURSOR BOT ##############################################
+    def create_sequencing_filter(self, data_type, experimental_strategy=None, workflow_type=None, data_format=None):
+        """
+        Create a filter for specific sequencing data types.
 
+        Args:
+            data_type (str): The type of data (e.g., "Gene Expression Quantification", "Copy Number Segment").
+            experimental_strategy (str or list, optional): The experimental strategy (e.g., "RNA-Seq", "WXS").
+            workflow_type (str or list, optional): The workflow type (e.g., "HTSeq - Counts", "VarScan2 Variant Aggregation and Masking").
+            data_format (str or list, optional): The data format (e.g., "BAM", "VCF").
+
+        Returns:
+            dict: A filter dictionary for the specified sequencing data.
+        """
+        filters = [self.create_basic_filter("data_type", data_type)]
+        
+        if experimental_strategy:
+            filters.append(self.create_basic_filter("files.experimental_strategy", experimental_strategy))
+        
+        if workflow_type:
+            filters.append(self.create_basic_filter("files.analysis.workflow_type", workflow_type))
+        
+        if data_format:
+            filters.append(self.create_basic_filter("files.data_format", data_format))
+        
+        return self.combine_filters(filters)
+
+    def rna_seq_filter(self, workflow_type=None):
+        """
+        Create a filter for RNA-Seq data.
+
+        Args:
+            workflow_type (str or list, optional): The workflow type (e.g., "HTSeq - Counts", "STAR - Counts").
+
+        Returns:
+            dict: A filter dictionary for RNA-Seq data.
+        """
+        return self.create_sequencing_filter(
+            data_type="Gene Expression Quantification",
+            experimental_strategy="RNA-Seq",
+            workflow_type=workflow_type or ["HTSeq - Counts", "STAR - Counts"]
+        )
+
+    def wgs_filter(self, workflow_type=None):
+        """
+        Create a filter for Whole Genome Sequencing (WGS) data.
+
+        Args:
+            workflow_type (str or list, optional): The workflow type.
+
+        Returns:
+            dict: A filter dictionary for WGS data.
+        """
+        return self.create_sequencing_filter(
+            data_type="Aligned Reads",
+            experimental_strategy="WGS",
+            workflow_type=workflow_type
+        )
+
+    def wxs_filter(self, workflow_type=None):
+        """
+        Create a filter for Whole Exome Sequencing (WXS) data.
+
+        Args:
+            workflow_type (str or list, optional): The workflow type.
+
+        Returns:
+            dict: A filter dictionary for WXS data.
+        """
+        return self.create_sequencing_filter(
+            data_type="Aligned Reads",
+            experimental_strategy="WXS",
+            workflow_type=workflow_type
+        )
+
+    def mirna_seq_filter(self, workflow_type=None):
+        """
+        Create a filter for miRNA-Seq data.
+
+        Args:
+            workflow_type (str or list, optional): The workflow type.
+
+        Returns:
+            dict: A filter dictionary for miRNA-Seq data.
+        """
+        return self.create_sequencing_filter(
+            data_type="miRNA Expression Quantification",
+            experimental_strategy="miRNA-Seq",
+            workflow_type=workflow_type
+        )
+
+    def methylation_filter(self, platform=None):
+        """
+        Create a filter for DNA methylation data.
+
+        Args:
+            platform (str or list, optional): The platform used (e.g., "Illumina Human Methylation 450").
+
+        Returns:
+            dict: A filter dictionary for methylation data.
+        """
+        filters = [
+            self.create_basic_filter("data_type", "Methylation Beta Value"),
+            self.create_basic_filter("files.experimental_strategy", "Methylation Array")
+        ]
+        if platform:
+            filters.append(self.create_basic_filter("files.platform", platform))
+        return self.combine_filters(filters)
+
+    def copy_number_variation_filter(self, workflow_type=None):
+        """
+        Create a filter for Copy Number Variation (CNV) data.
+
+        Args:
+            workflow_type (str or list, optional): The workflow type.
+
+        Returns:
+            dict: A filter dictionary for CNV data.
+        """
+        return self.create_sequencing_filter(
+            data_type="Copy Number Segment",
+            workflow_type=workflow_type
+        )
+
+    def somatic_mutation_filter(self, workflow_type=None):
+        """
+        Create a filter for somatic mutation data.
+
+        Args:
+            workflow_type (str or list, optional): The workflow type (e.g., "MuTect2 Variant Aggregation and Masking").
+
+        Returns:
+            dict: A filter dictionary for somatic mutation data.
+        """
+        return self.create_sequencing_filter(
+            data_type="Simple Somatic Mutation",
+            workflow_type=workflow_type or "MuTect2 Variant Aggregation and Masking"
+        )
+    
+    def create_basic_filter(self, field, value, operation="in"):
+        """
+        Create a basic filter for any field.
+
+        Args:
+            field (str): The field to filter on.
+            value (str or list): The value(s) to filter by.
+            operation (str): The operation to use (e.g., "in", "=", "!=", ">", "<", ">=", "<=").
+
+        Returns:
+            dict: A basic filter dictionary.
+        """
+        return {
+            "op": operation,
+            "content": {
+                "field": field,
+                "value": [value] if isinstance(value, str) else value
+            }
+        }
+
+    def create_range_filter(self, field, start, end):
+        """
+        Create a range filter for numeric fields.
+
+        Args:
+            field (str): The field to filter on.
+            start (int or float): The start of the range.
+            end (int or float): The end of the range.
+
+        Returns:
+            dict: A range filter dictionary.
+        """
+        return {
+            "op": "and",
+            "content": [
+                {
+                    "op": ">=",
+                    "content": {
+                        "field": field,
+                        "value": start
+                    }
+                },
+                {
+                    "op": "<=",
+                    "content": {
+                        "field": field,
+                        "value": end
+                    }
+                }
+            ]
+        }
+
+    def create_date_range_filter(self, field, start_date, end_date):
+        """
+        Create a date range filter.
+
+        Args:
+            field (str): The date field to filter on.
+            start_date (str): The start date in YYYY-MM-DD format.
+            end_date (str): The end date in YYYY-MM-DD format.
+
+        Returns:
+            dict: A date range filter dictionary.
+        """
+        return self.create_range_filter(field, start_date, end_date)
+
+    def create_exists_filter(self, field):
+        """
+        Create a filter to check if a field exists.
+
+        Args:
+            field (str): The field to check for existence.
+
+        Returns:
+            dict: An exists filter dictionary.
+        """
+        return {
+            "op": "is not",
+            "content": {
+                "field": field,
+                "value": "null"
+            }
+        }
+
+    def create_missing_filter(self, field):
+        """
+        Create a filter to check if a field is missing.
+
+        Args:
+            field (str): The field to check for missing values.
+
+        Returns:
+            dict: A missing filter dictionary.
+        """
+        return {
+            "op": "is",
+            "content": {
+                "field": field,
+                "value": "null"
+            }
+        }
+
+    def create_regex_filter(self, field, pattern):
+        """
+        Create a regex filter for string fields.
+
+        Args:
+            field (str): The field to apply the regex to.
+            pattern (str): The regex pattern.
+
+        Returns:
+            dict: A regex filter dictionary.
+        """
+        return {
+            "op": "regex",
+            "content": {
+                "field": field,
+                "value": pattern
+            }
+        }
+
+    def combine_filters(self, filters, operation="and"):
+        """
+        Combine multiple filters with a specified operation.
+
+        Args:
+            filters (list): A list of filter dictionaries.
+            operation (str): The operation to use for combining filters ("and" or "or").
+
+        Returns:
+            dict: A combined filter dictionary.
+        """
+        return {
+            "op": operation,
+            "content": filters
+        }
+####### CREATED BY ME ##############################################     
     def create_and_filters(self, filter_specs, op_specs):
         """
         Create a list of filters based on given specifications.
@@ -117,6 +392,7 @@ class GDCQueryFilters:
             NotImplementedError: This method is not yet implemented.
         """
         raise NotImplementedError()
+
 
 
 class GDCFacetFilters:

@@ -240,6 +240,7 @@ class BigQueryQueries(BigQueryUtils):
             primary_site,
             sample_type,
             tissue_type,
+            tissue_or_organ_of_origin,
             primary_diagnosis,
             expr_unstr_count
         FROM
