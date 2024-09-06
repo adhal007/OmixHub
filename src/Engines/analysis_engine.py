@@ -3,9 +3,14 @@ import pandas as pd
 import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
 import pandas as pd
 from gseapy.plot import gseaplot
+from gseapy import enrichment_map
 import gseapy as gp
 import numpy as np
-
+import networkx as nx
+import matplotlib.pyplot as plt
+from gseapy.plot import dotplot
+from sklearn.preprocessing import StandardScaler
+import ot
 class AnalysisEngine:
     """
     Analysis class to perform data analysis based on the specified analysis type.
@@ -25,16 +30,6 @@ class AnalysisEngine:
         self.data_from_bq = data_from_bq
         self.analysis_type = analysis_type
         
-    def check_tumor_normal_counts(self):
-        count_df = self.data_from_bq['tissue_type'].value_counts().reset_index()
-        count_df.columns = ['tissue_type', 'count']
-        if 'Tumor' in count_df['tissue_type'].values and 'Normal' in count_df['tissue_type'].values:
-            if count_df[count_df['tissue_type'] == 'Normal']['count'].values[0] < 10 or count_df[count_df['tissue_type'] == 'Tumor']['count'].values[0] < 10:
-                return False
-            else:
-                return True
-        else:
-            return False
         
     def expand_data_from_bq(self, data_from_bq, gene_ids_or_gene_cols, analysis_type):
         """
@@ -146,8 +141,60 @@ class AnalysisEngine:
         out_df = pd.DataFrame(out, columns = ['Term','fdr', 'es', 'nes']).sort_values('fdr').reset_index(drop = True)
         terms = pre_res.res2d.Term
         axs = pre_res.plot(terms=terms[1])
-        return out_df, axs
-     
+        return out_df, axs, pre_res
+
+    def plot_enrichment_map(self, pre_res):
+        nodes, edges = enrichment_map(pre_res.res2d, cutoff = 0.05)
+        G = nx.from_pandas_edgelist(edges,
+                                    source='src_idx',
+                                    target='targ_idx',
+                                    edge_attr=['jaccard_coef', 'overlap_coef', 'overlap_genes'])
+        fig, ax = plt.subplots(figsize=(8, 8))
+
+        pos = nx.layout.spiral_layout(G)
+        nx.draw_networkx_nodes(G,
+                               pos=pos,
+                               cmap=plt.cm.RdYlBu,
+                               node_color=list(nodes.NES),
+                               node_size=list(nodes.Hits_ratio * 1000))
+        nx.draw_networkx_labels(G,
+                                pos=pos,
+                                labels=nodes.Term.to_dict())
+        edge_weight = nx.get_edge_attributes(G, 'jaccard_coef').values()
+        nx.draw_networkx_edges(G,
+                               pos=pos,
+                               width=list(map(lambda x: x*10, edge_weight)),
+                               edge_color='#CDDBD4')
+        plt.axis('off')
+        return fig, ax
+
+    def create_dotplot(self, pre_res, cutoff=1.0, figsize=(10, 12)):
+        try:
+            ax = dotplot(pre_res.res2d,
+                         column="FDR q-val",
+                         title="GSEA Dotplot",
+                         cmap=plt.cm.viridis,
+                         size=10,
+                         figsize=figsize,
+                         cutoff=cutoff,
+                         show_ring=True,
+                         top_term=30)
+
+            fig = ax.figure
+
+            # Rotate x-axis labels for better readability
+            plt.xticks(rotation=45, ha='right')
+            plt.tight_layout()
+
+            return fig, ax
+        except Exception as e:
+            fig, ax = plt.subplots(figsize=figsize)
+            ax.text(0.5, 0.5, f"Error creating dotplot: {str(e)}", 
+                    ha='center', va='center', wrap=True)
+            ax.axis('off')
+            return fig, ax
+            return fig, ax
+    
     def data_for_ml(self):
         raise NotImplementedError("This method is not implemented yet")
         

@@ -81,7 +81,7 @@ class GDCEngine:
         self._files_endpt = gdc_endpt_base.GDCEndptBase(endpt="files")
         self._cases_endpt = gdc_endpt_base.GDCEndptBase(endpt="cases")
         self._projects_endpt = gdc_endpt_base.GDCEndptBase(endpt="projects")
-         
+        
         self._filters = gdc_filters.GDCQueryFilters()
         self._facet_filters = gdc_filters.GDCFacetFilters()
         self._fields = gdc_fields.GDCQueryDefaultFields()
@@ -89,6 +89,7 @@ class GDCEngine:
         self._parser = gdc_prs.GDCJson2DfParser(
             self._files_endpt, self._cases_endpt, self._projects_endpt
         )
+        self._column_names_from_bq = None
         self._op_params = self.params["op_params"]
         self._exp_types = ["RNA-Seq", "SNP", "Total RNA-Seq"]
         self._data_types = [
@@ -310,6 +311,13 @@ class GDCEngine:
             )
             return ml_data_matrix
 
+    def get_column_names_from_bq(self):
+        if self._column_names_from_bq is None:
+            if self.params['downstream_analysis'] == 'DE':
+                self._column_names_from_bq = ['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']
+            elif self.params['downstream_analysis'] == 'ML':
+                self._column_names_from_bq = ['case_id', 'file_id', 'expr_tpm', 'tissue_type', 'sample_type', 'primary_site', 'recurrence_free_survival_time']
+        return self._column_names_from_bq
     def create_identifier(self, row):
         """
         Create a unique identifier for a row based on specific fields. 
@@ -324,7 +332,7 @@ class GDCEngine:
         identifier_str = f"{row['primary_site']}_{row['tissue_type']}_{row['primary_diagnosis']}"
         return int(hashlib.md5(identifier_str.encode()).hexdigest(), 16) % (10 ** 8)
 
-    def get_data_for_bq(self, primary_site, downstream_analysis='DE', format='dataframe'):
+    def mak_data_for_bq(self, primary_site, downstream_analysis='DE', format='dataframe'):
         """
         Get data for BigQuery based on primary site and downstream analysis type.
 
@@ -341,13 +349,50 @@ class GDCEngine:
         df = self.run_rna_seq_data_matrix_creation(primary_site=primary_site, downstream_analysis=downstream_analysis)
         df = df.set_index('file_id').reset_index()
         gene_cols = df.columns.to_numpy()[1:60661]
-        df['expr_unstr_count'] = df[np.sort(gene_cols)].agg(list, axis=1)
+        if downstream_analysis == 'DE':
+            feature_values_column = 'expr_unstr_count'
+        elif downstream_analysis == 'ML':
+            feature_values_column = 'expr_tpm'
+        df[feature_values_column] = df[np.sort(gene_cols)].agg(list, axis=1)
         df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
         data_for_bq = df_unq[['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']]
         data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender']], on=['file_id', 'case_id'])
         if format == 'dataframe':
-            return data_bq_with_labels
+            return data_bq_with_labels, gene_cols
         elif format == 'json':
             json_data = data_bq_with_labels.to_json(orient='records')
             json_object = json.loads(json_data)
-            return json_object
+            return json_object, gene_cols
+    
+    def make_data_for_recurrence_free_survival(self, primary_site, downstream_analysis='ML', format='dataframe'):
+        """
+        Get data for recurrence free survival analysis based on primary site and downstream analysis type.
+
+        Args:
+            primary_site (str): The primary site to filter by.
+            downstream_analysis (str, optional): The type of downstream analysis ('ML' or other). Defaults to 'ML'.
+            format (str, optional): The format of the output ('dataframe' or 'json'). Defaults to 'dataframe'.
+
+        Returns:
+            pd.DataFrame or dict: The data formatted as a DataFrame or JSON object.
+        """
+        cohort_metadata = self._get_rna_seq_metadata()
+        cohort_metadata = cohort_metadata['metadata']
+        df = self.run_rna_seq_data_matrix_creation(primary_site=primary_site, downstream_analysis=downstream_analysis)
+        df = df.set_index('file_id').reset_index()
+        gene_cols = df.columns.to_numpy()[1:60661]
+        if downstream_analysis == 'DE':
+            feature_values_column = 'expr_unstr_count'
+        elif downstream_analysis == 'ML':
+            feature_values_column = 'expr_tpm'
+        df[feature_values_column] = df[np.sort(gene_cols)].agg(list, axis=1)
+        
+        df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
+        data_for_bq = df_unq[]
+        data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender']], on=['file_id', 'case_id'])
+        if format == 'dataframe':
+            return data_bq_with_labels, gene_cols
+        elif format == 'json':
+            json_data = data_bq_with_labels.to_json(orient='records')
+            json_object = json.loads(json_data)
+            return json_object, gene_cols
