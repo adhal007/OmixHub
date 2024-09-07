@@ -1,7 +1,7 @@
 Examples
 =============
 
-Installation/Usage:
+Usage:
 *******************
 As the package has not been published on PyPi yet, it CANNOT be install using pip.
 
@@ -10,13 +10,13 @@ For now, the suggested method is to clone the repository and view the example no
 
 
 Useful query filters for GDC API endpoints
-------------------------------------------
+********************************************
 
 The following examples demonstrate how to use various filters from the GDCQueryFilters class to query different GDC API endpoints.
 These examples demonstrate how to create filters for various GDC data types and endpoints.
 
 RNA-Seq Filter
-~~~~~~~~~~~~~~
+**************
 
 .. code-block:: python
 
@@ -29,7 +29,7 @@ RNA-Seq Filter
     # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": rna_seq_filter, "size": 10})
 
 WGS Filter
-~~~~~~~~~~
+**********
 
 .. code-block:: python
 
@@ -39,7 +39,7 @@ WGS Filter
     # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": wgs_filter, "size": 10})
 
 Methylation Filter
-~~~~~~~~~~~~~~~~~~
+*******************
 
 .. code-block:: python
 
@@ -49,7 +49,7 @@ Methylation Filter
     # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": methylation_filter, "size": 10})
 
 Top Mutated Genes Filter
-~~~~~~~~~~~~~~~~~~~~~~~~
+*************************
 
 .. code-block:: python
 
@@ -60,7 +60,7 @@ Top Mutated Genes Filter
     #                       params={"filters": json.dumps(top_mutated_genes_filter), "fields": "gene_id,symbol,score", "size": 5})
 
 Custom RNA-Seq Data Filter
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+***************************
 
 .. code-block:: python
 
@@ -75,8 +75,8 @@ Custom RNA-Seq Data Filter
 
 
 
-Useful Examples for Data Processing and Analysis in OmixHub
------------------------------------------------------------
+Data Processing and Analysis Examples
+**************************************************************
 
 Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons (GDC)
 **********************************************************************************
@@ -102,6 +102,25 @@ Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons (GDC)
 Migrating GDC RNA-Seq Expression Data to your BigQuery Database
 ********************************************************************************
 Make sure to run this code in a jupyter notebook or script in the Root directory of OmixHub
+   This example demonstrates a comprehensive workflow for uploading RNA-Seq data from multiple primary sites to BigQuery:
+
+   1. It initializes the `BigQueryUtils` class with a specific project ID.
+   2. Defines a schema for the BigQuery table, including various fields related to RNA-Seq data.
+   3. Creates a new BigQuery table with the defined schema, including partitioning and clustering for optimized performance.
+   4. Initializes a `GDCEngine` instance to fetch data from the GDC API.
+   5. Iterates through a list of primary sites, fetching data for each site from GDC.
+   6. Loads the fetched data into the BigQuery table for each primary site.
+
+   This strategy allows for efficient uploading of data from multiple primary sites into a single, well-structured BigQuery table. The use of partitioning and clustering can significantly improve query performance on large datasets.
+
+   Key features demonstrated:
+   - Creating a table with a specific schema
+   - Implementing partitioning and clustering for better query performance
+   - Batch processing of multiple primary sites
+   - Integration with GDCEngine for data retrieval
+   - Using tqdm for progress tracking during the upload process
+
+   This approach is particularly useful for large-scale genomic data analysis, allowing researchers to efficiently store and query RNA-Seq data across multiple primary sites in a cloud-based environment.
 
 .. code-block:: python
 
@@ -112,38 +131,20 @@ Make sure to run this code in a jupyter notebook or script in the Root directory
 
     import gevent.monkey
     gevent.monkey.patch_all(thread=False, select=False)
-    import pandas as pd
-    import numpy as np
 
-    import os
-    from importlib import reload
-    from flatten_json import flatten
-    from tqdm import tqdm 
-    import src.Engines.gdc_engine as gdc_engine
-    import src.Connectors.gcp_bigquery_utils as gcp_bigquery_utils
+    from Connectors.gcp_bigquery_utils import BigQueryUtils
     from google.cloud import bigquery
-    from google.cloud.exceptions import NotFound
-    reload(gcp_bigquery_utils)
-    reload(gdc_engine)
+    from tqdm import tqdm
+    from Engines.gdc_engine import GDCEngine
 
+    # Initialize BigQueryUtils with your project
+    project_id = 'rnaseqml'
+    bq_utils = BigQueryUtils(project_id=project_id)
 
-    # Initialize the GDC Engine
-    params = {
-        'files.experimental_strategy': 'RNA-Seq', 
-        'data_type': 'Gene Expression Quantification'
-    }
-
-    gdc_eng_inst = gdc_engine.GDCEngine(**params)
-
-    primary_sites = [
-        'Esophagus'
-    ]
-
-    ## Initialize BigQueryUtils with your project
-    bq_utils = gcp_bigquery_utils.BigQueryUtils(project_id='rnaseqml')
+    # Define the table ID
     table_id = 'rnaseqml.rnaseqexpression.expr_clustered'
 
-    ## Give Schema of your table to be created or updated 
+    # Define the schema for your table
     schema = [
         bigquery.SchemaField("case_id", "STRING", mode="NULLABLE"),
         bigquery.SchemaField("file_id", "STRING", mode="NULLABLE"),
@@ -159,20 +160,38 @@ Make sure to run this code in a jupyter notebook or script in the Root directory
         bigquery.SchemaField("group_identifier", "INTEGER", mode="NULLABLE")
     ]
 
-    ## Create table with partitioning and clustering
+    # Create table with partitioning and clustering
     bq_utils.create_bigquery_table_with_schema(
-        table_id=table_id, schema=schema, partition_field="group_identifier", clustering_fields=["primary_site", "tissue_type"]
+        table_id=table_id, 
+        schema=schema, 
+        partition_field="group_identifier", 
+        clustering_fields=["primary_site", "tissue_type"]
     )
 
-    ## Specify the Kind of Downstream Analysis you want to perform
+    # Initialize GDCEngine
+    params = {
+        'files.experimental_strategy': 'RNA-Seq', 
+        'data_type': 'Gene Expression Quantification'
+    }
+    gdc_eng_inst = GDCEngine(**params)
+
+    # List of primary sites to process
+    primary_sites = ['Esophagus', 'Lung', 'Breast']  # Add more sites as needed
+
+    # Specify the kind of downstream analysis you want to perform
     downstream_analysis = 'DE'
+
+    # Process each primary site
     for site in tqdm(primary_sites):
-        json_object = gdc_eng_inst.get_data_for_bq(site, downstream_analysis='DE', format='json')
+        # Get data from GDC
+        json_object = gdc_eng_inst.get_data_for_bq(site, downstream_analysis=downstream_analysis, format='json')
 
         # Load data into BigQuery
         job = bq_utils.load_json_data(json_object, schema, table_id)
         job.result()  # Wait for the job to complete
         print(f"Data for {site} loaded successfully.")
+
+    print("All data loaded successfully.")
 ******************************************************
 
 Run an analysis for Differential Gene Expression (DE) and Gene Set Enrichment Analysis (GSEA)

@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tempfile
 import os
+import numpy as np
 # Assuming gene set options are static or fetched from a file
 # GENE_SETS = pd.read_csv('/path_to_gene_sets/gene_sets.csv')['gene_set'].tolist()
 
