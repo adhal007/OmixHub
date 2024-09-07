@@ -7,8 +7,79 @@ As the package has not been published on PyPi yet, it CANNOT be install using pi
 
 For now, the suggested method is to clone the repository and view the example notebooks.
 
-Example 1. Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons (GDC)
-**************************************************
+
+
+Useful query filters for GDC API endpoints
+------------------------------------------
+
+The following examples demonstrate how to use various filters from the GDCQueryFilters class to query different GDC API endpoints.
+These examples demonstrate how to create filters for various GDC data types and endpoints.
+
+RNA-Seq Filter
+~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    from Connectors.gdc_filters import GDCQueryFilters
+
+    gdc_filters = GDCQueryFilters()
+    rna_seq_filter = gdc_filters.rna_seq_filter()
+    
+    # Use this filter with the 'files' endpoint
+    # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": rna_seq_filter, "size": 10})
+
+WGS Filter
+~~~~~~~~~~
+
+.. code-block:: python
+
+    wgs_filter = gdc_filters.wgs_filter()
+    
+    # Use this filter with the 'files' endpoint
+    # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": wgs_filter, "size": 10})
+
+Methylation Filter
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    methylation_filter = gdc_filters.methylation_filter()
+    
+    # Use this filter with the 'files' endpoint
+    # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": methylation_filter, "size": 10})
+
+Top Mutated Genes Filter
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    top_mutated_genes_filter = gdc_filters.top_mutated_genes_by_project_filter("TCGA-BRCA", top_n=5)
+    
+    # Use this filter with the 'analysis/top_mutated_genes_by_project' endpoint
+    # Example: requests.get("https://api.gdc.cancer.gov/analysis/top_mutated_genes_by_project", 
+    #                       params={"filters": json.dumps(top_mutated_genes_filter), "fields": "gene_id,symbol,score", "size": 5})
+
+Custom RNA-Seq Data Filter
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    custom_params = {
+        "cases.project.primary_site": ["Breast"],
+        "cases.demographic.gender": ["female"]
+    }
+    custom_rna_seq_filter = gdc_filters.rna_seq_data_filter(field_params=custom_params)
+    
+    # Use this filter with the 'files' endpoint
+    # Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": custom_rna_seq_filter, "size": 10})
+
+
+
+Useful Examples for Data Processing and Analysis in OmixHub
+-----------------------------------------------------------
+
+Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons (GDC)
+**********************************************************************************
 .. code-block:: python
 
     """
@@ -28,7 +99,7 @@ Example 1. Cohort Creation of Bulk RNA Seq Experiments from Genomic Data Commons
     rna_seq_ML_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Kidney', downstream_analysis='ML')
 **************************************************
 
-Example 2. Migrating GDC RNA-Seq Expression Data to your BigQuery Database
+Migrating GDC RNA-Seq Expression Data to your BigQuery Database
 ********************************************************************************
 Make sure to run this code in a jupyter notebook or script in the Root directory of OmixHub
 
@@ -104,7 +175,7 @@ Make sure to run this code in a jupyter notebook or script in the Root directory
         print(f"Data for {site} loaded successfully.")
 ******************************************************
 
-Example 3. Run an analysis for Differential Gene Expression (DE) and Gene Set Enrichment Analysis (GSEA)
+Run an analysis for Differential Gene Expression (DE) and Gene Set Enrichment Analysis (GSEA)
 ********************************************************************************************************
 .. code-block:: python
 

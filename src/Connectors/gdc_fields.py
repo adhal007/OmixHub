@@ -100,7 +100,7 @@ class GDCQueryDefaultFields:
                                                 'cases.project.disease_type',
                                                 'experimental_strategy',
                                                 'analysis.workflow_type',
-                                                'cases.diagnoses.days_to_recurrence'
+                                                'files.cases.follow_ups.days_to_progression_free'
                                                 ]
         
     def update_fields(self, field_name, new_fields):

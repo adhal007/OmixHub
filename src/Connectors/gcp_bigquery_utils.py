@@ -262,6 +262,46 @@ class BigQueryQueries(BigQueryUtils):
         df = result.to_dataframe()
         return df
 
+    def get_df_for_recurrence_free_survival_exp(self, primary_site, primary_diagnosis) -> pd.DataFrame:
+        """
+        Get a DataFrame for PyDeSeq analysis based on primary site and primary diagnosis.
+
+        Args:
+            primary_site (str): The primary site to filter by.
+            primary_diagnosis (str): The primary diagnosis to filter by.
+
+        Returns:
+            pd.DataFrame: The resulting DataFrame.
+        """
+        query = f"""
+        SELECT
+            case_id,
+            primary_site,
+            sample_type,
+            tissue_type,
+            tissue_or_organ_of_origin,
+            primary_diagnosis,
+            days_to_recurrence,
+            expr_unstr_count
+        FROM
+            `{self.dataset_id}.{self.table_id}`
+        WHERE
+            (primary_site = @primary_site AND primary_diagnosis = @primary_diagnosis AND tissue_type = 'Tumor') OR 
+            (primary_site = @primary_site AND tissue_type = 'Normal')
+        """
+        job_config = bigquery.QueryJobConfig(
+            query_parameters=[
+                bigquery.ScalarQueryParameter("primary_site", "STRING", primary_site),
+                bigquery.ScalarQueryParameter(
+                    "primary_diagnosis", "STRING", primary_diagnosis
+                ),
+            ]
+        )
+        query_job = self._client.query(query, job_config=job_config)
+        result = query_job.result()  # Wait for the query job to complete.
+        df = result.to_dataframe()
+        return df
+    
     def get_all_primary_diagnosis_for_primary_site(self, primary_site) -> pd.DataFrame:
         """
         Get all primary diagnoses for a given primary site from the BigQuery table.

@@ -96,7 +96,7 @@ class GDCJson2DfParser:
             'workflow_version': data.get('analysis', {}).get('workflow_version'),
             'experimental_strategy': data.get('experimental_strategy'),
             'disease_type': data.get('cases', [{}])[0].get('project', {}).get('disease_type'),
-            'days_to_recurrence': data.get('cases', [{}])[0].get('diagnoses', [{}])[0].get('days_to_recurrence')
+            'days_to_recurrence': data.get('cases', [{}])[0].get('follow_ups', [{}])[0].get('days_to_recurrence')
         }
         return unnested_data
     

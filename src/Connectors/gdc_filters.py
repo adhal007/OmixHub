@@ -384,6 +384,38 @@ class GDCQueryFilters:
         filter_for_query = self.create_and_filters(combined_filter_specs, op_specs)
         return filter_for_query
 
+    def top_mutated_genes_by_project_filter(self, project_name):
+        """
+        Create a filter for top mutated genes by project.
+
+        Args:
+            project_name (str): The project name to filter by (e.g., "TCGA-BRCA").
+            top_n (int): The number of top mutated genes to retrieve.
+
+        Returns:
+            dict: A filter dictionary for top mutated genes by project.
+        """
+        return {
+            "op": "and",
+            "content": [
+                {
+                    "op": "in",
+                    "content": {
+                        "field": "cases.project.project_id",
+                        "value": [project_name]
+                    }
+                },
+                {
+                    "op": "in",
+                    "content": {
+                        "field": "ssms.consequence.transcript.annotation.vep_impact",
+                        "value": ["HIGH", "MODERATE"]
+                    }
+                }
+            ]
+        }  
+    
+                        
     def all_diseases(self):
         """
         Placeholder method for retrieving all diseases.
