@@ -63,60 +63,9 @@ Connectors
       # Create a facet filter
       facet_filter = facet_filters.create_facet_filter("cases.project.primary_site", ["Breast", "Lung"])
 
-3. GDC Parser
-^^^^^^^^^^^^^
-.. autoclass:: src.Connectors.gdc_parser.GDCJson2DfParser
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   Example usage:
-
-   .. code-block:: python
-
-      from Connectors.gdc_parser import GDCJson2DfParser
-      from Connectors.gdc_endpt_base import GDCEndptBase
-      from Connectors.gdc_filters import GDCQueryFilters
-      import requests
-
-      # Initialize the GDCJson2DfParser with GDCEndptBase instances for each endpoint
-      gdc_files_sub = GDCEndptBase(endpt='files')
-      gdc_cases_sub = GDCEndptBase(endpt='cases')
-      gdc_projects_sub = GDCEndptBase(endpt='projects')
-
-      parser = GDCJson2DfParser(gdc_files_sub, gdc_cases_sub, gdc_projects_sub)
-
-      # Initialize GDCQueryFilters
-      gdc_filters = GDCQueryFilters()
-
-      # Create a filter for RNA-Seq data
-      custom_params = {
-         "cases.project.primary_site": ["Breast"],
-         "cases.demographic.gender": ["female"]
-      }
-      rna_seq_filter = gdc_filters.rna_seq_data_filter(field_params=custom_params)
-
-      # Use the filter to fetch data from the GDC API
-      url = "https://api.gdc.cancer.gov/files"
-      params = {
-         "filters": rna_seq_filter,
-         "fields": "id,submitter_id,cases.case_id,cases.project.project_id,cases.project.project_name,"
-                  "cases.project.program.program_id,cases.project.program.program_name,"
-                  "cases.diagnoses.age_at_diagnosis,cases.diagnoses.primary_diagnosis,"
-                  "cases.demographic.gender,cases.demographic.race,file_name,file_size,data_type,"
-                  "experimental_strategy",
-         "size": "10"  # Limit to 10 results for this example
-      }
-      response = requests.post(url, json=params)
-      json_data = response.json()
-
-      # Parse the JSON data into a DataFrame
-      df = parser.make_df_rna_seq(json_data)
-
-      # Display the resulting DataFrame
-      print(df)
 
 
-4. Google Cloud Connector
+3. Google Cloud Connector
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. class:: src.Connectors.gcp_bigquery_utils.BigQueryUtils(project_id)
 
