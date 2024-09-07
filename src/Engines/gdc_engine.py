@@ -78,11 +78,6 @@ class GDCEngine:
         ## public attributes
         self.params = self._default_params | params
         self._query_params = params
-
-        ## private attributes
-        # self._files_endpt = gdc_files.GDCFilesEndpt()
-        # self._cases_endpt = gdc_cases.GDCCasesEndpt()
-        # self._projects_endpt = gdc_projects.GDCProjectsEndpt()
         
         self._files_endpt = gdc_endpt_base.GDCEndptBase(endpt="files")
         self._cases_endpt = gdc_endpt_base.GDCEndptBase(endpt="cases")
@@ -317,8 +312,6 @@ class GDCEngine:
                 
             )
             return ml_data_matrix
-
-
     
     def create_identifier(self, row):
         """
