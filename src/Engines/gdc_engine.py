@@ -47,6 +47,12 @@ class GDCEngine:
         make_RNA_seq_data_matrix() -> pd.DataFrame:
             Create a data matrix for RNA sequencing data.
 
+        make_count_data_for_bq() -> pd.DataFrame:
+            Get data for BigQuery based on primary site and downstream analysis type.
+
+        make_data_for_recurrence_free_survival() -> pd.DataFrame:
+            Get data for recurrence free survival analysis based on primary site and downstream analysis type.
+
         run() -> None:
             Run the GDCEngine to fetch and process the data.
     """
@@ -98,6 +104,7 @@ class GDCEngine:
             "Isoform Expression Quantification",
             "Splice Junction Quantification",
         ]
+        self._field_names_from_data_matrix = ['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']
         self._available_feature_norms = ["fpkm_unstranded", "tpm_unstranded"]
 
     def set_params(self, **params: dict) -> None:
@@ -311,13 +318,8 @@ class GDCEngine:
             )
             return ml_data_matrix
 
-    def get_column_names_from_bq(self):
-        if self._column_names_from_bq is None:
-            if self.params['downstream_analysis'] == 'DE':
-                self._column_names_from_bq = ['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']
-            elif self.params['downstream_analysis'] == 'ML':
-                self._column_names_from_bq = ['case_id', 'file_id', 'expr_tpm', 'tissue_type', 'sample_type', 'primary_site', 'recurrence_free_survival_time']
-        return self._column_names_from_bq
+
+    
     def create_identifier(self, row):
         """
         Create a unique identifier for a row based on specific fields. 
@@ -332,7 +334,7 @@ class GDCEngine:
         identifier_str = f"{row['primary_site']}_{row['tissue_type']}_{row['primary_diagnosis']}"
         return int(hashlib.md5(identifier_str.encode()).hexdigest(), 16) % (10 ** 8)
 
-    def mak_data_for_bq(self, primary_site, downstream_analysis='DE', format='dataframe'):
+    def make_count_data_for_bq(self, primary_site, downstream_analysis='DE', format='dataframe'):
         """
         Get data for BigQuery based on primary site and downstream analysis type.
 
@@ -344,6 +346,7 @@ class GDCEngine:
         Returns:
             pd.DataFrame or dict: The data formatted as a DataFrame or JSON object.
         """
+        field_names_from_cohort = ['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender']
         cohort_metadata = self._get_rna_seq_metadata()
         cohort_metadata = cohort_metadata['metadata']
         df = self.run_rna_seq_data_matrix_creation(primary_site=primary_site, downstream_analysis=downstream_analysis)
@@ -355,8 +358,8 @@ class GDCEngine:
             feature_values_column = 'expr_tpm'
         df[feature_values_column] = df[np.sort(gene_cols)].agg(list, axis=1)
         df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
-        data_for_bq = df_unq[['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']]
-        data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender']], on=['file_id', 'case_id'])
+        data_for_bq = df_unq[self._field_names_from_data_matrix]
+        data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[field_names_from_cohort], on=['file_id', 'case_id'])
         if format == 'dataframe':
             return data_bq_with_labels, gene_cols
         elif format == 'json':
@@ -376,6 +379,7 @@ class GDCEngine:
         Returns:
             pd.DataFrame or dict: The data formatted as a DataFrame or JSON object.
         """
+        field_names_from_cohort =['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender', 'days_to_recurrence']
         cohort_metadata = self._get_rna_seq_metadata()
         cohort_metadata = cohort_metadata['metadata']
         df = self.run_rna_seq_data_matrix_creation(primary_site=primary_site, downstream_analysis=downstream_analysis)
@@ -388,8 +392,8 @@ class GDCEngine:
         df[feature_values_column] = df[np.sort(gene_cols)].agg(list, axis=1)
         
         df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
-        data_for_bq = df_unq[]
-        data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[['file_id', 'case_id', 'tissue_or_organ_of_origin', 'age_at_diagnosis', 'primary_diagnosis', 'race', 'gender']], on=['file_id', 'case_id'])
+        data_for_bq = df_unq[self._field_names_from_data_matrix]
+        data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[field_names_from_cohort], on=['file_id', 'case_id'])
         if format == 'dataframe':
             return data_bq_with_labels, gene_cols
         elif format == 'json':

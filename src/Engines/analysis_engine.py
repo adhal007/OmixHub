@@ -1,6 +1,6 @@
+
 import numpy as np 
 import pandas as pd 
-import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
 import pandas as pd
 from gseapy.plot import gseaplot
 from gseapy import enrichment_map
@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from gseapy.plot import dotplot
 from sklearn.preprocessing import StandardScaler
 import ot
+import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
 class AnalysisEngine:
     """
     Analysis class to perform data analysis based on the specified analysis type.
@@ -110,6 +111,7 @@ class AnalysisEngine:
         return metadata     
     
     def run_pydeseq(self, metadata, counts):
+
         """
         Run Gene Set Enrichment Analysis (GSEA) on the given DataFrame.
 
