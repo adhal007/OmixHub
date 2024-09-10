@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Operations - OmixHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            background-color: #34495e;
+            padding: 0.5rem;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 1rem;
+        }
+        nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        article {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        article:hover {
+            transform: translateY(-5px);
+        }
+        article img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        article .content {
+            padding: 1rem;
+        }
+        article h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        article p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        article a {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #3498db;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        article a:hover {
+            background-color: #2980b9;
+        }
+        section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        pre {
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>OmixHub</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#gdc-utilities">GDC Utilities</a></li>
+            <li><a href="#google-cloud-utilities">Google Cloud Utilities</a></li>
+            <li><a href="#data-preprocessing">Data Preprocessing</a></li>
+            <li><a href="#feature-selection">Feature Selection</a></li>
+            <li><a href="#normal-tissue-sample-simulator">RNA-Seq Sample Simulator</a></li> 
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Category: Data Operations</h1>
+
+        <div class="article-grid">
+            <!-- GDC Utilities -->
+            <article>
+                <img src="images/GDC_query_and_search.png" alt="GDC Utilities">
+                <div class="content">
+                    <h2>GDC Query Filters for RNA-Seq Data</h2>
+                    <p>Data Operations, GDC Utilities 06/22/2024 OmixHub Team</p>
+                    <p>Learn how to use GDC Query Filters to efficiently retrieve RNA-Seq data from the Genomic Data Commons (GDC) API.</p>
+                    <a href="#gdc-utilities">Continue Reading...</a>
+                </div>
+            </article>
+
+            <!-- Google Cloud Utilities -->
+            <article>
+                <img src="images/gdc_to_bg_migration.png" alt="Google Cloud Utilities">
+                <div class="content">
+                    <h2>Migrating GDC RNA-Seq Data to BigQuery</h2>
+                    <p>Data Operations, Google Cloud Utilities 05/15/2024 OmixHub Team</p>
+                    <p>A comprehensive guide on uploading RNA-Seq expression data from GDC to your BigQuery database for efficient storage and analysis.</p>
+                    <a href="#google-cloud-utilities">Continue Reading...</a>
+                </div>
+            </article>
+
+            <!-- Data Preprocessing -->
+            <article>
+                <img src="https://via.placeholder.com/400x200.png?text=Data+Preprocessing" alt="Data Preprocessing">
+                <div class="content">
+                    <h2>Cohort Creation for Bulk RNA-Seq Experiments</h2>
+                    <p>Data Operations, Data Preprocessing 04/03/2024 OmixHub Team</p>
+                    <p>Learn how to create data matrices for Differential Gene Expression (DE) or Machine Learning analysis from GDC RNA-Seq data.</p>
+                    <a href="#data-preprocessing">Continue Reading...</a>
+                </div>
+            </article>
+
+            <!-- Feature Selection -->
+            <article>
+                <img src="images/gsea_results.png" alt="Feature Selection">
+                <div class="content">
+                    <h2>Feature Selection for RNA-Seq Data Analysis</h2>
+                    <p>Data Operations, Feature Selection 03/01/2024 OmixHub Team</p>
+                    <p>Explore techniques for selecting relevant features from high-dimensional RNA-Seq data to improve analysis and model performance.</p>
+                    <a href="#feature-selection">Continue Reading...</a>
+                </div>
+            </article>
+            <article id="normal-tissue-sample-simulator">
+                <h3>Normal Tissue Sample Simulator</h3>
+                <p>The Normal Tissue Sample Simulator is a powerful tool for balancing datasets with uneven distribution of normal and tumor samples. It uses an autoencoder to generate synthetic normal tissue samples, ensuring a more robust analysis.</p>
+                
+                <p>This tool is particularly useful when:</p>
+                <ul>
+                    <li>Your dataset has significantly fewer normal samples compared to tumor samples</li>
+                    <li>You need to increase the size of your dataset for more reliable machine learning models</li>
+                    <li>You want to explore the characteristics of normal tissue samples in a controlled manner</li>
+                </ul>
+        
+                <figure>
+                    <img src="images/simulator_example.png" alt="Normal Tissue Sample Simulation" style="max-width: 100%; height: auto;">
+                    <figcaption>Visualization of original and simulated normal tissue samples using t-SNE</figcaption>
+                </figure>
+                
+                <p>The figure above shows a heatmap plot comparing the distribution of original normal tissue samples with the simulated samples across 60K gene expression features. 
+                    This visualization helps to verify that the simulated samples maintain the characteristics of the original normal tissue samples.
+                </p>
+            </article>
+        </div>
+
+
+        <section id="gdc-utilities">
+            <h2>GDC Query Filters for RNA-Seq Data</h2>
+            <p>The Genomic Data Commons (GDC) provides a wealth of RNA-Seq data, but efficiently querying this data can be challenging. Our GDC Query Filters utility simplifies this process:</p>
+            <pre><code>
+from Connectors.gdc_filters import GDCQueryFilters
+
+gdc_filters = GDCQueryFilters()
+rna_seq_filter = gdc_filters.rna_seq_filter()
+
+# Use this filter with the 'files' endpoint
+# Example: requests.post("https://api.gdc.cancer.gov/files", json={"filters": rna_seq_filter, "size": 10})
+            </code></pre>
+            <p>This utility allows you to create filters for various GDC data types and endpoints, making it easier to retrieve the specific data you need for your analysis.</p>
+        </section>
+
+        <section id="google-cloud-utilities">
+            <h2>Migrating GDC RNA-Seq Data to BigQuery</h2>
+            <p>Storing and analyzing large-scale RNA-Seq data can be challenging. Our Google Cloud utility helps you migrate GDC RNA-Seq expression data to BigQuery for efficient storage and analysis:</p>
+            <pre><code>
+from Connectors.gcp_bigquery_utils import BigQueryUtils
+from Engines.gdc_engine import GDCEngine
+
+# Initialize BigQueryUtils and create table
+bq_utils = BigQueryUtils(project_id='your_project_id')
+table_id = 'your_project.dataset.table'
+bq_utils.create_bigquery_table_with_schema(table_id, schema, partition_field="group_identifier", clustering_fields=["primary_site", "tissue_type"])
+
+# Initialize GDCEngine and fetch data
+gdc_eng_inst = GDCEngine(**params)
+
+# Process and upload data for each primary site
+for site in primary_sites:
+    json_object = gdc_eng_inst.make_count_data_for_bq(site, downstream_analysis='DE', format='json')
+    bq_utils.load_json_data(json_object, schema, table_id)
+            </code></pre>
+            <p>This approach allows for efficient uploading of data from multiple primary sites into a single, well-structured BigQuery table, optimized for query performance.</p>
+        </section>
+
+        <section id="data-preprocessing">
+            <h2>Cohort Creation for Bulk RNA-Seq Experiments</h2>
+            <p>Preparing RNA-Seq data for downstream analysis is a crucial step. Our data preprocessing utility helps create cohorts for Differential Gene Expression (DE) or Machine Learning (ML) analysis:</p>
+            <pre><code>
+import src.Engines.gdc_engine as gdc_engine
+
+# Create Dataset for differential gene expression
+rna_seq_DGE_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Kidney', downstream_analysis='DE')
+
+# Create Dataset for machine learning analysis
+rna_seq_ML_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Kidney', downstream_analysis='ML')
+            </code></pre>
+            <p>This utility allows you to easily create data matrices tailored for your specific analysis needs, whether it's for DE or ML studies.</p>
+        </section>
+
+        <section id="feature-selection">
+            <h2>Feature Selection for RNA-Seq Data Analysis</h2>
+            <p>Feature selection is crucial for improving model performance and interpretability in RNA-Seq data analysis. Our feature selection utility helps identify the most relevant genes:</p>
+            <pre><code>
+        import src.Engines.analysis_engine as analysis_engine
+        
+        # Initialize the Analysis Engine
+        analysis_eng = analysis_engine.AnalysisEngine(data_from_bq, analysis_type='DE')
+        
+        # Run differential expression analysis
+        res_pydeseq = analysis_eng.run_pydeseq(metadata=metadata, counts=counts_for_de)
+        
+        # Perform Gene Set Enrichment Analysis (GSEA)
+        gene_set = 'Human_Gene_Atlas'
+        result, plot = analysis_eng.run_gsea(res_pydeseq_with_gene_names, gene_set)
+            </code></pre>
+            <p>This utility combines differential expression analysis with Gene Set Enrichment Analysis to help you identify the most important features (genes) for your RNA-Seq data analysis.</p>
+        </section>
+
+        <section id="normal-tissue-simulator-code">
+            <h3>Code Implementation</h3>
+            <p>Here's how you can use the AutoencoderSimulator in conjuction with optimal transport to generate synthetic normal tissue samples, balancing your dataset for more accurate analysis:</p>
+            <pre><code>
+    # Get original normal samples
+    normal_samples = data_from_bq[data_from_bq['tissue_type'] == 'Normal']
+    
+    # Simulate normal samples
+    simulator = simulators.AutoencoderSimulator(data_from_bq)
+    preprocessed_data = simulator.preprocess_data()
+    simulator.train_autoencoder(preprocessed_data)
+    num_samples_to_simulate = len(tumor_samples) - len(normal_samples)
+    simulated_normal_samples = simulator.simulate_samples(num_samples_to_simulate)
+            </code></pre>
+            <p>This code snippet demonstrates the process of:</p>
+            <ol>
+                <li>Extracting the original normal samples from your dataset</li>
+                <li>Initializing the AutoencoderSimulator with your data</li>
+                <li>Preprocessing the data for the autoencoder</li>
+                <li>Training the autoencoder on the preprocessed data</li>
+                <li>Determining the number of samples to simulate</li>
+                <li>Generating the simulated normal samples</li>
+            </ol>
+            <p>After running this code, you can combine the original and simulated normal samples with your tumor samples to create a balanced dataset for further analysis.</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 OmixHub. All rights reserved.</p>
+    </footer>
+</body>
+</html>

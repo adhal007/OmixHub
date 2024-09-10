@@ -1,7 +1,4 @@
 
-
-import numpy as np
-import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -10,8 +7,6 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from sklearn.neural_network import MLPClassifier
-import numpy as np
-import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -37,7 +32,98 @@ from hpsklearn import HyperoptEstimator, any_classifier
 from hpsklearn.components import svc, random_forest_classifier, mlp_classifier
 from hyperopt import hp
 from hyperopt import tpe
+from src.ClassicML.Supervised.base_ml_models import BaseEnsembleClf
 import logging
+import numpy as np
+import pandas as pd
+
+class ModelProcessor:
+    def __init__(self):
+        self.ensemble_clf = None
+    def apply_dimensionality_reduction(self, X_train, X_test, X_val, method='PCA', n_components=20):
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+        X_val_scaled = scaler.transform(X_val)
+
+        if method == 'PCA':
+            reducer = PCA(n_components=n_components)
+            X_train_reduced = reducer.fit_transform(X_train_scaled)
+            X_test_reduced = reducer.transform(X_test_scaled)
+            X_val_reduced = reducer.transform(X_val_scaled)
+        elif method == 'TSNE':
+            tsne_components = min(3, n_components)
+            reducer = TSNE(n_components=tsne_components, random_state=42)
+            X_train_reduced = reducer.fit_transform(X_train_scaled)
+            X_test_reduced = TSNE(n_components=tsne_components, random_state=42).fit_transform(X_test_scaled)
+            X_val_reduced = TSNE(n_components=tsne_components, random_state=42).fit_transform(X_val_scaled)
+        elif method == 'SparsePCA':
+            reducer = SparsePCA(n_components=n_components, random_state=42)
+            X_train_reduced = reducer.fit_transform(X_train_scaled)
+            X_test_reduced = reducer.transform(X_test_scaled)
+            X_val_reduced = reducer.transform(X_val_scaled)
+
+        return X_train_reduced, X_test_reduced, X_val_reduced, reducer
+
+    def optimize_hyperparameters(self, classifier_type, X_train, y_train):
+        logging.getLogger('hyperopt').setLevel(logging.ERROR)
+
+        if classifier_type == 'SVM':
+            classifier = svc('my_svc',
+                             C=hp.loguniform('svm_C', np.log(1e-5), np.log(1e5)),
+                             kernel=hp.choice('kernel', ['rbf', 'linear']),
+                             gamma=hp.loguniform('gamma', np.log(1e-5), np.log(1e5)),
+                             probability=True)
+        elif classifier_type == 'Random Forest':
+            classifier = random_forest_classifier('my_rf')
+        elif classifier_type == 'Neural Network':
+            classifier = mlp_classifier('my_mlp')
+        else:
+            raise ValueError("Unsupported classifier type for hyperparameter optimization")
+
+        estim = HyperoptEstimator(
+            classifier=classifier,
+            preprocessing=[],
+            algo=tpe.suggest,
+            max_evals=100,
+            trial_timeout=300,
+            verbose=0
+        )
+        
+        try:
+            estim.fit(X_train, y_train)
+            return estim.best_model()['learner']
+        except Exception as e:
+            print(f"Error during hyperparameter optimization for {classifier_type}: {str(e)}")
+            if classifier_type == 'SVM':
+                return SVC(probability=True, random_state=42)
+            elif classifier_type == 'Random Forest':
+                return RandomForestClassifier(random_state=42)
+            elif classifier_type == 'Neural Network':
+
+    
+    def select_model(self, classifier_type):
+        classifiers = {
+            'SVM': SVC(probability=True, random_state=42),
+            'Random Forest': RandomForestClassifier(random_state=42),
+            'Neural Network': MLPClassifier(random_state=42),
+            'Ensemble': self.ensemble_clf
+        }
+        return classifiers.get(classifier_type, None)
+
+    def setup_ensemble(self, model_clfs, num_labels, random_state=42, prob_thresh=0.5):
+        self.ensemble_clf = BaseEnsembleClf(model_clfs, num_labels, random_state, prob_thresh)
+
+    def train_ensemble(self, X_train, y_train, X_val, y_val):
+        if self.ensemble_clf is None:
+            raise ValueError("Ensemble classifier not set up. Call setup_ensemble first.")
+        return self.ensemble_clf.train_clf(X_train, y_train, X_val, y_val)
+
+    def test_ensemble(self, X_test, y_test, model_outs):
+        if self.ensemble_clf is None:
+            raise ValueError("Ensemble classifier not set up. Call setup_ensemble first.")
+        return self.ensemble_clf.test_clf(X_test, y_test, model_outs)
+    
 # Custom Conditional Inference Random Forest (simplified version)
 class ConditionalInferenceRandomForest(BaseEstimator, ClassifierMixin):
     def __init__(self, n_estimators=100, random_state=None):
@@ -71,7 +157,8 @@ class WeightedSubspaceRandomForest(BaseEstimator, ClassifierMixin):
     def predict_proba(self, X):
         return self.rf.predict_proba(X * self.feature_weights)
 
-class ExperimentRunner:
+
+class RNASeqExperimentRunner:
     def __init__(self, data_from_bq, gene_cols):
         self.data_from_bq = data_from_bq
         self.tumor_samples = None
@@ -84,7 +171,7 @@ class ExperimentRunner:
         self.y_test = None
         self.y_val = None
         self.gene_cols = gene_cols
-
+        self.model_processor = ModelProcessor()
         self.gene_id_to_name = self.load_gene_mapping()
     
     def load_gene_mapping(self):
@@ -134,37 +221,6 @@ class ExperimentRunner:
         self.y_train = np.concatenate([np.ones(len(self.tumor_train)), np.zeros(len(normal_train))])
         self.y_test = np.concatenate([np.ones(len(tumor_test)), np.zeros(len(normal_test))])
         self.y_val = np.concatenate([np.ones(len(self.tumor_val)), np.zeros(len(normal_val))])
-
-    def apply_dimensionality_reduction(self, method='PCA', n_components=20):
-        expr_col = 'expr_unstr_count'
-        X_train = np.vstack(self.X_train[expr_col].apply(pd.Series).values)
-        X_test = np.vstack(self.X_test[expr_col].apply(pd.Series).values)
-        X_val = np.vstack(self.X_val[expr_col].apply(pd.Series).values)
-
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-        X_val_scaled = scaler.transform(X_val)
-
-        if method == 'PCA':
-            reducer = PCA(n_components=n_components)
-            X_train_reduced = reducer.fit_transform(X_train_scaled)
-            X_test_reduced = reducer.transform(X_test_scaled)
-            X_val_reduced = reducer.transform(X_val_scaled)
-        elif method == 'TSNE':
-            tsne_components = min(3, n_components)  # Ensure t-SNE uses at most 3 components
-            reducer = TSNE(n_components=tsne_components, random_state=42)
-            X_train_reduced = reducer.fit_transform(X_train_scaled)
-            # For t-SNE, we need to fit_transform for test and validation sets separately
-            X_test_reduced = TSNE(n_components=tsne_components, random_state=42).fit_transform(X_test_scaled)
-            X_val_reduced = TSNE(n_components=tsne_components, random_state=42).fit_transform(X_val_scaled)
-        elif method == 'SparsePCA':
-            reducer = SparsePCA(n_components=n_components, random_state=42)
-            X_train_reduced = reducer.fit_transform(X_train_scaled)
-            X_test_reduced = reducer.transform(X_test_scaled)
-            X_val_reduced = reducer.transform(X_val_scaled)
-
-        return X_train_reduced, X_test_reduced, X_val_reduced
     
     def evaluate_variable_importance(self, classifier, X_reduced, y, original_features, reducer, n_top_features=15):
         # Create a background dataset for SHAP
@@ -305,31 +361,35 @@ class ExperimentRunner:
             'SVM': 'SVM',
             'Random Forest': 'Random Forest',
             'Neural Network': 'Neural Network',
+            'Ensemble': 'Ensemble'
         }
+
+        # Set up ensemble classifier
+        ensemble_models = {
+            'clf_lr': LogisticRegression(solver='liblinear', penalty='l1', random_state=42),
+            'clf_rf': RandomForestClassifier(random_state=42),
+            'clf_svm': SVC(probability=True, random_state=42)
+        }
+        self.model_processor.setup_ensemble(ensemble_models, num_labels=5, random_state=42, prob_thresh=0.5)
 
         classification_results = {}
 
         expr_col = 'expr_unstr_count'
         original_features_train = np.vstack(self.X_train[expr_col].apply(pd.Series).values)
         original_features_test = np.vstack(self.X_test[expr_col].apply(pd.Series).values)
+        original_features_val = np.vstack(self.X_val[expr_col].apply(pd.Series).values)
 
         for dr_method, n_components in dimensionality_reduction_methods:
-            X_train_reduced, X_test_reduced, X_val_reduced = self.apply_dimensionality_reduction(method=dr_method, n_components=n_components)
-
-            # Get the reducer used
-            if dr_method == 'PCA':
-                reducer = PCA(n_components=n_components)
-            elif dr_method == 'TSNE':
-                reducer = TSNE(n_components=n_components, random_state=42)
-            reducer.fit(original_features_train)
-
+            X_train_reduced, X_test_reduced, X_val_reduced, reducer = self.model_processor.apply_dimensionality_reduction(
+                original_features_train, original_features_test, original_features_val, method=dr_method, n_components=n_components
+            )
             for clf_name, clf_type in classifiers.items():
-                # Optimize hyperparameters
-                optimized_clf = self.optimize_hyperparameters(clf_type, X_train_reduced, self.y_train)
-                
-                # Train and evaluate with optimized classifier
-                results = self.train_and_evaluate(optimized_clf, X_train_reduced, X_test_reduced, X_val_reduced, original_features_test, reducer)
-                
+                if clf_type == 'Ensemble':
+                    model_outs = self.model_processor.train_ensemble(X_train_reduced, self.y_train, X_val_reduced, self.y_val)
+                    results = self.model_processor.test_ensemble(X_test_reduced, self.y_test, model_outs)
+                else:
+                    optimized_clf = self.model_processor.optimize_hyperparameters(clf_type, X_train_reduced, self.y_train)
+                    results = self.train_and_evaluate(optimized_clf, X_t
                 # Get top gene IDs
                 top_gene_ids = [self.gene_cols[i] for i in results['Top_Features']]
                 

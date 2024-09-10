@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmixHub Documentation</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --link-color: #2980b9;
+            --code-background: #f7f9fa;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        nav {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 1rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        pre {
+            background-color: var(--code-background);
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--link-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>OmixHub Documentation</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#api-reference">API Reference</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#applications">Applications</a></li>
+            <li><a href="#references">References</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>OmixHub is a platform that interfaces with GDC using Python to help users apply ML-based analysis on different sequencing data. Currently, we support only RNA-Seq based datasets from the genomic data commons (GDC).</p>
+            <ul>
+                <li><strong>Cohort Creation</strong> of Bulk RNA Seq Tumor and Normal Samples from GDC.</li>
+                <li><strong>Bioinformatics analysis:</strong> Application of PyDESeq2 and GSEA in a single pipeline.</li>
+                <li><strong>Classical ML analysis:</strong> Applying clustering, supervised ML, and outlier sum statistics.</li>
+                <li><strong>Custom API Connections:</strong>
+                    <ul>
+                        <li>Search and retrieval of Cancer Data cohorts from GDC using complex JSON filters.</li>
+                        <li>Interacting with MongoDB in a Pythonic manner (DOCS coming soon).</li>
+                        <li>Interacting with Google Cloud BigQuery in a Pythonic manner (DOCS coming soon).</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="getting-started">
+            <h2>Getting Started</h2>
+            <ol>
+                <li>Clone the repository:
+                    <pre><code>git clone https://github.com/adhal007/OmixHub.git</code></pre>
+                </li>
+                <li>Create the correct conda environment for OmixHub:
+                    <pre><code>conda env create -f environment.yaml</code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section id="api-reference">
+            <h2>API Reference</h2>
+            <p>For detailed API reference, please visit the full documentation:</p>
+            <a href="https://omixhub.readthedocs.io/en/latest/modules.html" class="button">View Full API Reference</a>
+        </section>
+
+        <section id="examples">
+            <h2>Examples</h2>
+            <h3>Useful query filters for GDC API endpoints</h3>
+            <p>For examples of using various filters from the GDCQueryFilters class, please refer to the examples section in the full documentation.</p>
+            <a href="https://omixhub.readthedocs.io/en/latest/examples.html#useful-query-filters-for-gdc-api-endpoints" class="button">View Query Filter Examples</a>
+
+            <h3>Data Processing and Analysis Examples</h3>
+            <ul>
+                <li><a href="https://omixhub.readthedocs.io/en/latest/examples.html#cohort-creation-of-bulk-rna-seq-experiments-from-genomic-data-commons-gdc">Cohort Creation of Bulk RNA Seq Experiments from GDC</a></li>
+                <li><a href="https://omixhub.readthedocs.io/en/latest/examples.html#migrating-gdc-rna-seq-expression-data-to-your-bigquery-database">Migrating GDC RNA-Seq Expression Data to BigQuery</a></li>
+                <li><a href="https://omixhub.readthedocs.io/en/latest/examples.html#run-an-analysis-for-differential-gene-expression-de-and-gene-set-enrichment-analysis-gsea">Differential Gene Expression and GSEA Analysis</a></li>
+                <li><a href="https://omixhub.readthedocs.io/en/latest/examples.html#supervised-ml-on-a-dataset-from-bigquery">Supervised ML on a dataset from BigQuery</a></li>
+            </ul>
+        </section>
+
+        <section id="applications">
+            <h2>Applications</h2>
+            <h3>Running Gradio App</h3>
+            <p>Currently restricted to users. To contribute or try it, contact <a href="mailto:adhalbiophysics@gmail.com">adhalbiophysics@gmail.com</a>.</p>
+            <p>Running the app:</p>
+            <pre><code>python3 app_gradio.py</code></pre>
+            <p>For app navigation documentation, refer to: <code>cd ../tutorial_notebooks/docs/UI Prototype/gradio_use.md</code></p>
+        </section>
+
+        <section id="references">
+            <h2>References</h2>
+            <ol>
+                <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10028977/#S5">Characterizing tumor toxicity in Gene therapy targets from Bulk RNA-Sequencing</a></li>
+                <li><a href="https://ascopubs.org/doi/10.1200/CCI.19.00095">Bayesian Framework for identifying gene expression outliers in individual sample of RNA-Seq data</a></li>
+            </ol>
+        </section>
+
+        <section id="additional-docs">
+            <h2>Additional Documentation</h2>
+            <ul>
+                <li><strong>Application Examples</strong>
+                    <ul>
+                        <li><a href="../docs/OutlierMethodsApplication/docs/workflow.md">Outlier sum statistics</a></li>
+                        <li><a href="../docs/SuperviseLearningEnsembleApplication/workflow.md">Supervised ML using Ensemble models on kidney cancer data</a></li>
+                        <li><a href="../docs/UmapApplication/docs/workflow.md">Clustering using bayesian optimized parameters of kidney cancer sub-types from TCGA</a></li>
+                        <li><a href="../notebooks/pydeseq_gsea.ipynb">Analysis of differentially expressed genes functionally</a></li>
+                    </ul>
+                </li>
+                <li><a href="../docs/UI%20Prototype/roadmap.md">Roadmap for future developments</a></li>
+                <li><a href="../src/README.md">Methods in src.Connectors for GDC API search and retrieval using custom queries</a></li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>For the most up-to-date and detailed documentation, please visit: <a href="https://omixhub.readthedocs.io/en/latest/index.html" target="_blank">Full OmixHub Documentation</a></p>
+        <p>© Copyright 2024, Abhilash Dhal.</p>
+    </footer>
+</body>
+</html>
