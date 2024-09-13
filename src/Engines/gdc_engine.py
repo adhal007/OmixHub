@@ -99,7 +99,8 @@ class GDCEngine:
             "Isoform Expression Quantification",
             "Splice Junction Quantification",
         ]
-        self._field_names_from_data_matrix = ['case_id', 'file_id', 'expr_unstr_count', 'tissue_type', 'sample_type', 'primary_site']
+        
+        self._field_names_from_data_matrix = ['case_id', 'file_id', 'tissue_type', 'sample_type', 'primary_site']
         self._available_feature_norms = ["fpkm_unstranded", "tpm_unstranded"]
 
     def set_params(self, **params: dict) -> None:
@@ -347,10 +348,14 @@ class GDCEngine:
         gene_cols = df.columns.to_numpy()[1:60661]
         if downstream_analysis == 'DE':
             feature_values_column = 'expr_unstr_count'
+            
         elif downstream_analysis == 'ML':
             feature_values_column = 'expr_tpm'
+            
+        self._field_names_from_data_matrix.append(feature_values_column)    
         df[feature_values_column] = df[np.sort(gene_cols)].agg(list, axis=1)
         df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
+        
         data_for_bq = df_unq[self._field_names_from_data_matrix]
         data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[field_names_from_cohort], on=['file_id', 'case_id'])
         if format == 'dataframe':

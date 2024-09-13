@@ -148,6 +148,7 @@
                 </div>
             </article>
 
+            
             <!-- Google Cloud Utilities -->
             <article>
                 <img src="images/gdc_to_bg_migration.png" alt="Google Cloud Utilities">
@@ -300,7 +301,41 @@ rna_seq_ML_data = gdc_eng_inst.run_rna_seq_data_matrix_creation(primary_site='Ki
             </ol>
             <p>After running this code, you can combine the original and simulated normal samples with your tumor samples to create a balanced dataset for further analysis.</p>
         </section>
-
+        <section id="llm-agent">
+            <h2>OmixHub LLM Agent</h2>
+            <p>Ask the OmixHub LLM Agent about data operations or to perform tasks:</p>
+            <input type="text" id="userInput" placeholder="Enter your request">
+            <button onclick="sendQuery()">Send</button>
+            <div id="response"></div>
+        </section>
+        
+        <!-- Add this script at the end of your body tag -->
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            async function sendQuery() {
+                const userInput = document.getElementById('userInput').value;
+                const responseDiv = document.getElementById('response');
+                responseDiv.innerHTML = 'Processing...';
+                
+                try {
+                    const response = await axios.post('/api/query', { query: userInput });
+                    responseDiv.innerHTML = response.data.response;
+        
+                    // Check if the response contains a file path
+                    if (response.data.response.includes('saved to')) {
+                        const filePath = response.data.response.split('saved to ')[1];
+                        const fileName = filePath.split('/').pop();
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = `/download/${fileName}`;
+                        downloadLink.textContent = 'Download File';
+                        responseDiv.appendChild(document.createElement('br'));
+                        responseDiv.appendChild(downloadLink);
+                    }
+                } catch (error) {
+                    responseDiv.innerHTML = 'Error: ' + error.message;
+                }
+            }
+        </script>
     </main>
 
     <footer>

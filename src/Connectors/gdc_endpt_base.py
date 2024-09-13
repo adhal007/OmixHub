@@ -5,6 +5,11 @@ import pandas as pd
 import src.Connectors.gdc_filters as gdc_flt
 import src.Connectors.gdc_fields as gdc_fld
 import src.Connectors.gdc_field_validator as gdc_vld
+from IPython.display import display, HTML
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Example of usage
 """
 Copyright (c) 2024 OmixHub.  All rights are reserved.
@@ -285,7 +290,69 @@ class GDCEndptBase:
         response = requests.get(url=url, params=url_params)
         json_data = json.loads(response.text)
         return json_data, filters
-
+    
+    def run_query_filter(self, filter_name, filter_function, endpoint, method="post", size=5, *args, **kwargs):
+        """
+        Test a filter function and return the results as a DataFrame and HTML table.
+        
+        Args:
+            filter_name (str): Name of the filter being tested.
+            filter_function (callable): The filter function to test.
+            endpoint (str): The specific API endpoint to use.
+            method (str): The HTTP method to use (get or post).
+            size (int): Number of results to return. Defaults to 5.
+            *args, **kwargs: Arguments to pass to the filter function.
+        
+        Returns:
+            tuple: A tuple containing the DataFrame and HTML table string.
+        """
+        try:
+            logger.info(f"Testing filter: {filter_name}")
+            filter_dict = filter_function(*args, **kwargs)
+            logger.info(f"Filter dictionary: {json.dumps(filter_dict, indent=2)}")
+            
+            url = f"{self.homepage}/{endpoint}"
+            logger.info(f"URL: {url}")
+            
+            params = {"filters": json.dumps(filter_dict), "size": size}
+            if filter_name == "Top Mutated Genes Filter":
+                params["fields"] = "gene_id,symbol,score"
+                params["size"] = max(size, 10)
+            logger.info(f"Params: {json.dumps(params, indent=2)}")
+            
+            if method.lower() == "get":
+                response = requests.get(url, params=params)
+            else:  # POST
+                response = requests.post(url, json=params)
+            
+            logger.info(f"Response status code: {response.status_code}")
+            
+            df = pd.DataFrame()
+            html_table = ""
+            
+            if response.status_code == 200:
+                data = response.json()
+                if 'data' in data:
+                    total_items = data['data'].get('pagination', {}).get('total', 0)
+                    logger.info(f"Total items: {total_items}")
+                    if 'hits' in data['data'] and data['data']['hits']:
+                        df = pd.json_normalize(data['data']['hits'])
+                        html_table = df.to_html(classes="table table-striped", index=False)
+                    else:
+                        logger.warning("No results found.")
+                        html_table = "<p>No results found.</p>"
+                else:
+                    logger.warning("Unexpected response structure.")
+                    html_table = f"<pre>{json.dumps(data, indent=2)}</pre>"
+            else:
+                logger.error(f"Error response: {response.text}")
+                html_table = f"<p>Error: {response.status_code}</p><pre>{response.text}</pre>"
+            
+            return df, html_table
+        
+        except Exception as e:
+            logger.exception(f"An error occurred: {str(e)}")
+            return pd.DataFrame(), f"<p>An error occurred: {str(e)}</p>"
 ### Redundant code: Will possibly be used in hindsight
 # print(file_name)
 # with open(file_name, "wb") as output_file:
