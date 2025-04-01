@@ -77,6 +77,7 @@ class GDCEngine:
         }
         ## public attributes
         self.params = self._default_params | params
+        self.gene_cols = None 
         self._query_params = params
         
         self._files_endpt = gdc_endpt_base.GDCEndptBase(endpt="files")
@@ -345,7 +346,7 @@ class GDCEngine:
         cohort_metadata = cohort_metadata['metadata']
         df = self.run_rna_seq_data_matrix_creation(primary_site=primary_site, downstream_analysis=downstream_analysis)
         df = df.set_index('file_id').reset_index()
-        gene_cols = df.columns.to_numpy()[1:60661]
+        self.gene_cols = df.columns.to_numpy()[1:60661]  # Store gene_cols as an attribute
         if downstream_analysis == 'DE':
             feature_values_column = 'expr_unstr_count'
             
@@ -353,17 +354,17 @@ class GDCEngine:
             feature_values_column = 'expr_tpm'
             
         self._field_names_from_data_matrix.append(feature_values_column)    
-        df[feature_values_column] = df[np.sort(gene_cols)].agg(list, axis=1)
+        df[feature_values_column] = df[np.sort(self.gene_cols)].agg(list, axis=1)
         df_unq = df.drop_duplicates(['case_id']).reset_index(drop=True)
         
         data_for_bq = df_unq[self._field_names_from_data_matrix]
         data_bq_with_labels = pd.merge(data_for_bq, cohort_metadata[field_names_from_cohort], on=['file_id', 'case_id'])
         if format == 'dataframe':
-            return data_bq_with_labels, gene_cols
+            return data_bq_with_labels, self.gene_cols
         elif format == 'json':
             json_data = data_bq_with_labels.to_json(orient='records')
             json_object = json.loads(json_data)
-            return json_object, gene_cols
+            return json_object, self.gene_cols
     
     def make_data_for_recurrence_free_survival(self, primary_site, downstream_analysis='ML', format='dataframe'):
         """

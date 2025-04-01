@@ -12,6 +12,9 @@ from gseapy.plot import dotplot
 from sklearn.preprocessing import StandardScaler
 import ot
 import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
+import src.MLPreprocessor.RNASeqPreprocessor as rna_seq_pp
+import src.ClassicML.DataAug.simulators as simulators
+from sklearn.model_selection import train_test_split
 class AnalysisEngine:
     """
     Analysis class to perform data analysis based on the specified analysis type.
@@ -20,7 +23,7 @@ class AnalysisEngine:
         data_from_bq (pd.DataFrame): The input data from BigQuery.
         analysis_type (str): The type of analysis to perform.
     """
-    def __init__(self, data_from_bq:pd.DataFrame, analysis_type:str) -> None:
+    def __init__(self, data_from_bq:pd.DataFrame, analysis_type:str, gene_cols:list[str]) -> None:
         """
         Initialize the Analysis class with the given data and analysis type.
 
@@ -30,6 +33,11 @@ class AnalysisEngine:
         """
         self.data_from_bq = data_from_bq
         self.analysis_type = analysis_type
+        self.gene_cols = gene_cols  # Store gene_cols as an attribute
+        self.rna_pp = rna_seq_pp.RNASeqPP(self.data_from_bq, self.gene_cols)
+        self.data_for_analysis = None
+        self._analysis_types = ['ML', 'DE']
+        self._ml_methods = ['OS', 'clf']
 
     def check_tumor_normal_counts(self):
         count_df = self.data_from_bq['tissue_type'].value_counts().reset_index()
@@ -42,7 +50,7 @@ class AnalysisEngine:
         else:
             return False 
         
-    def expand_data_from_bq(self, data_from_bq, gene_ids_or_gene_cols, analysis_type):
+    def expand_data_from_bq(self, data_from_bq, gene_ids_or_gene_cols):
         """
         Expand the data from BigQuery by separating 'expr_unstr_count' or 'expr_unstr_tpm' into separate columns.
 
@@ -57,15 +65,7 @@ class AnalysisEngine:
         Returns:
             pd.DataFrame: The expanded DataFrame with separated columns.
         """
-        if analysis_type is None:
-            raise Warning("No analysis type was specified")
-            return None
-        elif analysis_type == 'DE':
-            # Expand 'expr_unstr_count' into separate columns using apply with pd.Series
-            feature_col = 'expr_unstr_count'
-        elif analysis_type == 'ML':
-            feature_col = 'expr_unstr_tpm'
-
+        feature_col = 'expr_unstr_count'                                                                     
         expr_unstr_df = data_from_bq[feature_col].apply(pd.Series)
 
         # Optionally rename the new columns to something meaningful
@@ -205,9 +205,30 @@ class AnalysisEngine:
                     ha='center', va='center', wrap=True)
             ax.axis('off')
             return fig, ax
-            return fig, ax
     
-    def data_for_ml(self):
-        raise NotImplementedError("This method is not implemented yet")
+    def rna_data_for_analysis(self, method='DE'):
+        """Prepare RNA Expression Data For Analysis
+
+        Args:
+            method (str, optional): _description_. Defaults to 'DE'.
+
+        Raises:
+            ValueError: _description_
+
+        Returns:
+            _type_: _description_
+        """
+        if method == 'DE':
+            if self.gene_cols is None: 
+                raise ValueError("Please Check the Gene Cols Provided as per GDC gene_id Annotation")
+            exp_df = self.expand_data_from_bq(self.data_from_bq, gene_ids_or_gene_cols=self.gene_cols)
+            metadata = self.metadata_for_pydeseq(exp_df=exp_df)
+            counts_for_de = self.counts_from_bq_df(exp_df, gene_ids_or_gene_cols=self.gene_cols)
+            return metadata, counts_for_de
+        elif method == 'ML':
+            return self.rna_pp.prepare_data_for_analysis()
+        else:
+            return None
+
         
     

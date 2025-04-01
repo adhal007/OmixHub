@@ -8,6 +8,14 @@ from typing import Union, Tuple
 
 class RNASeqPP:
     def __init__(self, data_from_bq, gene_cols):
+
+        # self.gene_id_to_name = self.load_gene_mapping()
+        self.gene_id_to_name = None
+        self.raw_counts = None
+        self.normalized_counts = None
+        self.size_factors = None
+
+        self.filtered_genes = None
         self.data_from_bq = data_from_bq
         self.tumor_samples = None
         self.tumor_train = None
@@ -20,22 +28,29 @@ class RNASeqPP:
         self.y_train = None
         self.y_test = None
         self.y_val = None
-        self.gene_cols = gene_cols
-        self.gene_id_to_name = self.load_gene_mapping()
-        self.raw_counts = None
-        self.normalized_counts = None
-        self.size_factors = None
         self.logmeans = None
         self.filtered_genes = None
+        self.filtered_gene_names = None
+        self.filtered_df = None
+        self.gene_cols = gene_cols
     
-    def load_gene_mapping(self):
-        mapping_file = '/Users/abhilashdhal/Projects/personal_docs/data/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv'
-        mapping_df = pd.read_csv(mapping_file)
+        
+    def filter_low_expression_genes(self, df, threshold=0.99):
+        gene_cols_array = np.array(self.gene_cols)
+        expr_data = np.array(df['expr_unstr_count'].tolist())
+        low_expr_prop = (expr_data <= 1).mean(axis=0)
+        genes_to_keep = np.where(low_expr_prop < threshold)[0]
+        self.filtered_gene_names = gene_cols_array[genes_to_keep]
+        return genes_to_keep
+    
+    def load_gene_mapping(self, mapping_df):
+        # mapping_file = '/Users/abhilashdhal/Projects/personal_docs/data/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv'
+        # mapping_df = pd.read_csv(mapping_file)
         return dict(zip(mapping_df['gene_id'], mapping_df['gene_name']))
     
-    def get_gene_name(self, gene_id):
+    def get_gene_name(self, mapping_df, gene_id):
         # Remove version number from gene_id if present
-        return self.gene_id_to_name[gene_id]
+        return self.load_gene_mapping(mapping_df)[gene_id]
 
     def deseq2_norm_fit(self, counts: Union[pd.DataFrame, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
         with np.errstate(divide="ignore"):
@@ -91,19 +106,29 @@ class RNASeqPP:
         return np.log(normalized_counts + 1)
 
 
-    def prepare_data(self, method='ML', num_samples_to_simulate=None, normalization='log2'):
+    def prepare_data_for_analysis(self, method='ML', num_samples_to_simulate=None, normalization='log2'):
+        # Filter low expression genes first, but keep the data_from_bq format
+        filtered_genes = self.filter_low_expression_genes(self.data_from_bq)
+        
+        # Apply the gene filtering to the original data
+        self.filtered_df = self.data_from_bq.copy()
+        self.filtered_df['expr_unstr_count'] = self.filtered_df['expr_unstr_count'].apply(
+            lambda x: [x[i] for i in filtered_genes]
+        )
+
         # Split tumor samples
-        self.tumor_samples = self.data_from_bq[self.data_from_bq['tissue_type'] == 'Tumor']
+        self.tumor_samples = self.filtered_df[self.filtered_df['tissue_type'] == 'Tumor']
         tumor_train, tumor_test = train_test_split(self.tumor_samples, test_size=0.2, random_state=42)
         self.tumor_train, self.tumor_val = train_test_split(tumor_train, test_size=0.2, random_state=42)
 
         # Get original normal samples
-        self.normal_samples = self.data_from_bq[self.data_from_bq['tissue_type'] == 'Normal']
+        self.normal_samples = self.filtered_df[self.filtered_df['tissue_type'] == 'Normal']
 
-        # Simulate normal samples
-        simulator = simulators.AutoencoderSimulator(self.data_from_bq)
+        # Simulate normal samples using filtered data
+        simulator = simulators.VariationalAutoencoderSimulator(self.filtered_df)
         preprocessed_data = simulator.preprocess_data()
         simulator.train_autoencoder(preprocessed_data)
+        
         if method == 'ML':
             num_samples_to_simulate = len(self.tumor_samples) - len(self.normal_samples)
             self.simulated_normal_samples = simulator.simulate_samples(num_samples_to_simulate)
@@ -112,7 +137,7 @@ class RNASeqPP:
                 raise ValueError("Number of Simulated Samples Cannot be None for Outlier Sum Statistics")
             elif num_samples_to_simulate < 2*len(self.tumor_samples):
                 raise ValueError("InSufficient Number of Simulated Normal Samples: Must be atleast 2X of tumor samples size")
-            self.simulated_normal_samples = simulator.simulate_samples(num_samples_to_simulate)            
+            self.simulated_normal_samples = simulator.simulate_samples(num_samples_to_simulate)                    
 
         # Combine original and simulated normal samples
         all_normal_samples = pd.concat([self.normal_samples, self.simulated_normal_samples])
@@ -126,53 +151,35 @@ class RNASeqPP:
         self.X_test = pd.concat([tumor_test, normal_test])
         self.X_val = pd.concat([self.tumor_val, normal_val])
 
-        # Apply the chosen normalization method
-        expr_col = 'expr_unstr_count'
-        if normalization == 'log2':
-            norm_func = self.norm_transform
-        elif normalization == 'vst':
-            norm_func = self.vst
-        elif normalization == 'rlog':
-            norm_func = self.rlog
-        else:
-            norm_func = self.normalize_counts
+        # Convert gene_cols to numpy array
+        gene_cols_array = np.array(self.gene_cols)
+        filtered_gene_names = gene_cols_array[filtered_genes]
 
-        def safe_normalize(x):
-            try:
-                return norm_func(pd.DataFrame({expr_col: [x]}))[0]
-            except Exception as e:
-                print(f"Error in normalization: {e}")
-                return x  # Return original data if normalization fails
-
-
-
-
-        # Apply log1p transformation to expression data if method is 'DE'
-        if method == 'DE':
-            self.X_train[expr_col] = self.X_train[expr_col].apply(safe_normalize)
-            self.X_test[expr_col] = self.X_test[expr_col].apply(safe_normalize)
-            self.X_val[expr_col] = self.X_val[expr_col].apply(safe_normalize)
-
+        # Expand the expr_unstr_count column
         def expand_expr_col(df):
             expr_data = np.array(df['expr_unstr_count'].tolist())
-            expr_df = pd.DataFrame(expr_data, columns=[f'gene_{i}' for i in range(expr_data.shape[1])])
+            expr_df = pd.DataFrame(expr_data, columns=filtered_gene_names)
             return pd.concat([df.drop('expr_unstr_count', axis=1).reset_index(drop=True), expr_df], axis=1)
 
         self.X_train = expand_expr_col(self.X_train)
         self.X_test = expand_expr_col(self.X_test)
         self.X_val = expand_expr_col(self.X_val)
 
-        # Keep only the gene expression features
-        gene_columns = [col for col in self.X_train.columns if col.startswith('gene_')]
-        self.X_train = self.X_train[gene_columns]
-        self.X_test = self.X_test[gene_columns]
-        self.X_val = self.X_val[gene_columns]
+        # Apply the chosen normalization method
+        if normalization == 'log2':
+            norm_func = lambda x: np.log2(x + 1)
+        elif normalization == 'vst':
+            norm_func = lambda x: np.sqrt(x + 3/8)
+        elif normalization == 'rlog':
+            norm_func = lambda x: np.log(x + 1)
+        else:
+            norm_func = lambda x: x  # No normalization
 
-        # Now add the gene code labels to the columns
-        self.X_train.columns = self.gene_cols
-        self.X_test.columns = self.gene_cols
-        self.X_val.columns = self.gene_cols
-        
+        # Apply normalization
+        self.X_train[filtered_gene_names] = self.X_train[filtered_gene_names].apply(norm_func)
+        self.X_test[filtered_gene_names] = self.X_test[filtered_gene_names].apply(norm_func)
+        self.X_val[filtered_gene_names] = self.X_val[filtered_gene_names].apply(norm_func)
+
         # Prepare labels
         self.y_train = np.concatenate([np.ones(len(self.tumor_train)), np.zeros(len(normal_train))])
         self.y_test = np.concatenate([np.ones(len(tumor_test)), np.zeros(len(normal_test))])
