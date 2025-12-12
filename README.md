@@ -15,7 +15,9 @@ OmixHub is a platform that interfaces with GDC using python to help users to app
    1. Search and retrieval of Cancer Data cohorts from GDC using complex json filters ([Methods in src.Connectors for GDC API search and retrieval using custom queries](./src/README.md))
    2. Interacting with MongoDB database in a pythonic manner (**DOCS coming soon**). 
    3. Interacting with Google cloud BigQuery in a pythonic manner (**DOCS coming soon**).  
-    
+
+### API DOCUMENTATION LINK
+https://omixhub.readthedocs.io/en/latest/getting_started.html
 <!-- #### High Level Objective:
 In NGS datasets for kidney cancer or other complex diseases, apply known or new ML models to identify patterns of gene expression to serve as a template for bio-informatics learning for aspiring scientists/researchers/students in the field. -->
 
