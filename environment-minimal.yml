@@ -1,0 +1,52 @@
+# OmixHub Minimal Environment
+# ============================
+# Lightweight version without optional dependencies
+#
+# Installation:
+#   conda env create -f environment-minimal.yml
+#   conda activate omixhub-minimal
+
+name: omixhub-minimal
+
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Core
+  - python>=3.10,<3.12
+  - pip>=23.0
+  
+  # Scientific
+  - numpy>=1.24,<2.0
+  - scipy>=1.11
+  - pandas>=2.0
+  - scikit-learn>=1.3
+  
+  # Deep Learning
+  - pytorch>=2.0
+  
+  # Bioinformatics
+  - scanpy>=1.9
+  - anndata>=0.10
+  
+  # Visualization
+  - matplotlib>=3.8
+  - seaborn>=0.12
+  
+  # Development
+  - jupyter
+  - ipykernel
+  - tqdm
+  
+  # Utilities
+  - requests
+  
+  - pip:
+      # GDC access
+      - gdc-api-wrapper>=0.2
+      - grequests>=0.7.0
+      
+      # Differential expression
+      - pydeseq2>=0.4

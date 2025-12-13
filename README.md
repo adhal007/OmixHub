@@ -25,7 +25,7 @@ In NGS datasets for kidney cancer or other complex diseases, apply known or new 
 1. Clone the repository `git clone https://github.com/adhal007/OmixHub.git` 
 2. Create the correct conda enviroment for OmixHub: `conda env create -f environment.yaml`
 
-### INSTALLACTION
+### INSTALLATION
 Please follow the instructions on
 
 

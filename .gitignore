@@ -18,3 +18,157 @@
 *personal_docs*
 *gct*
 *xlsx*
+
+# ===================
+# OmixHub .gitignore
+# ===================
+
+# ===================
+# Python
+# ===================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ===================
+# Virtual Environments
+# ===================
+.env
+.venv
+env/
+venv/
+ENV/
+
+# ===================
+# Jupyter Notebooks
+# ===================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ===================
+# IDE / Editor
+# ===================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ===================
+# macOS
+# ===================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ===================
+# Data Files (Don't commit large data)
+# ===================
+*.h5
+*.hdf5
+*.h5ad
+*.csv
+*.tsv
+*.xlsx
+*.parquet
+!tests/data/*.csv
+!tests/data/*.tsv
+
+# ===================
+# Model Files
+# ===================
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.joblib
+
+# ===================
+# Logs
+# ===================
+*.log
+logs/
+codeflash_log.txt
+
+# ===================
+# Sphinx Documentation Build
+# ===================
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# Unnecessary doc folders (clean these up!)
+# docs/bq_to_gsea_tutorial_files/
+# docs/DeSeqApplication/
+# docs/GCP/
+# docs/OutlierMethodsApplication/
+# docs/SubtreeDocs/
+# docs/SupervisedLearningApplication/
+# docs/SuperviseLearningEnsembleApplication/
+# docs/UI Prototype/
+# docs/UmapApplication/
+# docs/UsefulCLICode/
+
+# ===================
+# Testing
+# ===================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# ===================
+# Build Artifacts
+# ===================
+*.html
+!docs/**/*.html
+!index.html
+
+# ===================
+# Secrets (NEVER commit these)
+# ===================
+.env
+.env.local
+*.pem
+*.key
+secrets.json
+credentials.json
+service_account.json
+
+# ===================
+# Cache
+# ===================
+.cache/
+*.cache
+
+# ===================
+# Temporary Files
+# ===================
+tmp/
+temp/
+*.tmp
+*.temp
