@@ -15,6 +15,13 @@ import src.ClassicML.DGE.pydeseq_utils as pydeseq_utils
 import src.MLPreprocessor.RNASeqPreprocessor as rna_seq_pp
 import src.ClassicML.DataAug.simulators as simulators
 from sklearn.model_selection import train_test_split
+
+## Need to add methods for running different ML Analysis 
+## Currently only DE Analysis is implemented.
+## Need to add methods for running different ML Analysis
+## Must be done in a way that the user can specify the analysis type and the corresponding method will be called.
+## Probably be best to use the Analysis Engine in conjunction with a template method pattern where the Analysis Engine will call the appropriate method based on the analysis type specified by the user.
+
 class AnalysisEngine:
     """
     Analysis class to perform data analysis based on the specified analysis type.
