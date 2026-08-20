@@ -5,18 +5,28 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from scipy.stats import boxcox
 from typing import Union, Tuple
-
+### NEXT IMMEDIATE FIXES:
+# 1. Add docstrings to all methods for clarity.
+# 2. Add GTEX data support for simulating normal samples.
 class RNASeqPP:
-    def __init__(self, data_from_bq, gene_cols):
+    def __init__(self, data_from_bq, gene_cols, gtex_data=None):
 
+        ## provided from the user
+        self.gtex_data = gtex_data
+        self.data_from_bq = data_from_bq
+        self.gene_cols = gene_cols
+
+        ## Why are these internal variables initialized to None? 
+        # These variables are used to store intermediate results and processed data during the preprocessing steps. 
+        # Initializing them to None allows the class to check if they have been computed or not, and to avoid unnecessary recomputation. 
+        # It also provides a clear structure for the class, indicating which attributes will be populated as the preprocessing progresses.
         # self.gene_id_to_name = self.load_gene_mapping()
         self.gene_id_to_name = None
         self.raw_counts = None
         self.normalized_counts = None
         self.size_factors = None
-
         self.filtered_genes = None
-        self.data_from_bq = data_from_bq
+
         self.tumor_samples = None
         self.tumor_train = None
         self.tumor_val = None
@@ -32,10 +42,18 @@ class RNASeqPP:
         self.filtered_genes = None
         self.filtered_gene_names = None
         self.filtered_df = None
-        self.gene_cols = gene_cols
-    
+
         
     def filter_low_expression_genes(self, df, threshold=0.99):
+        """
+        Filter out genes with low expression across samples.
+        Genes with expression <= 1 in more than `threshold` proportion of samples are removed.
+        Args:
+            df (pd.DataFrame): DataFrame containing gene expression data.
+            threshold (float): Proportion of samples with low expression to filter out genes.
+        Returns:
+            np.ndarray: Indices of genes to keep.
+        """
         gene_cols_array = np.array(self.gene_cols)
         expr_data = np.array(df['expr_unstr_count'].tolist())
         low_expr_prop = (expr_data <= 1).mean(axis=0)
@@ -44,15 +62,35 @@ class RNASeqPP:
         return genes_to_keep
     
     def load_gene_mapping(self, mapping_df):
+        """
+        Load gene ID to gene name mapping from a DataFrame.
+        Args:
+            mapping_df (pd.DataFrame): DataFrame containing gene ID to gene name mapping.
+        Returns:
+            dict: Dictionary mapping gene IDs to gene names."""
         # mapping_file = '/Users/abhilashdhal/Projects/personal_docs/data/Transcriptomics/data/gene_annotation/gene_id_to_gene_name_mapping.csv'
         # mapping_df = pd.read_csv(mapping_file)
         return dict(zip(mapping_df['gene_id'], mapping_df['gene_name']))
     
     def get_gene_name(self, mapping_df, gene_id):
+        """"
+        Get the gene name corresponding to a given gene ID.
+        Args:
+            mapping_df (pd.DataFrame): DataFrame containing gene ID to gene name mapping.
+            gene_id (str): Gene ID for which to retrieve the gene name.
+        Returns:
+            str: Gene name corresponding to the given gene ID."""
         # Remove version number from gene_id if present
         return self.load_gene_mapping(mapping_df)[gene_id]
 
     def deseq2_norm_fit(self, counts: Union[pd.DataFrame, np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Fit the DESeq2 normalization model to the counts data.
+        Args:
+            counts (Union[pd.DataFrame, np.ndarray]): Raw counts data.
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: Log means and filtered genes.
+        """
         with np.errstate(divide="ignore"):
             log_counts = np.log(counts)
         logmeans = log_counts.mean(0)
@@ -61,6 +99,7 @@ class RNASeqPP:
 
     def deseq2_norm_transform(self, counts: Union[pd.DataFrame, np.ndarray],
                               logmeans: np.ndarray, filtered_genes: np.ndarray) -> Tuple[Union[pd.DataFrame, np.ndarray], Union[pd.DataFrame, np.ndarray]]:
+
         with np.errstate(divide="ignore"):
             log_counts = np.log(counts)
         if isinstance(log_counts, pd.DataFrame):
@@ -75,6 +114,10 @@ class RNASeqPP:
     def normalize_counts(self, data):
         """
         Normalize counts using DESeq2-like method.
+        Args:
+            data (pd.DataFrame): DataFrame containing raw counts data.
+        Returns:
+            np.ndarray: Normalized counts.
         """
         counts = np.array(data['expr_unstr_count'].tolist())
         if self.logmeans is None or self.filtered_genes is None:
@@ -85,6 +128,10 @@ class RNASeqPP:
     def norm_transform(self, data):
         """
         Perform log2 transformation: log2(n + 1).
+        Args:
+            data (pd.DataFrame): DataFrame containing raw counts data.
+        Returns:
+            np.ndarray: Transformed counts.
         """
         normalized_counts = self.normalize_counts(data)
         return np.log2(normalized_counts + 1)
@@ -92,6 +139,10 @@ class RNASeqPP:
     def vst(self, data):
         """
         Variance stabilizing transformation.
+        Args:
+            data (pd.DataFrame): DataFrame containing raw counts data.
+        Returns:
+            np.ndarray: Transformed counts.
         """
         normalized_counts = self.normalize_counts(data)
         # Apply a simple approximation of VST
@@ -100,13 +151,27 @@ class RNASeqPP:
     def rlog(self, data):
         """
         Regularized log transformation.
+        Args:
+            data (pd.DataFrame): DataFrame containing raw counts data.
+        Returns:
+            np.ndarray: Transformed counts.
         """
         normalized_counts = self.normalize_counts(data)
         # Apply a simple approximation of rlog
         return np.log(normalized_counts + 1)
 
-
+    ## Need to fix this method for the case when we have GTEx data.
     def prepare_data_for_analysis(self, method='ML', num_samples_to_simulate=None, normalization='log2'):
+        """
+        Prepare the data for analysis by filtering low expression genes, splitting tumor and normal samples,
+        simulating normal samples, and applying normalization.
+        Args:
+            method (str): Method for analysis ('ML' or 'OS').
+            num_samples_to_simulate (int): Number of normal samples to simulate (required for 'OS' method).
+            normalization (str): Normalization method ('log2', 'vst', or 'rlog').
+        Returns:
+            Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, np.ndarray, np.ndarray, np.ndarray]: Prepared training, testing, and validation datasets along with their labels.
+        """
         # Filter low expression genes first, but keep the data_from_bq format
         filtered_genes = self.filter_low_expression_genes(self.data_from_bq)
         
@@ -129,6 +194,14 @@ class RNASeqPP:
         preprocessed_data = simulator.preprocess_data()
         simulator.train_autoencoder(preprocessed_data)
         
+        # For both the methods ML or OS, why do we need to simulate normal/healthy tissue samples? 
+        # The reason is that in many cases, especially in cancer research, the number of available normal tissue samples can be limited. 
+        # This can lead to an imbalance in the dataset, which can affect the performance of machine learning models. 
+        # By simulating additional normal samples, we can create a more balanced dataset that allows for better training and evaluation of models.
+        # However, a better improvement would be to use GTEx data and simulate normal samples from that data. 
+        # This would provide a more realistic representation of normal tissue samples, as GTEx data is derived from a wide range of healthy individuals and tissues. 
+        # By leveraging GTEx data, we can generate simulated normal samples that better capture the variability and characteristics of real-world normal tissue, 
+        # leading to improved model performance and generalization.
         if method == 'ML':
             num_samples_to_simulate = len(self.tumor_samples) - len(self.normal_samples)
             self.simulated_normal_samples = simulator.simulate_samples(num_samples_to_simulate)
