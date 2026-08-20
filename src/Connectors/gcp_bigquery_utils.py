@@ -279,16 +279,17 @@ class BigQueryQueries(BigQueryUtils):
         table_id (str): The ID of the BigQuery table.
     """
 
-    def __init__(self, project_id, dataset_id, table_id) -> None:
+    def __init__(self, project_id, dataset_id, table_id,
+                 credentials_path: Optional[str] = None) -> None:
         """
-        Initialize the BigQueryQueries class.
-
         Args:
             project_id (str): The Google Cloud project ID.
             dataset_id (str): The ID of the BigQuery dataset.
             table_id (str): The ID of the BigQuery table.
+            credentials_path (str, optional): Path to a service account JSON
+                key file. Falls back to Application Default Credentials.
         """
-        super().__init__(project_id)
+        super().__init__(project_id, credentials_path=credentials_path)
         self.dataset_id = dataset_id
         self.table_id = table_id
 
